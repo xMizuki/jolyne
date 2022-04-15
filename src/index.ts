@@ -78,5 +78,5 @@ process
     .on("uncaughtException", (err: Error) => {
         client.log(err.stack, "error");
         process.exit(1);
-    })
+    });
 client.login(process.env.CLIENT_TOKEN);

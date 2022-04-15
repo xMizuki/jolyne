@@ -1,6 +1,5 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import Client from '../structures/Client';
-import type { CommandInteraction, Interaction, Message } from 'discord.js';
+import type { CommandInteraction, Interaction } from 'discord.js';
 
 /**
  * Discord Slash Command Interaction.
@@ -14,17 +13,6 @@ interface Interaction extends CommandInteraction {
     client: Client;
 }
 
-/**
- * Discord Message.
- */
- interface Message extends Message {
-    /**
-     * The Discord Client.
-     * @type {Client}
-     * @readonly
-     */
-    client: Client;
-}
 
 /**
  * A CommandInteraction object used to create Discord Slash Commands.

@@ -19,18 +19,36 @@ export const data: SlashCommand["data"] = {
         description: "💣 BITES THE DUST...",
         options: []
     }]
-}
+};
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    return ctx.sendT("base:ADVENTURE_RESET_BITE")
-    switch (ctx.interaction.options.getSubcommand()) {
-        case "start":
-            if (userData)
-            break;
-        case "reset":
-            break;
+    if (ctx.interaction.options.getSubcommand() === "start") {
+        //if (userData) return ctx.sendT("base:ALREADY_ADVENTURE");
+        const firstComponent: any = {
+            components: [{
+                custom_id: ctx.interaction.id + ":agree",
+                disabled: false,
+                emoji: null,
+                label: ctx.translate("adventure:AGREE"),
+                style: 3,
+                type: 2,
+                url: null
+            }, {
+                custom_id: ctx.interaction.id + ":disagree",
+                disabled: false,
+                emoji: null,
+                label: ctx.translate("adventure:DISAGREE"),
+                style: 4,
+                type: 2,
+                url: null
+            }],
+            type: 1
+        };
+        ctx.sendT("adventure:CONFIRM", {
+            components: [firstComponent]
+        });
     }
 
-}
+};
 

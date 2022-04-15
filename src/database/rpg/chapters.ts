@@ -12,7 +12,7 @@ const guards = {
     },
     hp: 150,
     completed: false
-}
+};
 
 export default {
     1: {
@@ -151,4 +151,4 @@ export default {
     }
 
 
-}
+};

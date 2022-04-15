@@ -22,8 +22,10 @@
   "dependencies": {
     "@discordjs/rest": "^0.3.0",
     "chalk": "^4.1.2",
+    "chartjs-node-canvas": "^3.2.0",
     "discord-hybrid-sharding": "^1.5.3",
     "discord.js": "^13.6.0",
+    "discord.js-light": "^4.6.5",
     "dotenv": "^16.0.0",
     "i18next": "^21.6.16",
     "i18next-fs-backend": "^1.1.4",
@@ -32,6 +34,9 @@
   },
   "devDependencies": {
     "@types/i18next-fs-backend": "^1.1.2",
-    "@types/pg": "^8.6.5"
+    "@types/pg": "^8.6.5",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "eslint": "^8.13.0"
   }
 }

@@ -1,5 +1,4 @@
 import JolyneClient from './Client';
-// eslint-disable-next-line import/no-extraneous-dependencie
 import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message } from 'discord.js';
 import { APIMessage } from 'discord-api-types';
 
@@ -23,7 +22,7 @@ export default class InteractionCommandContext {
     }
 
     await this.interaction
-      .deferReply({ ephemeral })
+      .deferReply({ ephemeral });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -55,10 +54,16 @@ export default class InteractionCommandContext {
     );
   }
 
-  async sendT(text: string, translateVars = {}): Promise<Message | null> {
-    return this.makeMessage({
-      content: this.translate(text, translateVars),
-    });
+  async sendT(text: string, options: any = {}): Promise<Message | null> {
+    const messageOptions: any = {
+      content: this.translate(text, options)
+    };
+
+    if (options.embed) messageOptions.embed = options.embed;
+    if (options.files) messageOptions.files = options.files;
+    if (options.components) messageOptions.components = options.components;
+
+    return this.makeMessage(messageOptions);
   }
 
   async fetchReply(): Promise<Message | null> {
@@ -70,10 +75,10 @@ export default class InteractionCommandContext {
 
   async deleteReply(): Promise<void | null> {
     return this.interaction
-      .deleteReply()
+      .deleteReply();
   }
 
-  translate(text: string, translateVars: any): string {
+  translate(text: string, translateVars: any = {}): string {
     translateVars.emojis = this.client._emojis;
     translateVars.user = this.interaction.user;
     if (this.interaction.options.getUser("user")) translateVars.user_option = this.interaction.options.getUser("user");

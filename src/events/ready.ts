@@ -9,7 +9,7 @@ export const execute: Event["execute"] = async (client: Client) => {
     client.user.setActivity({ name: "loading..."});
 
     const lastCommands = await client.database.redis.client.get("jolyne:commands");
-    let commandsData = client.commands.map((v: SlashCommand) => v.data);
+    const commandsData = client.commands.map((v: SlashCommand) => v.data);
 
     if (JSON.stringify(commandsData) !== lastCommands) {
         client.log('Slash commands has changed. Loading...', 'cmd');
@@ -29,4 +29,4 @@ export const execute: Event["execute"] = async (client: Client) => {
     client._ready = true;
     client.user.setActivity({ name: "The Way To Heaven", type: "WATCHING" });
     client.log(`Ready! Logged in as ${client.user.tag} (${client.user.id})`);
-}
+};

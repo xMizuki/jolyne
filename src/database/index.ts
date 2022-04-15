@@ -2,8 +2,8 @@ import postgres from './postgres';
 import redis from './redis';
 import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
-import Chapters from './rpg/chapters'
-import type { UserData }  from '../@types'
+import Chapters from './rpg/chapters';
+import type { UserData }  from '../@types';
 
 export default class DatabaseHandler {
     postgres: postgres;
@@ -18,10 +18,10 @@ export default class DatabaseHandler {
     }
 
     async saveUserData(userData: UserData): Promise<void> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const oldData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userData.id]).then(r => r.rows[0] || null);
             if (!oldData) return resolve(oldData);
-            const changes: Array<{}> = [];
+            const changes: Array<object> = [];
             Object.keys(oldData).filter(r => oldData[r] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: any) => {
                 const oldValue = oldData[key];
                 const newValue = userData[key as keyof UserData];
@@ -29,13 +29,13 @@ export default class DatabaseHandler {
                     if (String(newValue) !== String(oldValue)) changes.push({
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
-                    })
+                    });
                 } else {
                     if (key instanceof Array) {
                         if(!arrayEqual(newValue, oldValue)) changes.push({
                             query: `${key}=$${changes.length + 1}`,
                             value: newValue
-                        })
+                        });
                     } else { // If JSON
                         if(JSON.stringify(newValue) !== JSON.stringify(oldValue)) changes.push({
                             query: `${key}=$${changes.length + 1}`,
@@ -44,7 +44,7 @@ export default class DatabaseHandler {
 
                     }
                 }
-            })
+            });
             if (changes.length > 0) {
                 this.languages.set(userData.id, userData.language);
                 await this.postgres.client.query(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id]);
@@ -55,8 +55,8 @@ export default class DatabaseHandler {
     }
 
     async createUserData(userId: string): Promise<UserData> {
-        return new Promise(async (resolve, reject) => {
-            const discordUserTag = this._client.users.cache.get(userId)?.tag || await this._client.users.fetch(userId).then((r: User) => r.tag || "Unknown#0000").catch(() => "null")
+        return new Promise(async (resolve) => {
+            const discordUserTag = this._client.users.cache.get(userId)?.tag || await this._client.users.fetch(userId).then((r: User) => r.tag || "Unknown#0000").catch(() => "null");
             const newUserData: UserData = {
                 id: userId,
                 tag: discordUserTag,
@@ -101,11 +101,11 @@ export default class DatabaseHandler {
             await this.redis.client.set(`jjba:user:${userId}`, JSON.stringify(newUserData));
             this.languages.set(newUserData.id, newUserData.language);
             return resolve(newUserData);    
-        })
+        });
     }        
 
     async getUserData(userId: string, forceData?: boolean): Promise<UserData> {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const cachedUser: UserData = await this.redis.client.get(`jjba:user:${userId}`).then(r => JSON.parse(r) || null);
             if (cachedUser) {
                 const finalData: UserData = {
@@ -140,7 +140,7 @@ export default class DatabaseHandler {
             }
             if (!forceData) return resolve(null);
             return await this.createUserData(userId).then(r => resolve(r));
-        })
+        });
     }
     fixStats(userData: UserData) {
         const stand = require("./rpg/stands.json")[userData.stand]?.bonus ?? { total: 0, strength: 0, stamina: 0, perceptibility: 0, defense: 0 };

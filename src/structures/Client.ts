@@ -3,10 +3,10 @@ import { REST } from '@discordjs/rest';
 import emojis from '../emojis.json';
 import log from '../utils/logger';
 import database from '../database';
-import * as Functions from '../utils/functions'
+import * as Functions from '../utils/functions';
 
 export default class Jolyne extends Client {
-    _ready: boolean = false;
+    _ready: boolean;
     _emojis: object = emojis;
     _rest: REST;
     commands: Collection<string, any> = new Collection();
@@ -18,6 +18,7 @@ export default class Jolyne extends Client {
 
     constructor(options?: ClientOptions) {
       super(options);
+      this._ready = false;
       this.log = log;
       this.database = new database(this);
       this.functions = Functions;

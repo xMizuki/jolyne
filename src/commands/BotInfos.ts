@@ -1,0 +1,204 @@
+import type { SlashCommand, UserData } from '../@types';
+import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, MessageAttachment } from 'discord.js';
+import InteractionCommandContext from '../structures/Interaction';
+import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+
+export const name: SlashCommand["name"] = "infos";
+export const category: SlashCommand["category"] = "others";
+export const cooldown: SlashCommand["cooldown"] = 10;
+export const data: SlashCommand["data"] = {
+    name: "infos",
+    description: "🤖 Show my informations.",
+    options: []
+};
+
+const width = 800;
+const height = 300;
+const ticksOptions: any[] = [{
+    ticks: {
+        fontColor: "white",
+        fontStyle: "bold"
+    }
+}];
+const options: any = {
+    legend: {
+        display: false
+    },
+    scales: {
+        yAxes: ticksOptions,
+        xAxes: ticksOptions
+    }
+};
+const isSameDay: Function = (firstDate: Date, secondDate: Date) => {
+    return `${firstDate.getDate()}|${firstDate.getMonth()}|${firstDate.getFullYear()}` === `${secondDate.getDate()}|${secondDate.getMonth()}|${secondDate.getFullYear()}`;
+};
+const generateCanvas = async (joinedXDays: any[], lastXDays: any[]) => {
+    const canvasRenderService = new ChartJSNodeCanvas({
+        width,
+        height
+    });
+    const image = await canvasRenderService.renderToBuffer({
+        type: "line",
+        data: {
+            labels: lastXDays,
+            datasets: [{
+                label: "Players",
+                data: joinedXDays,
+                borderColor: "rgb(112, 146, 108)",
+                fill: true,
+                backgroundColor: "rgba(150, 219, 150, 0.11)"
+            }]
+        },
+        options
+    });
+    const attachment = new MessageAttachment(image, "image.png");
+    return attachment;
+};
+const joinedXDayss = async (numberOfDays: number, members: any[]) => {
+    const days: number[] = [];
+    let lastDate = 0;
+    members = members.sort((a: { adventureat: number; }, b: { adventureat: number; }) => b.adventureat - a.adventureat);
+    for (let i = 0; i < numberOfDays; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        for (const member of members) {
+            const joinedDate = new Date(Number(member.adventureat));
+            if (isSameDay(joinedDate, date)) {
+                if (lastDate !== joinedDate.getDate()) {
+                    lastDate = joinedDate.getDate();
+                    days.push(1);
+                } else {
+                    let currentDay = days.pop();
+                    days.push(++currentDay);
+                }
+            }
+        }
+        if (days.length < i) days.push(0);
+    }
+    return days.reverse();
+};
+const lastXDayss = (numberOfDays: number, monthIndex: any[]) => {
+    const days = [];
+    for (let i = 0; i < numberOfDays; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        let day: string | number = date.getDate();
+        const month = monthIndex[date.getMonth()];
+        if (day < 10) day = `0${day}`;
+        days.push(`${day} ${month}`);
+    }
+    return days.reverse();
+};
+const m = [
+    "Jan",
+    "Feb",
+    "March",
+    "Apr",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec"
+];
+
+
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
+    await ctx.defer();
+    const numberOfDays = 30;
+
+    const userss = await ctx.client.database.redis.client.keys("*jjba:user*");
+    let user = [];
+    for (const u of userss) {
+        const cachedUser = JSON.parse(await ctx.client.database.redis.client.get(u));
+        if (cachedUser.adventureat) user.push(cachedUser);
+    }
+    user = user.sort((a, b) => b.adventureat - a.adventureat);
+    let days: any[] = [];
+    for (const u of user) {
+        const date = new Date(Number(u.adventureat));
+        const day = date.getDate();
+        const month = m[date.getMonth()];
+        let dayIndex = days.find(r => r.date === `${day} ${month}`);
+        if (!dayIndex) days.push({
+            count: 0,
+            date: `${day} ${month}`
+        });
+        dayIndex = days.find(r => r.date === `${day} ${month}`);
+        dayIndex.count++;
+        days = days.map(v => {
+            if (v.date === `${day} ${month}`) v = dayIndex;
+            return v;
+        });
+    }
+    days = days.reverse();
+    const joinedXDays = await joinedXDayss(numberOfDays, user);
+    const lastXDays = await lastXDayss(numberOfDays, m);
+    lastXDays.length = lastXDays.length-1;
+    const attachment = await generateCanvas(joinedXDays, lastXDays);
+
+            return ctx.interaction.editReply({ files: [attachment], embeds: [{
+            author: { name: ctx.client.user.tag, iconURL: ctx.client.user.displayAvatarURL() },
+            fields: [
+                {
+                    name: ctx.translate("infos:USERS"),
+                    value: 'fixNumber(ctx.client.guilds.cache.map(v=>v.memberCount).reduce((accumulator, curr) => accumulator + curr))',
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:SERVERS"),
+                    value: 'ctx.client.guilds.cache.size',
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:UPTIME"),
+                    value: 'ctx.interaction.convertMs(ctx.client.uptime)',
+                    inline: true 
+
+                },
+                {
+                    name: ctx.translate("infos:LIBRARY"),
+                    value: "Discord.JS",
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:PLAYERS") + " (RPG)",
+                    value: 'fixNumber((await ctx.client.database.redis.client.keys("*jjba:user:*")).length)',
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:RAM_USAGE"),
+                    value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}mb / 7978.38mb (${((process.memoryUsage().heapUsed / 1024 / 1024)/7978.38*100).toFixed(2)}%)`,
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:CREATOR"),
+                    value: "Mizuki#2477",
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:SUPPORT_INVITE"),
+                    value: "[discord.gg/9a2HYsum2v](https://discord.gg/9a2HYsum2v)",
+                    inline: true
+                },
+                {
+                    name: ctx.translate("infos:NEW_PLAYERS"),
+                    value: ctx.translate("infos:NEW_PLAYERS_VALUE", {
+                        new: joinedXDays[joinedXDays.length-1]
+                    })
+                }
+
+            ],
+            footer: { text: "Shard #0" },
+            color: "#70926c",
+            image: {
+                url: 'attachment://image.png',
+            },        
+        }]});
+
+
+};
+
+

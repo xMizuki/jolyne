@@ -3,7 +3,7 @@ import Backend from "i18next-fs-backend";
 import path from "path";
 import fs from 'fs/promises';
 
-async function walkDirectory (dir: string = path.resolve(__dirname, "../../i18n/"), namespaces: any[] = [], folderName: string = "") {
+async function walkDirectory (dir: string = path.resolve(__dirname, "../../i18n/"), namespaces: any[] = [], folderName = "") {
     const files = await fs.readdir(dir);
 
     const languages = [];

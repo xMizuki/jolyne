@@ -11,7 +11,7 @@ const getDatePrefix = () => {
     date.getMilliseconds().toString().padStart(3, "0")) + "]:";
 };
 
-export default function log(content: string, type: string = "log") {
+export default function log(content: string, type = "log") {
     const clusterID = process.env.TOTAL_SHARDS ? `Cluster ${process.env.CLUSTER}/${parseInt(process.env.CLUSTER_COUNT) - 1} ` : "";
 
     switch (type) {

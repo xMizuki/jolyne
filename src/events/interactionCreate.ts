@@ -13,4 +13,4 @@ export const execute: Event["execute"] = async (interaction: Interaction) => {
         command.execute(new InteractionCommandContext(interaction), userData);
     } else command.execute(new InteractionCommandContext(interaction));
 
-}
+};
