@@ -1,0 +1,12 @@
+{
+    "MULTIPLE_QUESTION": "Ont dirais vous avez beaucoup d'ennemies a combattre. Qui vous voulez battre ?",
+    "FROM_CQ": "(depuis les quêtes du chapitre)",
+    "FROM_DQ": "(depuis les quêtes quotidiennes)",
+    "USER_QUESTION": "<@{{user_option.id}}> | **{{user.username}}** aimerai vous combattre ({{type}})",
+    "NOBODY_BATTLE": "{{emojis.pucciSerious}} Mais contre qui tu veux te battre ?!",
+    "USER_IS_BUSY": "**{{user_option.username}}** Est occupé. Réessayez plus tard.",
+    "IF_PLAYER_THEN_SELECT": "{{emojis.pucciSerious}}Si tu veut combattre un jeu, utilise l'option `user`.",
+    "SELECT_BATTLE_TYPE": "{{emojis.pucciSerious}} Tu a oublié de mettre le type de bataille (Amical ou Compétitif).",
+    "CONFUSED": "{{emojis.pucciSerious}} Hein ? Si tu veut de battre contre un PNJ, ignore la catégorie 'user' et 'type'.",
+    "BAD_CONDITIONS": "{{emojis.jolyne}} Vous ne pouvez pas vous battre dans ces conditions. Soignez vous et réessayez."
+}

@@ -1,0 +1,12 @@
+{
+    "MULTIPLE_QUESTION": "Looks like you have too much enemies. Who do you want to fight ?",
+    "FROM_CQ": "(from your chapter quests)",
+    "FROM_DQ": "(from your daily quests)",
+    "USER_QUESTION": "<@{{user_option.id}}> | **{{user.username}}** would like to fight you ({{type}})",
+    "NOBODY_BATTLE": "{{emojis.pucciSerious}} Who the hell do you want to fight ?!",
+    "USER_IS_BUSY": "**{{user_option.username}}** is currently busy. Try again later.",
+    "IF_PLAYER_THEN_SELECT": "{{emojis.pucciSerious}} If you want to fight a player, then use the `user` option.",
+    "SELECT_BATTLE_TYPE": "{{emojis.pucciSerious}} You forgot to set the battle type (friendly fight or a ranked one).",
+    "CONFUSED": "{{emojis.pucciSerious}} Huh ? If you want to battle against an NPC, then ignore the `user` option and/or the `type` option.",
+    "BAD_CONDITIONS": "{{emojis.jolyne}} You can't fight in your conditions. Heal yourself and then try again."
+}

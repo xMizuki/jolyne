@@ -1,0 +1,12 @@
+{
+    "USERS": "Utilisateurs",
+    "SERVERS": "Serveurs",
+    "UPTIME": "Temps d'activité",
+    "LIBRARY": "Library",
+    "PLAYERS": "Joueurs",
+    "RAM_USAGE": "Utilisation de RAM",
+    "CREATOR": "Créateur",
+    "SUPPORT_INVITE": "Invitation au support",
+    "NEW_PLAYERS": "Nouveau Joueurs",
+    "NEW_PLAYERS_VALUE": "(+{{new}} nouveaux jours enregistrés aujourd'hui)"
+}

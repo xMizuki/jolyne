@@ -1,0 +1,22 @@
+{
+    "NO_ADVENTURE": "{{emojis.jolyne}} Aun no has empezado tu aventura. ¡Usa `/adventure start` para empezar!",
+    "ALREADY_ADVENTURE": "{{emojis.jolyne}} Ya has comenzado con tu bizarra aventura.",
+    "USER_NO_ADVENTURE": "{{emojis.thinking}} **{{user_option.username}}** aún no ha empezado con su aventura.",
+    "AND": "y",
+    "SECOND": "segundo",
+    "MINUTE": "minuto",
+    "HOUR": "hora",
+    "DAY": "día",
+    "COOLDOWN": "{{emojis.jolyne}} Estas en cooldown.",
+    "TRADE": "{{emojis.jolyne}} En este momento estás intercambiando. Por favor complete su intercambio primero antes de usar cualquier comando de aventura.",
+    "BATTLE": ":crossed_swords: En este momento estas en batalla. Por favor termine si batalla primero antes de usar cualquier comando de aventura. ¿No puedes encontrar tu batalla? cliquea aquí: {{link}}",
+    "YOU_SEARCHED": "Has buscado",
+    "IN_A": "en un(a)",
+    "IN_THE": "en el/la",
+    "IN_AN": "En un(a)",
+    "BEHIND_A": "detrás de",
+    "UNDER_A": "debajo de",
+    "GOT": "conseguiste",
+    "FOUND": "encontraste",
+    "A": "un(a)"
+}

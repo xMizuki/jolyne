@@ -1,0 +1,5 @@
+{
+    "DESCRIPTION": "Display informations about a specified anime character",
+    "EXAMPLES": ["`character:` Monkey D. Luffy", "`character:` Jotaro Cujoh"]
+
+}
