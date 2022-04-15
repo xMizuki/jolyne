@@ -11,6 +11,3 @@ yarn*.log
 
 # Sytem
 .env
-
-# Crowdin
-crowdin.yml
