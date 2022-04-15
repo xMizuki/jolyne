@@ -8,5 +8,7 @@
     "IF_PLAYER_THEN_SELECT": "{{emojis.pucciSerious}}Si tu veut combattre un jeu, utilise l'option `user`.",
     "SELECT_BATTLE_TYPE": "{{emojis.pucciSerious}} Tu a oublié de mettre le type de bataille (Amical ou Compétitif).",
     "CONFUSED": "{{emojis.pucciSerious}} Hein ? Si tu veut de battre contre un PNJ, ignore la catégorie 'user' et 'type'.",
-    "BAD_CONDITIONS": "{{emojis.jolyne}} Vous ne pouvez pas vous battre dans ces conditions. Soignez vous et réessayez."
+    "BAD_CONDITIONS": "{{emojis.jolyne}} Vous ne pouvez pas vous battre dans ces conditions. Soignez vous et réessayez.",
+    "DIFFERENCE_TOO_BIG": "The difference between you and **{{user_option.username}}** is too big. Try someone else or choose the **Friendly** mode.",
+    "TURN_CONTENT": "It's {{w}}'s turn"
 }
