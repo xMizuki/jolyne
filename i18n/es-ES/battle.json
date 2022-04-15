@@ -8,5 +8,7 @@
     "IF_PLAYER_THEN_SELECT": "{{emojis.pucciSerious}} Si quieres luchar contra un jugador, entonces usa la opción `user`.",
     "SELECT_BATTLE_TYPE": "{{emojis.pucciSerious}} Has olvidado establecer el tipo de batalla (Batalla amistosa o Clasificación).",
     "CONFUSED": "{{emojis.pucciSerious}} ¿Huh? Si quieres una batalla contra un NPC, entonces ignora la opción de `user` y/o la opción de `type`.",
-    "BAD_CONDITIONS": "{{emojis.jolyne}} No puedes luchar en tus condiciones. Cúrate y entonces intenta de nuevo"
+    "BAD_CONDITIONS": "{{emojis.jolyne}} No puedes luchar en tus condiciones. Cúrate y entonces intenta de nuevo",
+    "DIFFERENCE_TOO_BIG": "The difference between you and **{{user_option.username}}** is too big. Try someone else or choose the **Friendly** mode.",
+    "TURN_CONTENT": "It's {{w}}'s turn"
 }
