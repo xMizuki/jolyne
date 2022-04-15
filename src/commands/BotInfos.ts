@@ -105,7 +105,7 @@ const m = [
 ];
 
 
-export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData ? : UserData) => {
     await ctx.defer();
     const numberOfDays = 30;
 
@@ -115,7 +115,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const cachedUser = JSON.parse(await ctx.client.database.redis.client.get(u));
         if (cachedUser.adventureat) user.push(cachedUser);
     }
-    user = user.sort((a, b) => b.adventureat - a.adventureat);
+    user = user.sort((a: UserData, b: UserData) => b.adventureat - a.adventureat);
     let days: any[] = [];
     for (const u of user) {
         const date = new Date(Number(u.adventureat));
@@ -135,14 +135,18 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     }
     days = days.reverse();
     const joinedXDays = await joinedXDayss(numberOfDays, user);
-    const lastXDays = await lastXDayss(numberOfDays, m);
-    lastXDays.length = lastXDays.length-1;
+    const lastXDays = lastXDayss(numberOfDays, m);
+    lastXDays.length = lastXDays.length - 1;
     const attachment = await generateCanvas(joinedXDays, lastXDays);
 
-            return ctx.interaction.editReply({ files: [attachment], embeds: [{
-            author: { name: ctx.client.user.tag, iconURL: ctx.client.user.displayAvatarURL() },
-            fields: [
-                {
+    return ctx.interaction.editReply({
+        files: [attachment],
+        embeds: [{
+            author: {
+                name: ctx.client.user.tag,
+                iconURL: ctx.client.user.displayAvatarURL()
+            },
+            fields: [{
                     name: ctx.translate("infos:USERS"),
                     value: 'fixNumber(ctx.client.guilds.cache.map(v=>v.memberCount).reduce((accumulator, curr) => accumulator + curr))',
                     inline: true
@@ -155,7 +159,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 {
                     name: ctx.translate("infos:UPTIME"),
                     value: 'ctx.interaction.convertMs(ctx.client.uptime)',
-                    inline: true 
+                    inline: true
 
                 },
                 {
@@ -186,19 +190,21 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 {
                     name: ctx.translate("infos:NEW_PLAYERS"),
                     value: ctx.translate("infos:NEW_PLAYERS_VALUE", {
-                        new: joinedXDays[joinedXDays.length-1]
+                        new: joinedXDays[joinedXDays.length - 1]
                     })
                 }
 
             ],
-            footer: { text: "Shard #0" },
+            footer: {
+                text: "Shard #0"
+            },
             color: "#70926c",
             image: {
                 url: 'attachment://image.png',
-            },        
-        }]});
+            },
+        }]
+    });
 
 
 };
-
 
