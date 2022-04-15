@@ -18,5 +18,7 @@
     "UNDER_A": "sous un",
     "GOT": "a obtenu",
     "FOUND": "trouvé",
-    "A": "un"
+    "A": "un",
+    "LEVEL_UP_MESSAGE": ":stars: <@{{user.id}}>, You are now level **{{level}}**\n\n:information_source: You gained **4** skill-oints. Use `/skill-points` to use them.",
+    "BASE_COOLDOWN": "You have to wait **{{timer}}** second(s) before using the `/{{command}}` again."
 }
