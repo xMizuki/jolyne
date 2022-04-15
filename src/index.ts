@@ -1,11 +1,12 @@
 // Import Structures
-import Client from './base/Client';
+import Client from './structures/Client';
 import { Intents } from 'discord.js';
 import { config } from 'dotenv';
+import DJSLIGHT from 'discord.js-light';
 import Cluster from 'discord-hybrid-sharding';
 import fs from 'fs';
 import path from 'path';
-import i18n from './base/i18n';
+import i18n from './structures/i18n';
 
 // Import types
 import type { SlashCommand, Event } from './@types';
@@ -19,7 +20,30 @@ const client = new Client({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.GUILD_MESSAGES
-    ]
+    ],
+    makeCache: DJSLIGHT.Options.cacheWithLimits({
+        ApplicationCommandManager: 0, // guild.commands
+        BaseGuildEmojiManager: 0, // guild.emojis
+        ChannelManager: 0, // client.channels
+        GuildChannelManager: 0, // guild.channels
+        GuildBanManager: 0, // guild.bans
+        GuildInviteManager: 0, // guild.invites
+        GuildManager: Infinity, // client.guilds
+        GuildMemberManager: 0, // guild.members
+        GuildStickerManager: 0, // guild.stickers
+        GuildScheduledEventManager: 0, // guild.scheduledEvents
+        MessageManager: 0, // channel.messages
+        PermissionOverwriteManager: 0, // channel.permissionOverwrites
+        PresenceManager: 0, // guild.presences
+        ReactionManager: 0, // message.reactions
+        ReactionUserManager: 0, // reaction.users
+        RoleManager: 0, // guild.roles
+        StageInstanceManager: 0, // guild.stageInstances
+        ThreadManager: 0, // channel.threads
+        ThreadMemberManager: 0, // threadchannel.members
+        UserManager: Infinity, // client.users
+        VoiceStateManager: 0 // guild.voiceStates
+    }),
 });
 
 async function init() {

@@ -1,5 +1,6 @@
-import type { SlashCommand, Interaction, command, UserData } from '../@types';
+import type { SlashCommand, command } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
+import InteractionCommandContext from '../structures/Interaction';
 
 export const name: SlashCommand["name"] = "help";
 export const category: SlashCommand["category"] = "utils";
@@ -18,8 +19,8 @@ export const data: SlashCommand["data"] = {
     ],
 }
 
-export const execute: SlashCommand["execute"] = async (interaction: Interaction) => {
-    const commands = interaction.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext) => {
+    const commands = ctx.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
         if (v.data?.options.length !== 0 && v.data.options.filter((r: { choices: any; }) => !r.choices).filter((r: { type: number; }) => r.type !== 3).filter((r: { type: number; }) => r.type !== 6).filter((r: { type: number; }) => r.type !== 4).length !== 0) {
             return v.data.options.map((c: { name: any; description: any; }) => {
                 return {
@@ -56,29 +57,29 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
             description: v.description
         }
     });
-    if (interaction.options.getString("command")) {
-        const command:any = commands.filter((r: any) => r.name === interaction.options.getString("command"))[0];
-        if (!command) interaction.reply(`Command not found`);
+    if (ctx.interaction.options.getString("command")) {
+        const command:any = commands.filter((r: any) => r.name === ctx.interaction.options.getString("command"))[0];
+        if (!command) ctx.interaction.reply(`Command not found`);
 
         const embed = new MessageEmbed().addField("Description", command.description);
         
         if (command.options && command.options.length !== 0) embed.addField("Usage", `/${command.name} ` + command.options.map((v: command) => `\`${v.required ? `<${v.name}>` : `[${v.name}]`}\``).join(", ") + "\n" + command.options.map((v: command) => `> \`${v.name}:\` ${v.description}`).join("\n"))
         if (command.examples) embed.addField("Examples", command.examples.map((v: string) => `/${command.name} ${v}`).join("\n"))
         if (command.cooldown) embed.addField("Cooldown", !isNaN(command.cooldown) ? command.cooldown + " seconds" : command.cooldown);
-        embed.setAuthor({name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL({
+        embed.setAuthor({name: ctx.interaction.user.tag, iconURL: ctx.interaction.user.displayAvatarURL({
             dynamic: true
         })})
         embed.setTitle(`Command: ${command.name}`)
         embed.setColor("#70926c")
         embed.setTimestamp()
-        return interaction.reply({
+        return ctx.interaction.reply({
             embeds: [embed]
         });
     } else {
         const category_selector = new MessageActionRow()
         .addComponents(
             new MessageSelectMenu()
-            .setCustomId(interaction.id)
+            .setCustomId(ctx.interaction.id)
             .setPlaceholder('Select a category.')
             .setMinValues(1)
             .setMaxValues(1)
@@ -97,14 +98,14 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
         const go_back_button = new MessageActionRow()
         .addComponents(
             new MessageButton()
-            .setCustomId(interaction.id+"_back")	
+            .setCustomId(ctx.interaction.id+"_back")	
             .setEmoji('◀️')
             .setStyle("SECONDARY")
         );
-        await interaction.reply({ embeds: [{
+        await ctx.interaction.reply({ embeds: [{
             author: {
                 name: "Jolyne Help",
-                icon_url: interaction.client.user.displayAvatarURL()
+                icon_url: ctx.client.user.displayAvatarURL()
             },
             description: `Hello there ! I'm Jolyne, an RPG JJBA bot\nYou can use me to do a lot of things, but I'm not perfect yet.\nIf you need more information on a specified command, use\n\`/help command: [command]\` or check every commands with all its information [here](https://www.jolyne.wtf/commands).`,
             color: "#70926c",
@@ -118,13 +119,13 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
         }], components: [category_selector] });
 
 
-        const filter = (i: MessageComponentInteraction) => i.user.id === interaction.user.id && i.customId.startsWith(interaction.id);
-        const collector = interaction.channel.createMessageComponentCollector({ filter });
+        const filter = (i: MessageComponentInteraction) => i.user.id === ctx.interaction.user.id && i.customId.startsWith(ctx.interaction.id);
+        const collector = ctx.interaction.channel.createMessageComponentCollector({ filter });
 
         let collectorTimeout = setTimeout(async () => {
             let component = category_selector.toJSON();
             component.components[0].disabled = true;
-            interaction.editReply({ components: [new MessageActionRow(component)] });
+            ctx.interaction.editReply({ components: [new MessageActionRow(component)] });
             collector.stop();
         }, 120000);
 
@@ -134,16 +135,16 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
             collectorTimeout = setTimeout(async () => {
                 let component = category_selector.toJSON();
                 component.components[0].disabled = true;
-                interaction.editReply({ components: [new MessageActionRow(component)] });
+                ctx.interaction.editReply({ components: [new MessageActionRow(component)] });
                 collector.stop();
             }, 120000);
 
             // CHECKERS
-            if (i.customId === interaction.id+"_back") {
-                await interaction.editReply({ embeds: [{
+            if (i.customId === ctx.interaction.id+"_back") {
+                await ctx.interaction.editReply({ embeds: [{
                     author: {
                         name: "Jolyne Help",
-                        icon_url: interaction.client.user.displayAvatarURL()
+                        icon_url: ctx.client.user.displayAvatarURL()
                     },
                     description: `Hello there ! I'm Jolyne, an RPG JJBA bot\nYou can use me to do a lot of things, but I'm not perfect yet.\nIf you need more information on a specified command, use\n\`/help command: [command]\` or check every commands with all its information [here](https://www.jolyne.wtf/commands).`,
                     color: "#70926c",
@@ -156,7 +157,7 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
         
                 }], components: [category_selector] });        
             } else
-            if (i.customId === interaction.id) {
+            if (i.customId === ctx.interaction.id) {
                 let category: string = i.values[0];
                 let description: Array<any> = [];
                 let cmds: Array<any> = [];
@@ -169,10 +170,10 @@ export const execute: SlashCommand["execute"] = async (interaction: Interaction)
                 for (const cmd of cmds) {
                     description.push(`\`/${cmd.name}\`: ${cmd.description ?? "none"}`);
                 }
-                interaction.editReply({ components: [category_selector, go_back_button], embeds: [{
+                ctx.interaction.editReply({ components: [category_selector, go_back_button], embeds: [{
                     author: {
                         name: `${capitalize(category)} Commands`,
-                        icon_url: interaction.client.user.displayAvatarURL()
+                        icon_url: ctx.client.user.displayAvatarURL()
                     },
                     description: description.join("\n"),
                     color: "#70926c"

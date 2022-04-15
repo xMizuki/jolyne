@@ -1,5 +1,6 @@
-import type { SlashCommand, Interaction, command, UserData } from '../@types';
+import type { SlashCommand, UserData } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
+import InteractionCommandContext from '../structures/Interaction';
 
 export const name: SlashCommand["name"] = "adventure";
 export const category: SlashCommand["category"] = "adventure";
@@ -21,8 +22,9 @@ export const data: SlashCommand["data"] = {
 }
 
 
-export const execute: SlashCommand["execute"] = async (interaction: Interaction, userData?: UserData) => {
-    switch (interaction.options.getSubcommand()) {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
+    return ctx.sendT("base:ADVENTURE_RESET_BITE")
+    switch (ctx.interaction.options.getSubcommand()) {
         case "start":
             if (userData)
             break;
