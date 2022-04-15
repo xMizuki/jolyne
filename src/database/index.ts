@@ -1,18 +1,17 @@
 import postgres from './postgres';
 import redis from './redis';
 import { Collection, User } from 'discord.js';
-import Jolyne from '../base/Client';
+import Jolyne from '../structures/Client';
 import Chapters from './rpg/chapters'
 import type { UserData }  from '../@types'
 
 export default class DatabaseHandler {
     postgres: postgres;
     redis: redis;
-    cache: Collection<string, any>;
+    languages: Collection<string, any> = new Collection();
     _client: Jolyne;
 
     constructor(client: Jolyne) {
-        this.cache = new Collection();
         this.postgres = new postgres();
         this.redis = new redis();
         this._client = client;
@@ -47,7 +46,7 @@ export default class DatabaseHandler {
                 }
             })
             if (changes.length > 0) {
-                console.log(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id])
+                this.languages.set(userData.id, userData.language);
                 await this.postgres.client.query(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id]);
                 await this.redis.client.set(`jjba:user:${userData.id}`, JSON.stringify(userData));
                 return resolve(await this.redis.client.get(`jjba:user:${userData.id}`).then(r => JSON.parse(r) || null));
@@ -100,41 +99,43 @@ export default class DatabaseHandler {
                 newUserData.adventureat
             ]);
             await this.redis.client.set(`jjba:user:${userId}`, JSON.stringify(newUserData));
+            this.languages.set(newUserData.id, newUserData.language);
             return resolve(newUserData);    
         })
     }        
 
     async getUserData(userId: string, forceData?: boolean): Promise<UserData> {
         return new Promise(async (resolve, reject) => {
-            const cachedUser = await this.redis.client.get(`jjba:user:${userId}`).then(r => JSON.parse(r) || null);
+            const cachedUser: UserData = await this.redis.client.get(`jjba:user:${userId}`).then(r => JSON.parse(r) || null);
             if (cachedUser) {
                 const finalData: UserData = {
                     id: cachedUser.id,
                     tag: cachedUser.tag,
-                    xp: parseInt(cachedUser.xp),
-                    level: parseInt(cachedUser.level),
-                    health: parseInt(cachedUser.health),
-                    max_health: parseInt(cachedUser.max_health || cachedUser.health),
-                    stamina: parseInt(cachedUser.stamina),
-                    max_stamina: parseInt(cachedUser.max_stamina || cachedUser.stamina),
-                    chapter: parseInt(cachedUser.chapter),
-                    money: parseInt(cachedUser.money),
+                    xp: Number(cachedUser.xp),
+                    level: Number(cachedUser.level),
+                    health: Number(cachedUser.health),
+                    max_health: Number(cachedUser.max_health || cachedUser.health),
+                    stamina: Number(cachedUser.stamina),
+                    max_stamina: Number(cachedUser.max_stamina || cachedUser.stamina),
+                    chapter: Number(cachedUser.chapter),
+                    money: Number(cachedUser.money),
                     language: cachedUser.language,
                     skill_points: cachedUser.skill_points,
                     items: cachedUser.items,
                     quests: cachedUser.quests,
                     squests: cachedUser.squests,
-                    adventureat: parseInt(cachedUser.adventureat),
+                    adventureat: Number(cachedUser.adventureat),
                     spb: cachedUser.spb,
                     stand: cachedUser.stand
                 };
+                if (!this.languages.get(userId) || this.languages.get(userId) !== cachedUser.language) this.languages.set(userId, cachedUser.language);
                 return resolve(finalData);
-
             }
             const userData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userId]).then(r => r.rows[0] || null);
             if (userData) {
                 await this.redis.client.set(`jjba:user:${userId}`, JSON.stringify(userData));
                 const finalData: UserData = userData;
+                if (!this.languages.get(userId) || this.languages.get(userId) !== finalData.language) this.languages.set(userId, finalData.language);
                 return resolve(finalData);
             }
             if (!forceData) return resolve(null);

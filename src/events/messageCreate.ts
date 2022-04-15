@@ -1,4 +1,5 @@
-import type { Event, Message } from '../@types';
+import type { Event } from '../@types';
+import { Message } from 'discord.js'
 
 export const name: Event["name"] = "messageCreate";
 export const execute: Event["execute"] = async (message: Message) => {
