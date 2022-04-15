@@ -1,0 +1,37 @@
+{
+  "name": "jolyne",
+  "version": "1.0.0",
+  "description": "A JJBA RPG Discord Bot",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/Cluster.js",
+    "watch": "tsc --watch",
+    "dev": "tsc && node dist/Cluster.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jolyne-Developers/jolyne.git"
+  },
+  "author": "xMizuki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jolyne-Developers/jolyne/issues"
+  },
+  "homepage": "https://github.com/Jolyne-Developers/jolyne#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "chalk": "^4.1.2",
+    "discord-hybrid-sharding": "^1.5.3",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
+    "i18next": "^21.6.16",
+    "i18next-fs-backend": "^1.1.4",
+    "ioredis": "^5.0.4",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/i18next-fs-backend": "^1.1.2",
+    "@types/pg": "^8.6.5"
+  }
+}
