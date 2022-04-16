@@ -1,6 +1,7 @@
 import type { SlashCommand, UserData } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, MessageAttachment } from 'discord.js';
 import InteractionCommandContext from '../structures/Interaction';
+import { localeNumber } from '../utils/functions'
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 
 export const name: SlashCommand["name"] = "infos";
@@ -148,7 +149,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             },
             fields: [{
                     name: ctx.translate("infos:USERS"),
-                    value: 'fixNumber(ctx.client.guilds.cache.map(v=>v.memberCount).reduce((accumulator, curr) => accumulator + curr))',
+                    value: localeNumber(ctx.client.guilds.cache.map(v=>v.memberCount).reduce((accumulator, curr) => accumulator + curr)),
                     inline: true
                 },
                 {
@@ -158,7 +159,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 },
                 {
                     name: ctx.translate("infos:UPTIME"),
-                    value: 'ctx.interaction.convertMs(ctx.client.uptime)',
+                    value: ctx.convertMs(ctx.client.uptime),
                     inline: true
 
                 },
@@ -169,7 +170,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 },
                 {
                     name: ctx.translate("infos:PLAYERS") + " (RPG)",
-                    value: 'fixNumber((await ctx.client.database.redis.client.keys("*jjba:user:*")).length)',
+                    value: localeNumber((await ctx.client.database.redis.client.keys("*jjba:user:*")).length),
                     inline: true
                 },
                 {
@@ -196,7 +197,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
             ],
             footer: {
-                text: "Shard #0"
+                text: `Cluster #${ctx.client.cluster.id} | Shard #${ctx.interaction.guild.shardId}`
             },
             color: "#70926c",
             image: {
