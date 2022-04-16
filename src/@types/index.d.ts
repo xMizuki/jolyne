@@ -413,11 +413,11 @@ interface Stand {
   /**
    * The stand's emoji
    */
-   readonly emoji: string;
+  readonly emoji: string;
   /**
    * If the stand is available.
    */
-   readonly private available: boolean;
+  readonly available: boolean;
 }
 
 /**
@@ -434,42 +434,46 @@ interface SkillPoints {
  * Item interface
  */
 interface Item {
-    /**
-     * The item's name.
-     */
-    readonly name: string;
-    /**
-     * The item's description.
-     */
-    readonly description: string;
-    /**
-     * The item's type.
-     */
-    readonly type: "food" | "box" | "cloth" | "arrow";
-    /**
-     * The item's cost
-     */
-    readonly cost: number;
-    /**
-     * If the item is tradable
-     */
-    readonly tradable: boolean;
-    /**
-     * If the item is storable
-     */
-    readonly storable: boolean;
-    /**
-     * The item's emoji
-     */
-    readonly emoji: string;
-    /**
-     * The item's benefices
-     */
-    readonly benefices: Item_Benefices;
+  /**
+   * The item's name.
+   */
+  readonly name: string;
+  /**
+   * The item's description.
+   */
+  readonly description: string;
+  /**
+   * The item's type.
+   */
+  readonly type: "food" | "box" | "cloth" | "arrow";
+  /**
+   * The item's cost.
+   */
+  readonly cost: number;
+  /**
+   * If the item is tradable.
+   */
+  readonly tradable: boolean;
+  /**
+   * If the item is storable.
+   */
+  readonly storable: boolean;
+  /**
+   * The item's emoji.
+   */
+  readonly emoji: string;
+  /**
+   * The item's benefices.
+   */
+  readonly benefices: Item_Benefices;
+  /**
+   * The item's shop.
+   */
+  readonly shop: "Tonio Trussardi's Restaurant" | "Grocery Store" | null 
 }
 
 interface Item_Benefices {
-    health?: number,
-    stamina?: number,
-    stand?: string
+  health?: number;
+  stamina?: number;
+  stand?: string | null;
 }
