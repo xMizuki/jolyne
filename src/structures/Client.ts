@@ -3,7 +3,7 @@ import { REST } from '@discordjs/rest';
 import emojis from '../emojis.json';
 import log from '../utils/logger';
 import database from '../database';
-import * as Functions from '../utils/functions';
+import Cluster from 'discord-hybrid-sharding';
 
 export default class Jolyne extends Client {
     _ready: boolean;
@@ -14,16 +14,16 @@ export default class Jolyne extends Client {
     log: Function;
     database: database;
     translations: Map<any, Function>;
-    functions: object;
+    cluster: Cluster.Client;
 
     constructor(options?: ClientOptions) {
       super(options);
       this._ready = false;
       this.log = log;
       this.database = new database(this);
-      this.functions = Functions;
       this._rest = new REST({
         version: '9'
       }).setToken(process.env.CLIENT_TOKEN);
+      this.cluster = new Cluster.Client(this); 
     }
 }

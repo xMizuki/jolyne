@@ -11,3 +11,10 @@ export const capitalize = function capitalize(str: string) {
 export const localeNumber = function localeNumber(num: number) {
     return num.toLocaleString('en-US');
 };
+
+export const s =  function s(nbr: number | string) {
+    nbr = Number(nbr);
+    if (isNaN(nbr)) return "(s)";
+    if (nbr <= 1) return "";
+    else return 's';
+};
