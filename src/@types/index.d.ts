@@ -462,4 +462,14 @@ interface Item {
      * The item's emoji
      */
     readonly emoji: string;
+    /**
+     * The item's benefices
+     */
+    readonly benefices: Item_Benefices;
+}
+
+interface Item_Benefices {
+    health?: number,
+    stamina?: number,
+    stand?: string
 }
