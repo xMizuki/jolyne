@@ -58,7 +58,7 @@ const generateCanvas = async (joinedXDays: any[], lastXDays: any[]) => {
 const joinedXDayss = async (numberOfDays: number, members: any[]) => {
     const days: number[] = [];
     let lastDate = 0;
-    members = members.sort((a: { adventureat: number; }, b: { adventureat: number; }) => b.adventureat - a.adventureat);
+    members = members.sort((a: UserData, b: UserData) => b.adventureat - a.adventureat);
     for (let i = 0; i < numberOfDays; i++) {
         const date = new Date();
         date.setDate(date.getDate() - i);

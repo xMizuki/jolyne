@@ -1,3 +1,5 @@
+import type { UserData, Quest, NPC } from '../@types'
+
 export const getRandomInt = function getRandomInt(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -18,3 +20,17 @@ export const s =  function s(nbr: number | string) {
     if (nbr <= 1) return "";
     else return 's';
 };
+
+export const romanize = function romanize(num: number) {
+    if (!+num)
+        return false;
+    var digits = String(+num).split(""),
+        key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
+               "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
+               "","I","II","III","IV","V","VI","VII","VIII","IX"],
+        roman = "",
+        i = 3;
+    while (i--)
+        roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+    return Array(+digits.join("") + 1).join("M") + roman;
+}

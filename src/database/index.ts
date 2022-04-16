@@ -2,8 +2,9 @@ import postgres from './postgres';
 import redis from './redis';
 import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
-import Chapters from './rpg/chapters';
-import type { UserData }  from '../@types';
+//import Chapters from './rpg/_chapters';
+import * as Chapters from './rpg/Chapters' ;
+import type { UserData, SkillPoints }  from '../@types';
 
 export default class DatabaseHandler {
     postgres: postgres;
@@ -46,10 +47,11 @@ export default class DatabaseHandler {
                 }
             });
             if (changes.length > 0) {
+                this.fixStats(userData);
                 this.languages.set(userData.id, userData.language);
                 await this.postgres.client.query(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id]);
-                await this.redis.client.set(`jjba:user:${userData.id}`, JSON.stringify(userData));
-                return resolve(await this.redis.client.get(`jjba:user:${userData.id}`).then(r => JSON.parse(r) || null));
+                await this.redis.client.set(`cachedUser:${userData.id}`, JSON.stringify(userData));
+                return resolve(await this.redis.client.get(`cachedUser:${userData.id}`).then(r => JSON.parse(r) || null));
             } else resolve(null);
         });
     }
@@ -68,19 +70,26 @@ export default class DatabaseHandler {
                 max_stamina: 60,
                 chapter: 1,
                 money: 500,
-                language: 'english',
+                language: 'en-US',
                 skill_points: {
                     strength: 0,
                     defense: 0,
-                    perceptibility: 0,
+                    perception: 0,
+                    stamina: 0
+                },
+                spb: {
+                    strength: 0,
+                    defense: 0,
+                    perception: 0,
                     stamina: 0
                 },
                 items: ["pizza", "pizza", "pizza"],
-                quests: Chapters[1].quests,
-                squests: [],
+                chapter_quests: Chapters.C1.quests,
+                daily_quests: [],
+                side_quests: [],
                 adventureat: Date.now()
             };
-            await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, quests, squests, adventureat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`, [
+            await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, chapter_quests, daily_quests, side_quests, adventureat, spb) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`, [
                 newUserData.id,
                 newUserData.tag,
                 newUserData.xp,
@@ -94,19 +103,32 @@ export default class DatabaseHandler {
                 newUserData.language,
                 newUserData.skill_points,
                 newUserData.items,
-                newUserData.quests,
-                newUserData.squests,
-                newUserData.adventureat
+                newUserData.chapter_quests,
+                newUserData.daily_quests,
+                newUserData.side_quests,
+                newUserData.adventureat,
+                newUserData.spb
             ]);
-            await this.redis.client.set(`jjba:user:${userId}`, JSON.stringify(newUserData));
+            this.fixStats(newUserData);
+            await this.redis.client.set(`cachedUser:${userId}`, JSON.stringify(newUserData));
             this.languages.set(newUserData.id, newUserData.language);
             return resolve(newUserData);    
         });
-    }        
+    }
+    
+    async delUserData(userId: string): Promise<number> {
+        return new Promise(async (resolve) => {
+            await this.postgres.client.query(`DELETE FROM users WHERE id = $1`, [userId]);
+            const keys = await this.redis.client.keys(`*${userId}*`);
+            for (const key of keys) await this.redis.client.del(key);
+            return resolve(keys.length);
+        });
+    }
+
 
     async getUserData(userId: string, forceData?: boolean): Promise<UserData> {
         return new Promise(async (resolve) => {
-            const cachedUser: UserData = await this.redis.client.get(`jjba:user:${userId}`).then(r => JSON.parse(r) || null);
+            const cachedUser: UserData = await this.redis.client.get(`cachedUser:${userId}`).then(r => JSON.parse(r) || null);
             if (cachedUser) {
                 const finalData: UserData = {
                     id: cachedUser.id,
@@ -122,19 +144,27 @@ export default class DatabaseHandler {
                     language: cachedUser.language,
                     skill_points: cachedUser.skill_points,
                     items: cachedUser.items,
-                    quests: cachedUser.quests,
-                    squests: cachedUser.squests,
+                    chapter_quests: cachedUser.chapter_quests,
+                    daily_quests: cachedUser.daily_quests,
+                    side_quests: cachedUser.side_quests,
                     adventureat: Number(cachedUser.adventureat),
                     spb: cachedUser.spb,
                     stand: cachedUser.stand
                 };
                 if (!this.languages.get(userId) || this.languages.get(userId) !== cachedUser.language) this.languages.set(userId, cachedUser.language);
+                if (typeof finalData.chapter_quests[0] === "string" && finalData.chapter_quests[0].startsWith("{")) {
+                    finalData.chapter_quests = finalData.chapter_quests.map((r: string) => JSON.parse(r));
+                }
+                if (typeof finalData.daily_quests[0] === "string" && finalData.daily_quests[0].startsWith("{")) {
+                    finalData.daily_quests = finalData.daily_quests.map((r: string) => JSON.parse(r));
+                }
                 return resolve(finalData);
             }
             const userData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userId]).then(r => r.rows[0] || null);
             if (userData) {
-                await this.redis.client.set(`jjba:user:${userId}`, JSON.stringify(userData));
+                await this.redis.client.set(`cachedUser:${userId}`, JSON.stringify(userData));
                 const finalData: UserData = userData;
+                this.fixStats(finalData);
                 if (!this.languages.get(userId) || this.languages.get(userId) !== finalData.language) this.languages.set(userId, finalData.language);
                 return resolve(finalData);
             }
@@ -143,9 +173,10 @@ export default class DatabaseHandler {
         });
     }
     fixStats(userData: UserData) {
-        const stand = require("./rpg/stands.json")[userData.stand]?.bonus ?? { total: 0, strength: 0, stamina: 0, perceptibility: 0, defense: 0 };
-        Object.keys(stand).filter(r => r!== "total").forEach(async e => {
-            userData.spb[e] = userData.skill_points[e] + stand[e];
+        const stand = require("./rpg/_stands")[userData.stand]?.bonus ?? { strength: 0, stamina: 0, perception: 0, defense: 0 };
+        if (!userData.spb) userData.spb = { strength: 0, stamina: 0, perception: 0, defense: 0 };
+        Object.keys(stand).filter(r => r!== "total").forEach(async (e: any) => {
+            userData.spb[e as keyof SkillPoints] = userData.skill_points[e as keyof SkillPoints] + stand[e];
         });
 
         if (!userData.stamina && userData.stamina !== 0) userData.stamina = 60;
@@ -157,7 +188,7 @@ export default class DatabaseHandler {
         const strength = userData.skill_points?.strength ?? 0;
         const stamina = Math.round((userData.skill_points?.stamina ?? 0) / 10);
         const health = userData.skill_points?.defense ?? 0;
-        const perception = userData.skill_points?.perceptibility ?? 0;
+        const perception = userData.skill_points?.perception ?? 0;
 
         userData.max_health = 100;
         userData.max_stamina = 60;
@@ -177,6 +208,10 @@ export default class DatabaseHandler {
 
     async setCache(base: string, target: string, value: string | number = 1): Promise<string> {
         return await this.redis.client.set(`tempCache_${base}:${target}`, value);
+    }
+    async delCache(base: string, target?: string): Promise<string | number> {
+        if (!target) return await this.redis.client.del(`tempCache_*${base}`);
+        return await this.redis.client.del(`tempCache_${base}:${target}`);
     }
 }
 

@@ -166,20 +166,19 @@ interface UserData {
     /**
      * The user's skill points.
      */
-    skill_points: JSON<{ 
-        strength: number;
-        defense: number;
-        perceptibility: number; // (perception)
-        stamina: number;
-    }>;
+    skill_points: SkillPoints;
     /**
      * The user's chapter quests.
      */
-    quests: Array;
+    chapter_quests: Array;
     /**
      * The user's daily quests.
      */
-    squests: Array;
+    daily_quests: Array;
+    /**
+     * The user's side quests.
+     */
+    side_quests: Array;
     /**
      * The date when the user started their adventure.
      */
@@ -187,33 +186,66 @@ interface UserData {
     /**
      * The user's skill points (including bonuses).
      */
-    spb?: JSON<{ 
-        strength: number;
-        defense: number;
-        perceptibility: number; // (perception)
-        stamina: number;
-    }>;
+    spb?: SkillPoints
     /**
      * The user's dodge chances.
      */
     dodge_chances?: number;
 }
 
+
 /**
- * NPCs Interface.
+ * A quest object.
  */
-interface NPC {
+interface Quest {
     /**
      * The NPC's ID.
      * @readonly
      */
     readonly id: string;
     /**
-     * The NPC's name.
-     * @readonly
-     * @type {string}
-     * @memberof NPC
+     * Total x collected
      */
+    total?: number;
+    /**
+     * If the quest has been completed
+     */
+    completed?: boolean = false;
+    /**
+     * The quest's title.
+     */
+    title?: JSON<{
+        'en-US': string;
+        'fr-FR': string;
+        'es-ES': string;
+        'de-DE': string;
+    }>;
+    /**
+     * The quest's description.
+     */
+    description?: JSON<{
+        'en-US': string;
+        'fr-FR': string;
+        'es-ES': string;
+        'de-DE': string;
+    }>;
+    /**
+     * The quest's emoji
+     */
+    emoji?: string;
+    /**
+     * ,
+     */
+    timeout?: number;
+    health?: number;
+    i18n?: string;
+
+}
+
+/**
+ * NPCs Interface.
+ */
+ interface NPC extends Quest {
     readonly name?: string;
     /**
      * The NPC's level.
@@ -263,31 +295,130 @@ interface NPC {
      * @type {boolean}
      * @memberof NPC
      */
-    completed: boolean;
 }
 
 /**
- * A quest object.
+ * A chapter object.
  */
-interface Quest extends NPC {
+interface Chapter {
     /**
-     * The quest's description.
-     * @readonly
-     * @type {JSON}
-     * @memberof Quest
+     * The chapter's description
      */
-    readonly description: JSON<{
-        english: string;
-        french?: string;
-        german?: string;
-        spanish?: string;
+    description?: JSON<{
+        'en-US': string;
+        'fr-FR': string;
+        'es-ES': string;
+        'de-DE': string;
     }>;
-
-    // Too lazy to comment.
-    email_timeout?: string;
-    emoji?: string;
-
+    /**
+     * The chapter's title
+     */
+    title?: JSON<{
+        'en-US': string;
+        'fr-FR': string;
+        'es-ES': string;
+        'de-DE': string;
+    }>;
+    /**
+     * Tips for the chapter
+     */
+    tips?: JSON<{
+        'en-US': string;
+        'fr-FR': string;
+        'es-ES': string;
+        'de-DE': string;
+    }>;
+    /**
+     * Mails given by the chapter
+     */
+    mails?: Array;
+    /**
+     * Items given by the chapter
+     */
+    items?: Array;
+    /**
+     * Chapter quests
+     */
+    quests?: Array;
 }
 
+/**
+ * Abilities Interface.
+ */
+interface Ability {
+    /**
+     * The ability's name.
+     */
+    readonly name: string;
+    /**
+     * The ability's description.
+     */
+    readonly description: string;
+    /**
+     * The ability's cooldown.
+     */
+    readonly cooldown: number;
+    /**
+     * The ability's base damages.
+     */
+    readonly damages: number;
+    /**
+     * If the ability is blockable.
+     */
+    readonly blockable: boolean;
+    /**
+     * If the ability is dodgeable.
+     */
+    readonly dodgeable: boolean;
+    /**
+     * How much stamina the ability costs.
+     */
+    readonly stamina: number;
+}
 
-// Stopping commenting from now on. plz do it for me
+/**
+ * Stand Interface.
+ */
+interface Stand {
+    /**
+     * The stand's name.
+     */
+    readonly name: string;
+    /**
+     * The stand's description.
+     */
+    readonly description: string;
+    /**
+     * The stand's skill points bonuses.
+     */
+    readonly skill_points: SkillPoints;
+    /**
+     * The stand's color
+     */
+    readonly color: string;
+
+    /**
+     * The stand's image URL.
+     */
+    readonly image: string;
+    /**
+     * The stand's abilities.
+     */
+    readonly abilities: Array<Ability>;
+    /**
+     * Other stuffs
+     */
+    readonly other: JSON<{
+        [key: string]: any;
+    }>;
+}
+
+/**
+ * Skill Points interface
+ */
+interface SkillPoints {
+    perception: number;
+    strength: number;
+    defense: number;
+    stamina: number;
+}

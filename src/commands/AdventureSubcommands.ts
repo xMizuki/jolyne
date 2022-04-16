@@ -54,6 +54,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         collector.on("collect", async (i: MessageComponentInteraction) => {
             ctx.timeoutCollector(collector);
             i.deferUpdate();
+            ctx.client.database.delCache("adventure", ctx.interaction.user.id);
 
             if (i.customId === ctx.interaction.id + ":agree") {
                 await ctx.client.database.getUserData(ctx.interaction.user.id, true);
@@ -65,6 +66,64 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 collector.stop();
             }
         });
+    } else {
+        if (!userData) return ctx.sendT("base:NO_ADVENTURE");
+        const firstComponent: object = {
+            components: [{
+                custom_id: ctx.interaction.id + ":confirm",
+                disabled: false,
+                label: ctx.translate("base:CONFIRM"),
+                style: 3,
+                type: 2,
+            }, {
+                custom_id: ctx.interaction.id + ":cancel",
+                disabled: false,
+                label: ctx.translate("base:CANCEL"),
+                style: 4,
+                type: 2,
+            }],
+            type: 1
+        };
+        await ctx.sendT("adventure:ADVENTURE_RESET_BITE", {
+            components: [firstComponent]
+        });
+        const filter = (i: MessageComponentInteraction) => i.user.id === ctx.interaction.user.id;
+        const collector = ctx.interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
+        ctx.timeoutCollector(collector);
+
+        collector.on("collect", async (i: MessageComponentInteraction) => {
+            ctx.timeoutCollector(collector);
+            await i.deferUpdate();
+            if (i.customId === ctx.interaction.id + ":final_confirm") {
+                await ctx.client.database.delUserData(ctx.interaction.user.id);
+                ctx.sendT("adventure:ADVENTURE_RESET_MESSAGE", {
+                    components: []
+                });
+            } else if (i.customId === ctx.interaction.id + ":confirm") {
+                await ctx.sendT("adventure:ADVENTURE_RESET_CONFIRME_1", {
+                    components: [{
+                        components: [{
+                            custom_id: ctx.interaction.id + ":final_confirm",
+                            disabled: false,
+                            label: ctx.translate("base:CONFIRM"),
+                            style: 3,
+                            type: 2,
+                        }, {
+                            custom_id: ctx.interaction.id + ":cancel",
+                            disabled: false,
+                            label: ctx.translate("base:CANCEL"),
+                            style: 4,
+                            type: 2,
+                        }],
+                        type: 1
+                    }]
+                });
+            } else {
+                ctx.deleteReply();
+                collector.stop();
+            }
+        });
+
     }
 
 };

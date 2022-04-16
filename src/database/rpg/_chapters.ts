@@ -1,3 +1,5 @@
+import type { NPC } from '../../@types';
+
 const guards = {
     id: "defeat:guard",
     english_name: "Defeat a Guards",

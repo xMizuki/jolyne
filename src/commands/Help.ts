@@ -1,3 +1,4 @@
+// Outdated code, need to optimize it. IK it's really ugly.
 import type { SlashCommand, command } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, SelectMenuInteraction } from 'discord.js';
 import InteractionCommandContext from '../structures/Interaction';
@@ -20,7 +21,7 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext) => {
-    const commands = ctx.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
+    const allCommands = ctx.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
         if (v.data?.options.length !== 0 && v.data.options.filter((r: { choices: object; }) => !r.choices).filter((r: { type: number; }) => r.type !== 3).filter((r: { type: number; }) => r.type !== 6).filter((r: { type: number; }) => r.type !== 4).length !== 0) {
             return v.data.options.map((c: { name: string; description: string; }) => {
                 return {
@@ -57,15 +58,24 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             description: v.description
         };
     });
+    let commands: command[] = [];
+    for (const command of allCommands) {
+        if (command instanceof Array) {
+            for (const commandx of command) {
+                commands.push(commandx);
+            }
+        } else commands.push(command);
+    }
+
     if (ctx.interaction.options.getString("command")) {
-        const command:any = commands.filter((r: any) => r.name === ctx.interaction.options.getString("command"))[0];
+        const command:command = commands.filter((r: any) => r.name === ctx.interaction.options.getString("command"))[0];
         if (!command) ctx.interaction.reply(`Command not found`);
 
         const embed = new MessageEmbed().addField("Description", command.description);
         
         if (command.options && command.options.length !== 0) embed.addField("Usage", `/${command.name} ` + command.options.map((v: command) => `\`${v.required ? `<${v.name}>` : `[${v.name}]`}\``).join(", ") + "\n" + command.options.map((v: command) => `> \`${v.name}:\` ${v.description}`).join("\n"));
         if (command.examples) embed.addField("Examples", command.examples.map((v: string) => `/${command.name} ${v}`).join("\n"));
-        if (command.cooldown) embed.addField("Cooldown", !isNaN(command.cooldown) ? command.cooldown + " seconds" : command.cooldown);
+        if (command.cooldown) embed.addField("Cooldown", typeof command.cooldown === "number" ? command.cooldown + " seconds" : command.cooldown);
         embed.setAuthor({name: ctx.interaction.user.tag, iconURL: ctx.interaction.user.displayAvatarURL({
             dynamic: true
         })});
@@ -121,23 +131,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         const filter = (i: MessageComponentInteraction) => i.user.id === ctx.interaction.user.id && i.customId.startsWith(ctx.interaction.id);
         const collector = ctx.interaction.channel.createMessageComponentCollector({ filter });
-
-        let collectorTimeout = setTimeout(async () => {
-            const component = category_selector.toJSON();
-            component.components[0].disabled = true;
-            ctx.interaction.editReply({ components: [new MessageActionRow(component)] });
-            collector.stop();
-        }, 120000);
+        ctx.timeoutCollector(collector);
 
         collector.on('collect', async (i: SelectMenuInteraction) => { // i = any cuz i.values doesnt existe on msgcomponentint like what the hell
-            // UPDATE COLLECTOR TIMEOUT
-            clearTimeout(collectorTimeout);
-            collectorTimeout = setTimeout(async () => {
-                const component = category_selector.toJSON();
-                component.components[0].disabled = true;
-                ctx.interaction.editReply({ components: [new MessageActionRow(component)] });
-                collector.stop();
-            }, 120000);
+            ctx.timeoutCollector(collector);
 
             // CHECKERS
             if (i.customId === ctx.interaction.id+"_back") {

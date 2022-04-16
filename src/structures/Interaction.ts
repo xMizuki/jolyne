@@ -94,6 +94,7 @@ export default class InteractionCommandContext {
   timeoutCollector(collector: InteractionCollector<any>, time: number = 120000): NodeJS.Timeout {
     clearTimeout(this._timeoutCollector)
     return this._timeoutCollector = setTimeout(async () => {
+      if (collector.ended) return;
       const components = await this.getDisabledComponents()
       await this.makeMessage({ components: components });
       collector.stop();

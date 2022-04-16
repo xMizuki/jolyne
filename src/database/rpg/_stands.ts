@@ -1,4 +1,4 @@
-{
+export default {
     "Star Platinum": {
         "emoji_id": "925699121745104918",
         "type": "Legendary",
