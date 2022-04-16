@@ -4,7 +4,7 @@ import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
 //import Chapters from './rpg/_chapters';
 import * as Chapters from './rpg/Chapters' ;
-import type { UserData, SkillPoints }  from '../@types';
+import type { UserData, SkillPoints, Quest }  from '../@types';
 
 export default class DatabaseHandler {
     postgres: postgres;
@@ -47,8 +47,38 @@ export default class DatabaseHandler {
                 }
             });
             if (changes.length > 0) {
+                if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
+                if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
+                    userData.chapter_quests = userData.chapter_quests.map((c: Quest) => {
+                        if (c.id.startsWith("cc")) {
+                            let goal = Number(c.id.split(":")[1]);
+                            if (c.completed) return c;
+                            if (!c.total) c.total = 0;
+                            c.total = c.total + Number(userData.money - oldData.money);
+                            if (c.total < 0) c.total = 0;
+                            if (c.total >= goal) {
+                                c.completed = true;
+                                c.total = goal;
+                            };            
+                        }
+                        return c;
+                    });
+                    userData.daily_quests = userData.daily_quests.map((c: Quest) => {
+                        if (c.id.startsWith("cc")) {
+                            let goal = Number(c.id.split(":")[1]);
+                            if (c.completed) return c;
+                            if (!c.total) c.total = 0;
+                            c.total = c.total + Number(userData.money - oldData.money);
+                            if (c.total < 0) c.total = 0;
+                            if (c.total >= goal) {
+                                c.completed = true;
+                                c.total = goal;
+                            };            
+                        }
+                        return c;
+                    });
+                }
                 this.fixStats(userData);
-                this.languages.set(userData.id, userData.language);
                 await this.postgres.client.query(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id]);
                 await this.redis.client.set(`cachedUser:${userData.id}`, JSON.stringify(userData));
                 return resolve(await this.redis.client.get(`cachedUser:${userData.id}`).then(r => JSON.parse(r) || null));
