@@ -23,16 +23,27 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    if (ctx.interaction.options.getUser("user")) {
-        userData = await ctx.client.database.getUserData(ctx.interaction.options.getUser("user").id);
+    const userOption = ctx.interaction.options.getUser("user");
+    if (userOption) {
+        userData = await ctx.client.database.getUserData(userOption.id);
         if (!userData) return ctx.sendT("base:USER_NO_ADVENTURE");
     }
     const rows: UserData[] = await ctx.client.database.postgres.client.query(`SELECT * FROM users WHERE adventureat IS NOT NULL AND level IS NOT NULL AND xp IS NOT NULL ORDER BY level DESC, xp DESC`).then(r => r.rows);
     const userPosition = rows.findIndex(p => p.id === ctx.interaction.user.id) + 1;
-    const userStand = Stands[(userData.stand.replace(/ /gi, "_").replace(/:/gi, "_")) as keyof typeof Stands];
+    const userStand = userData.stand ? Stands[(userData.stand.replace(/ /gi, "_").replace(/:/gi, "_")) as keyof typeof Stands] : null;
 
     const embed = new MessageEmbed()
-        .setAuthor({ name: userData.tag, iconURL: ctx.interaction.options.getUser("user")?.displayAvatarURL({ dynamic: true }) ?? ctx.interaction.user.displayAvatarURL({ dynamic: true }) });
+        .setAuthor({ name: userData.tag, iconURL: userOption?.displayAvatarURL({ dynamic: true }) ?? ctx.interaction.user.displayAvatarURL({ dynamic: true }) })
+        .setDescription(ctx.translate("profile:ADVENTUREAT", {
+            rUnix: `<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
+            dUnix: `<t:${(userData.adventureat/1000).toFixed(0)}:D>`,
+        }))
+        .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${userData.money}`, true)
+        .addField("Rank", `:globe_with_meridians: \`${userPosition}\`/\`${rows.length}\``, true)
+        .addField("Player Infos", `:heart: HP: ${Util.localeNumber(userData.health)}/${Util.localeNumber(userData.max_health)}\n:zap: Stamina: ${Util.localeNumber(userData.stamina)}/${Util.localeNumber(userData.max_stamina)}`, true)
+        .addField("Combat Stats", `:crossed_swords: ATK Damages: ${Util.getATKDMG(userData)}\n🍃 Dodge Chances: ~${userData.dodge_chances}%`, true)
+        .addField("Stand", userStand ? `${userStand.emoji} ${userStand.name}` : "Stand-less", true);
+    if (userStand) embed.setThumbnail(userStand.image);
 
     ctx.makeMessage({
         embeds: [embed]

@@ -396,7 +396,6 @@ interface Stand {
    * The stand's color
    */
   readonly color: string;
-
   /**
    * The stand's image URL.
    */
@@ -412,6 +411,10 @@ interface Stand {
     [key: string]: any;
   }>;
   /**
+   * The stand's emoji
+   */
+   readonly emoji: string;
+  /**
    * If the stand is available.
    */
    readonly private available: boolean;
@@ -425,4 +428,38 @@ interface SkillPoints {
   strength: number;
   defense: number;
   stamina: number;
+}
+
+/**
+ * Item interface
+ */
+interface Item {
+    /**
+     * The item's name.
+     */
+    readonly name: string;
+    /**
+     * The item's description.
+     */
+    readonly description: string;
+    /**
+     * The item's type.
+     */
+    readonly type: "food" | "box" | "cloth" | "arrow";
+    /**
+     * The item's cost
+     */
+    readonly cost: number;
+    /**
+     * If the item is tradable
+     */
+    readonly tradable: boolean;
+    /**
+     * If the item is storable
+     */
+    readonly storable: boolean;
+    /**
+     * The item's emoji
+     */
+    readonly emoji: string;
 }

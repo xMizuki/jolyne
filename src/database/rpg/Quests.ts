@@ -1,4 +1,4 @@
-import type { Quest, UserData, NPC } from '../../@types';
+import type { Quest, UserData, NPC, Chapter } from '../../@types';
 import * as Emojis from '../../emojis.json';
 import * as Util from '../../utils/functions';
 
@@ -209,3 +209,14 @@ export const validate = function validateQuest(quests: Array<Quest>, id: string)
     });
 
 };
+
+export const adapt = function adaptQuest(userData: UserData, UserChapter: Chapter): object {
+    return {
+        1: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
+        2: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
+        3: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(1)}\`**: ${UserChapter.title[userData.language]}`,
+        4: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(2)}\`**: ${UserChapter.title[userData.language]}`,
+        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,    
+    }
+
+}

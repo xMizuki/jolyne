@@ -19,13 +19,6 @@ export const data: SlashCommand["data"] = {
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
     const UserChapter: Chapter = Chapters[`C${userData.chapter}` as keyof typeof Chapters];
     let percent = 0;
-    const chp = {
-        1: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
-        2: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
-        3: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(1)}\`**: ${UserChapter.title[userData.language]}`,
-        4: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(2)}\`**: ${UserChapter.title[userData.language]}`,
-        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,
-    };
     makeChapterQuestMessage();
 
     function makeChapterQuestMessage() {
@@ -85,7 +78,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             content += `${emoji} ${cn.content} ||${cn.status}||\n`;
         }
         ctx.makeMessage({
-            content: `${chp[userData.chapter as keyof typeof chp]}\n\`\`\`\n${UserChapter.description[userData.language]}\n\`\`\`\n\n:scroll: **__Quests:__** (${percent.toFixed(2)}%)\n${content}`,
+            content: `${Quests.adapt(userData, UserChapter)[userData.chapter as keyof typeof Quests.adapt]}\n\`\`\`\n${UserChapter.description[userData.language]}\n\`\`\`\n\n:scroll: **__Quests:__** (${percent.toFixed(2)}%)\n${content}`,
         });
 
     }

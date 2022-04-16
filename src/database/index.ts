@@ -182,12 +182,8 @@ export default class DatabaseHandler {
                     stand: cachedUser.stand
                 };
                 if (!this.languages.get(userId) || this.languages.get(userId) !== cachedUser.language) this.languages.set(userId, cachedUser.language);
-                if (typeof finalData.chapter_quests[0] === "string" && finalData.chapter_quests[0].startsWith("{")) {
-                    finalData.chapter_quests = finalData.chapter_quests.map((r: string) => JSON.parse(r));
-                }
-                if (typeof finalData.daily_quests[0] === "string" && finalData.daily_quests[0].startsWith("{")) {
-                    finalData.daily_quests = finalData.daily_quests.map((r: string) => JSON.parse(r));
-                }
+                this.fixStats(finalData);
+
                 return resolve(finalData);
             }
             const userData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userId]).then(r => r.rows[0] || null);
@@ -226,6 +222,7 @@ export default class DatabaseHandler {
         userData.max_stamina += Math.round((userData.level + stamina) + ((userData.level + stamina) * 5 / 100) * ((userData.level + stamina) * 30));
         userData.dodge_chances = Math.round(Math.round((userData.level / 2) + (perception / 1.15)));
     }
+    
 
     async getCache(base: string, target?: string): Promise<string | null> {
         if (!target) {

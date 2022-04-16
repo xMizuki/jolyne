@@ -32,7 +32,7 @@ export default class InteractionCommandContext {
   private resolveMessage(message: Message | APIMessage | null): Message | null {
     if (!message) return null;
     if (message instanceof Message) return message;
-    // @ts-expect-error Message constructor is private,
+    // @ts-expect-error Message constructor is private, but we beed it.
     return new Message(this.client, message);
   }
 
