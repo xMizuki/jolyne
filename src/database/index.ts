@@ -165,6 +165,19 @@ export default class DatabaseHandler {
         userData.max_stamina += Math.round((userData.level + stamina) + ((userData.level + stamina) * 5 / 100) * ((userData.level + stamina) * 30));
         userData.dodge_chances = Math.round(Math.round((userData.level / 2) + (perception / 1.15)));
     }
+
+    async getCache(base: string, target?: string): Promise<string | null> {
+        if (!target) {
+            const keys = await this.redis.client.keys(`tempCache_*${base}`);
+            if (keys.filter(r => r.includes(base)).length !== 0) return keys.filter(r => r.includes(base))[0];    
+            else return null;
+        }
+        return await this.redis.client.get(`tempCache_${base}:${target}`).then(r => r || null);
+    }    
+
+    async setCache(base: string, target: string, value: string | number = 1): Promise<string> {
+        return await this.redis.client.set(`tempCache_${base}:${target}`, value);
+    }
 }
 
 function arrayEqual(array1: any, array2: any) {
