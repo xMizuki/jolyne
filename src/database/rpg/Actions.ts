@@ -35,4 +35,4 @@ export const remove_thing_kakyoin = async (ctx: InteractionCommandContext, userD
         Quests.validate(userData.chapter_quests, "action:bring_kakyoin_hospital");
     }
     ctx.client.database.saveUserData(userData);    
-}
+};

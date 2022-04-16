@@ -29,4 +29,4 @@ export const C1: Chapter = {
         Quests.Claim_Daily(2)
     ]
 
-}
+};

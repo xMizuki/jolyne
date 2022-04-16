@@ -1,10 +1,10 @@
 import type { SlashCommand, UserData } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
 import InteractionCommandContext from '../structures/Interaction';
-import type { Quest, Chapter } from '../@types'
+import type { Quest, Chapter } from '../@types';
 import * as Util from '../utils/functions';
 import * as Chapters from '../database/rpg/Chapters';
-import * as Emojis from '../emojis.json'
+import * as Emojis from '../emojis.json';
 import * as Quests from '../database/rpg/Quests';
 
 export const name: SlashCommand["name"] = "chapter";
@@ -13,20 +13,20 @@ export const cooldown: SlashCommand["cooldown"] = 3;
 export const data: SlashCommand["data"] = {
     name: "chapter",
     description: "Show informations about your current chapter & your chapter quests",
-}
+};
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
     const UserChapter: Chapter = Chapters[`C${userData.chapter}` as keyof typeof Chapters];
-    let percent: number = 0;
-    let chp = {
+    let percent = 0;
+    const chp = {
         1: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
         2: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
         3: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(1)}\`**: ${UserChapter.title[userData.language]}`,
         4: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(2)}\`**: ${UserChapter.title[userData.language]}`,
         5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,
     };
-    makeChapterQuestMessage()
+    makeChapterQuestMessage();
 
     function makeChapterQuestMessage() {
         const fixedChapterContent: Array<object> = [];
@@ -57,15 +57,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 
             } else {
                 if (quest.id.startsWith("defeat")) {
-                    let max = userData.chapter_quests.filter((r: Quest) => r.id === quest.id).length;
-                    let count = userData.chapter_quests.filter((r: Quest) => r.id == quest.id && r.completed).length;
+                    const max = userData.chapter_quests.filter((r: Quest) => r.id === quest.id).length;
+                    const count = userData.chapter_quests.filter((r: Quest) => r.id == quest.id && r.completed).length;
 
                     if (dftArray.filter(r => r === quest.id).length !== 0) {
                         if (quest.completed) percent += 100;
                         continue;
                     }
-                    bar = `Defeat ${max} ${quest.name}`
-                    let perc: number = (count * 100)/max
+                    bar = `Defeat ${max} ${quest.name}`;
+                    const perc: number = (count * 100)/max;
                     percent += perc;
                     dftArray.push(quest.id); 
                     fixedChapterContent.push({
@@ -73,13 +73,13 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         status: `(${count}/${max}) **${perc}%**`
                     });
                 } else {
-                    console.log(quest.id)
+                    console.log(quest.id);
                 }
             }
         }
-        let content: string = "";
+        let content = "";
         for (let i = 0; i < fixedChapterContent.length; i++) {
-            let cn: any = fixedChapterContent[i];
+            const cn: any = fixedChapterContent[i];
             let emoji: string = Emojis.reply;
             if (i === fixedChapterContent.length - 1) emoji = Emojis.replyEnd;
             content += `${emoji} ${cn.content} ||${cn.status}||\n`;
@@ -90,4 +90,4 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     }
 
-}
+};

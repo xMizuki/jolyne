@@ -19,7 +19,7 @@ export const Analyse_Hair: Quest = {
     i18n: "ANALYSE_HAIR",
     emoji: "📧",
     completed: false
-}
+};
 
 export const Remove_Thing_Kakyoin: Quest = {
     id: "action:remove_thing_kakyoin",
@@ -38,7 +38,7 @@ export const Remove_Thing_Kakyoin: Quest = {
     i18n: "REMOVE_THING_KAKYOIN",
     emoji: "💥",
     completed: false
-}
+};
 
 export const Tell_To_Your_Grandfather_About_Dio: Quest = {
     id: "action:tygad",
@@ -57,7 +57,7 @@ export const Tell_To_Your_Grandfather_About_Dio: Quest = {
     i18n: "TELL_GRANDFATHER",
     emoji: "📧",
     completed: false
-}
+};
 
 export const bring_kakyoin_hospital: Quest = {
     id: "action:bring_kakyoin_hospital",
@@ -76,7 +76,7 @@ export const bring_kakyoin_hospital: Quest = {
     i18n: "BRING_KAKYOIN_HOSPITAL",
     emoji: "🏥",
     completed: false
-}
+};
 
 
 export const Awaken_Stand: Quest = {
@@ -96,7 +96,7 @@ export const Awaken_Stand: Quest = {
     i18n: "AWAKE_STAND",
     emoji: Emojis.mysterious_arrow,
     completed: false
-}
+};
 
 
 export const Loot_Coins = (cc: number) => {
@@ -115,7 +115,7 @@ export const Loot_Coins = (cc: number) => {
 
     };
     return LootQuest;
-}
+};
 
 export const Claim_Daily = (cc: number) => {
     const LootQuest: Quest = {
@@ -131,7 +131,7 @@ export const Claim_Daily = (cc: number) => {
         completed: false
     };
     return LootQuest;
-}
+};
 
 export const Claim_Coins = (cc: number) => {
     const LootQuest: Quest = {
@@ -147,7 +147,7 @@ export const Claim_Coins = (cc: number) => {
         completed: false
     };
     return LootQuest;
-}
+};
 
 export const Use_Loot = (cc: number) => {
     const LootQuest: Quest = {
@@ -163,7 +163,7 @@ export const Use_Loot = (cc: number) => {
         completed: false
     };
     return LootQuest;
-}
+};
 
 export const Assault = (cc: number) => {
     const AssaultQuest: Quest = {
@@ -179,7 +179,7 @@ export const Assault = (cc: number) => {
         completed: false
     };
     return AssaultQuest;
-}
+};
 
 export const getStatus = function getQuestStatus(quest: NPC | Quest, userData: UserData): number {
     if (quest.id.startsWith("defeat") || quest.id.startsWith("action") || quest.id.startsWith("defeat")) {
@@ -196,16 +196,16 @@ export const getStatus = function getQuestStatus(quest: NPC | Quest, userData: U
         if (userData.stand) return 100;
         else return 0;
     }
-}
+};
 
 export const validate = function validateQuest(quests: Array<Quest>, id: string) {
-    let validé: boolean = false;
+    let validé = false;
     return quests.map(c => {
         if (c.id === id && !validé) {
             c.completed = true;
-            validé = true
+            validé = true;
         }
         return c;
     });
 
-}
+};

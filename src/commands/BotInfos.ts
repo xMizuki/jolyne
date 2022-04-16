@@ -1,7 +1,7 @@
 import type { SlashCommand, UserData } from '../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, MessageAttachment } from 'discord.js';
 import InteractionCommandContext from '../structures/Interaction';
-import { localeNumber } from '../utils/functions'
+import { localeNumber } from '../utils/functions';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 
 export const name: SlashCommand["name"] = "infos";

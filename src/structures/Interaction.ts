@@ -1,7 +1,7 @@
 import JolyneClient from './Client';
 import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector } from 'discord.js';
 import { APIMessage } from 'discord-api-types';
-import * as Util from '../utils/functions'
+import * as Util from '../utils/functions';
 
 export default class InteractionCommandContext {
   _timeoutCollector: NodeJS.Timeout;
@@ -91,11 +91,11 @@ export default class InteractionCommandContext {
     return components;
   }
 
-  timeoutCollector(collector: InteractionCollector<any>, time: number = 120000): NodeJS.Timeout {
-    clearTimeout(this._timeoutCollector)
+  timeoutCollector(collector: InteractionCollector<any>, time = 120000): NodeJS.Timeout {
+    clearTimeout(this._timeoutCollector);
     return this._timeoutCollector = setTimeout(async () => {
       if (collector.ended) return;
-      const components = await this.getDisabledComponents()
+      const components = await this.getDisabledComponents();
       await this.makeMessage({ components: components });
       collector.stop();
     }, time ?? 12000);
@@ -114,16 +114,16 @@ export default class InteractionCommandContext {
     const hour = this.translate("base:HOUR");
     const minute = this.translate("base:MINUTE");
     const second = this.translate("base:SECOND");
-    let roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
-    let days: number = roundTowardsZero(milliseconds / 86400000),
+    const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
+    const days: number = roundTowardsZero(milliseconds / 86400000),
         hours = roundTowardsZero(milliseconds / 3600000) % 24,
         minutes = roundTowardsZero(milliseconds / 60000) % 60,
         seconds = roundTowardsZero(milliseconds / 1000) % 60;
-    let isDays = days > 0,
+    const isDays = days > 0,
         isHours = hours > 0,
         isMinutes = minutes > 0,
         isSeconds = seconds > 0;
-    let pattern =
+    const pattern =
         (!isDays ? `` : (isMinutes || isHours) ? `{days} ${day}(s), ` : `{days} ${day}(s) and `) +
         (!isHours ? `` : (isMinutes) ? `{hours} ${hour}(s), ` : `{hours} ${hour}(s) and `) +
         (!isMinutes ? `` : `{minutes} ${minute}(s)`) +

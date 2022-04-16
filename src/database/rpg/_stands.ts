@@ -358,4 +358,4 @@ export default {
             "stamina": 0
         }
     }
-}
+};

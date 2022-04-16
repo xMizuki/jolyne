@@ -20,4 +20,4 @@ export const Star_Platinum: Stand = {
         wokelast: "ORAAAAAAAAAAAAAAAA !!!!"
     }
 
-}
+};

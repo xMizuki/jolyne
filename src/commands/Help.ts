@@ -58,7 +58,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             description: v.description
         };
     });
-    let commands: command[] = [];
+    const commands: command[] = [];
     for (const command of allCommands) {
         if (command instanceof Array) {
             for (const commandx of command) {
