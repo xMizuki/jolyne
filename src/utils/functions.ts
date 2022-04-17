@@ -42,3 +42,10 @@ export const getMaxXp = function getMaxXP(level: number): number {
 export const getATKDMG = function getATKDMG(userData: UserData): number {
     return Math.round(5 + Math.round((userData.spb.strength * 0.675) + ((Number(userData.level) * 1.50) + ((5 / 100) * 15)) / 2));
 }
+export const wait = function wait(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export const randomArray = function randomArray<T>(array: T[]): T {
+    return array[Math.floor(Math.random() * array.length)];
+}

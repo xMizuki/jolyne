@@ -470,7 +470,7 @@ interface Item {
   /**
    * The item's shop.
    */
-  readonly shop?: "Tonio Trussardi's Restaurant" | "Grocery Store" | null 
+  readonly shop?: "Tonio Trussardi's Restaurant" | "Grocery Store" | 'Black Market' | null 
   /**
    * Function to use the item (if not consumable)
    */

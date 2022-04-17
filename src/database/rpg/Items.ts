@@ -98,6 +98,9 @@ export const Mysterious_Arrow: Item = {
     } else if (percent <= 70) {
       stand = Util.randomArray(StandsArray.filter(r => r.rarity === "C"));
     }
+    userData.stand = stand.name;
+    await ctx.client.database.saveUserData(userData);
+    await ctx.client.database.delCache("action", userData.id);
     return ctx.makeMessage({
       content: stand.name
     });
