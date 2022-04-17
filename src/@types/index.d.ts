@@ -1,4 +1,5 @@
 import Client from "../structures/Client";
+import CommandInteractionContext from "../structures/Interaction";
 import type { CommandInteraction, Interaction } from "discord.js";
 
 /**
@@ -469,7 +470,11 @@ interface Item {
   /**
    * The item's shop.
    */
-  readonly shop: "Tonio Trussardi's Restaurant" | "Grocery Store" | null 
+  readonly shop?: "Tonio Trussardi's Restaurant" | "Grocery Store" | null 
+  /**
+   * Function to use the item (if not consumable)
+   */
+  readonly use?: (ctx: CommandInteractionContext, userData: UserData) => void;
 }
 
 interface Item_Benefices {

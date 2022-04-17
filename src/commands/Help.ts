@@ -22,7 +22,7 @@ export const data: SlashCommand["data"] = {
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext) => {
     const allCommands = ctx.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
-        if (v.data?.options.length !== 0 && v.data.options.filter((r: { choices: object; }) => !r.choices).filter((r: { type: number; }) => r.type !== 3).filter((r: { type: number; }) => r.type !== 6).filter((r: { type: number; }) => r.type !== 4).length !== 0) {
+        if (v.data?.options?.length !== 0 && v.data.options.filter((r: { choices: object; }) => !r.choices).filter((r: { type: number; }) => r.type !== 3).filter((r: { type: number; }) => r.type !== 6).filter((r: { type: number; }) => r.type !== 4).length !== 0) {
             return v.data.options.map((c: { name: string; description: string; }) => {
                 return {
                     cooldown: v.cooldown,

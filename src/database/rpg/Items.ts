@@ -1,4 +1,8 @@
-import type { Item } from "../../@types";
+import type { Item, UserData, Stand } from "../../@types";
+import CommandInteractionContext from "../../structures/Interaction";
+import * as Emojis from '../../emojis.json';
+import * as Stands from './Stands';
+import * as Util from '../../utils/functions'
 
 export const Pizza: Item = {
   name: "Pizza",
@@ -7,13 +11,11 @@ export const Pizza: Item = {
   cost: 750,
   tradable: true,
   storable: true,
-  emoji: "<:complete_pizza:929061977148506133>",
+  emoji: Emojis.complete_pizza,
   benefices: {
     health: 75,
-    stamina: 0,
-    stand: null,
   },
-  shop: "Tonio Trussardi's Restaurant",
+  shop: "Tonio Trussardi's Restaurant"
 };
 
 export const Spaghetti_Bowl: Item = {
@@ -27,9 +29,8 @@ export const Spaghetti_Bowl: Item = {
   benefices: {
     health: 200,
     stamina: 30,
-    stand: null,
   },
-  shop: "Tonio Trussardi's Restaurant",
+  shop: "Tonio Trussardi's Restaurant"
 };
 
 export const Salad_Bowl: Item = {
@@ -42,10 +43,9 @@ export const Salad_Bowl: Item = {
   emoji: "🥗",
   benefices: {
     health: 50,
-    stamina: 50,
-    stand: null,
+    stamina: 50
   },
-  shop: "Tonio Trussardi's Restaurant",
+  shop: "Tonio Trussardi's Restaurant"
 };
 
 export const Slice_of_Pizza: Item = {
@@ -58,8 +58,49 @@ export const Slice_of_Pizza: Item = {
   emoji: "🍕",
   benefices: {
     health: 10,
-    stamina: 0,
-    stand: null,
   },
-  shop: "Tonio Trussardi's Restaurant",
+  shop: "Tonio Trussardi's Restaurant"
+};
+
+export const Mysterious_Arrow: Item = {
+  name: "Mysterious Arrow",
+  description: "A mysterious arrow",
+  type: "arrow",
+  cost: 30000,
+  tradable: true,
+  storable: true,
+  emoji: Emojis.mysterious_arrow,
+  benefices: {
+    stand: 'random'
+  },
+  shop: "Black Market",
+  use: async (ctx: CommandInteractionContext, userData: UserData) => {
+    const StandsArray: Stand[] = Object.keys(Stands).filter(r => Stands[r as keyof typeof Stands].available).map(r => Stands[r as keyof typeof Stands]);
+    const percent: number = Util.getRandomInt(0, 100);
+    if (userData.stand) {
+      await ctx.sendT("items:MYSTERIOUS_ARROW.ALREADY_STAND");
+      await Util.wait(2000);
+      return await ctx.sendT("items:MYSTERIOUS_ARROW.ALREADY_STAND2");
+    }
+    await ctx.client.database.setCache("action", userData.id, 1);
+    await ctx.sendT("items:MYSTERIOUS_ARROW.MANIFESTING");
+    await Util.wait(2000);
+    await ctx.sendT("items:MYSTERIOUS_ARROW.INVADING");
+    await Util.wait(2000);
+
+    let stand: Stand;
+    if (percent <= 4) {
+      stand = Util.randomArray(StandsArray.filter(r => r.rarity === "S"));
+    } else if (percent <= 15) {
+      stand = Util.randomArray(StandsArray.filter(r => r.rarity === "A"));
+    } else if (percent <= 40) {
+      stand = Util.randomArray(StandsArray.filter(r => r.rarity === "B"));
+    } else if (percent <= 70) {
+      stand = Util.randomArray(StandsArray.filter(r => r.rarity === "C"));
+    }
+    return ctx.makeMessage({
+      content: stand.name
+    });
+
+  }
 };
