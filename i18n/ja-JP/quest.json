@@ -1,0 +1,36 @@
+{
+    "ANALYSE_HAIR": {
+        "TITLE": "Analyse these hairs",
+        "DESCRIPTION": "Send these yellow hairs to the SPEEDWAGON FOUNDATION"
+    },
+    "REMOVE_THING_KAKYOIN": {
+        "TITLE": "Remove the creature",
+        "DESCRIPTION": "Remove the creature on the head of the Kakyoin (50% success rate)"
+    },
+    "TELL_GRANDFATHER": {
+        "TITLE": "Tell to your grandfather about Dio",
+        "DESCRIPTION": "Send an e-mail to your grandfather"
+    },
+    "BRING_KAKYOIN_HOSPITAL": {
+        "TITLE": "Bring Kakyoin to the hospital",
+        "DESCRIPTION": "Bring Kakyoin to the hospital"
+    },
+    "AWAKE_STAND": {
+        "DESCRIPTION": "Awaken your stand"
+    },
+    "LOOT_COINS": {
+        "DESCRIPTION": "Loot {{cc}} coins (using the `/loot` command)"
+    },
+    "CLAIM_DAILY": {
+        "DESCRIPTION": "Claim your daily reward {{cc}} time{{s}} (using the `/loot` command)"
+    },
+    "CLAIM_COINS": {
+        "DESCRIPTION": "Claim {{cc}} coins"
+    },
+    "USE_LOOT": {
+        "DESCRIPTION": "Use the `/loot` command {{cc}} time{{s}}"
+    },
+    "USE_ASSAULT": {
+        "DESCRIPTION": "Use the `/assault` command {{cc}} time{{s}}"
+    }
+}

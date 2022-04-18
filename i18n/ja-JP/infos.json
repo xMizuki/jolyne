@@ -1,0 +1,12 @@
+{
+    "USERS": "Users",
+    "SERVERS": "Servers",
+    "UPTIME": "Uptime",
+    "LIBRARY": "Library",
+    "PLAYERS": "Players",
+    "RAM_USAGE": "RAM Usage",
+    "CREATOR": "Creator",
+    "SUPPORT_INVITE": "Support Invite",
+    "NEW_PLAYERS": "New Players",
+    "NEW_PLAYERS_VALUE": "(+{{new}} new registered players today)"
+}

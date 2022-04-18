@@ -1,0 +1,14 @@
+{
+    "MULTIPLE_QUESTION": "Parece que tienes demasiados enemigos. ¿Con quién quieres pelear?",
+    "FROM_CQ": "(De tus misiones de capítulo)",
+    "FROM_DQ": "(De tus misiones diarias)",
+    "USER_QUESTION": "<@{{user_option.id}}> | **{{user.username}}** desea enfrentarte ({{type}})",
+    "NOBODY_BATTLE": "{{emojis.pucciSerious}} Con quién rayos quieres luchar?!",
+    "USER_IS_BUSY": "**{{user_option.username}}** esta ocupado/a. Intentalo más tarde",
+    "IF_PLAYER_THEN_SELECT": "{{emojis.pucciSerious}} Si quieres luchar contra un jugador, entonces usa la opción `user`.",
+    "SELECT_BATTLE_TYPE": "{{emojis.pucciSerious}} Has olvidado establecer el tipo de batalla (Batalla amistosa o Clasificación).",
+    "CONFUSED": "{{emojis.pucciSerious}} ¿Huh? Si quieres una batalla contra un NPC, entonces ignora la opción de `user` y/o la opción de `type`.",
+    "BAD_CONDITIONS": "{{emojis.jolyne}} No puedes luchar en tus condiciones. Cúrate y entonces intenta de nuevo",
+    "DIFFERENCE_TOO_BIG": "The difference between you and **{{user_option.username}}** is too big. Try someone else or choose the **Friendly** mode.",
+    "TURN_CONTENT": "It's {{w}}'s turn"
+}

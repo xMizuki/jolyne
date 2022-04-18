@@ -1,0 +1,16 @@
+# Node
+node_modules
+package-lock.json
+yarn.lock
+
+# Compiled files
+dist
+
+# Yarn logs
+yarn*.log
+
+# Sytem
+.env
+
+# Others
+src/migration

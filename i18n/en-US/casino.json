@@ -1,0 +1,25 @@
+{
+    "NO_MONEY": "{{emojis.daniel}} **__Daniel J. D'Arby:__** Oi oi, you don't have enough money, bozo.",
+    "CONFIRM_MESSAGE": "{{emojis.daniel}} **__Daniel J. D'Arby:__** Yo __{{user.username}}__,\n\nYou're going to bet **{{bet}}** coins {{emojis.jocoins}}.\nAre you sure you want to do this ?",
+    "CANCEL_MESSAGE": "{{emojis.daniel}} **__Daniel J. D'Arby:__** I see, you're too scared.",
+    "JACKPOT_MESSAGES": [
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** You're a lucky one, you won the jackpot !",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** WAIT WHAT ??? HOW DID YOU- WAIT COME BACK HERE !!!",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Bro I swear you're cheating, HOW IS THAT POSSIBLE ?!"
+    ],
+    "BASIC_WIN_MESSAGES": [
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Nice, you won **{{win}}** coins {{emojis.jocoins}} !",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** You're a good. Take these **{{win}}** coins {{emojis.jocoins}}.",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Wait what- It's not supposed to- Anyways, here is your **{{win}}** coins {{emojis.jocoins}}."
+    ],
+    "LOSE_MESSAGES": [
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Lol, what did you expect, bozo ?",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** That's a real shame, better luck next time... ",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Nice try.",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** It was really close... JK LOL YOU REALLY THINK YOU'RE GOING TO WIN ?!",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** Damnnnn... You should try again",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** That's exactly what i expected... Don't worry, i'm not cheating... *coughs*",
+        "{{emojis.daniel}} **__Daniel J. D'Arby:__** You're a bad bozo, you lost everything."
+    ],
+    "CASINO_YOU_GOT": "You got **{{amount}}** coins {{emojis.jocoins}} !"
+}

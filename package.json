@@ -1,0 +1,44 @@
+{
+  "name": "jolyne",
+  "version": "1.0.0",
+  "description": "A JJBA RPG Discord Bot",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/Cluster.js",
+    "watch": "tsc --watch",
+    "dev": "tsc && node dist/Cluster.js",
+    "migrate": "node dist/migration/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xMizuki/jolyne.git"
+  },
+  "author": "xMizuki",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/xMizuki/jolyne/issues"
+  },
+  "homepage": "https://github.com/xMizuki/jolyne#readme",
+  "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "canvas": "^2.9.1",
+    "chalk": "^4.1.2",
+    "chartjs-node-canvas": "^3.2.0",
+    "discord-hybrid-sharding": "^1.5.3",
+    "discord.js": "^13.6.0",
+    "discord.js-light": "^4.6.5",
+    "dotenv": "^16.0.0",
+    "i18next": "^21.6.16",
+    "i18next-fs-backend": "^1.1.4",
+    "ioredis": "^5.0.4",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/i18next-fs-backend": "^1.1.2",
+    "@types/pg": "^8.6.5",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "eslint": "^8.13.0"
+  }
+}
