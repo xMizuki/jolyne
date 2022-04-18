@@ -11,6 +11,3 @@ yarn*.log
 
 # Sytem
 .env
-
-# Others
-src/migration
