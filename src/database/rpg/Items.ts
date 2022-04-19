@@ -102,7 +102,7 @@ export const Mysterious_Arrow: Item = {
       await ctx.sendT("items:MYSTERIOUS_ARROW.ALREADY_STAND2");
       return false;
     }
-    await ctx.client.database.setCache("action", userData.id, 1);
+    await ctx.client.database.setCooldownCache("action", userData.id, 1);
     await ctx.sendT("items:MYSTERIOUS_ARROW.MANIFESTING", {
       components: []
     });
@@ -127,7 +127,7 @@ export const Mysterious_Arrow: Item = {
     }
     userData.stand = stand.name;
     await ctx.client.database.saveUserData(userData);
-    await ctx.client.database.delCache("action", userData.id);
+    await ctx.client.database.delCooldownCache("action", userData.id);
 
     const standCartBuffer = await Util.generateStandCart(stand);
     const file = new MessageAttachment(standCartBuffer, "stand.png");
@@ -314,7 +314,7 @@ export const Money_Box: Item = {
 }
 
 const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: string, skip?: boolean, left?: number): Promise<boolean> => {
-  ctx.client.database.setCache("action", userData.id, 1);
+  ctx.client.database.setCooldownCache("action", userData.id, 1);
   const win: Array<any> = [];
   let win_content: string = "";
   let superator = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬";
@@ -391,8 +391,8 @@ const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: s
   }
   if (skip) await ctx.makeMessage({ content: content });
   if (skip) {
-    if (left <= 1) ctx.client.database.delCache("action", userData.id);
-  } else ctx.client.database.delCache("action", userData.id);
+    if (left <= 1) ctx.client.database.delCooldownCache("action", userData.id);
+  } else ctx.client.database.delCooldownCache("action", userData.id);
   return true;
 }
 

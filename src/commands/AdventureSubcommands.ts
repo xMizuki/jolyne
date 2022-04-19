@@ -49,12 +49,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const filter = (i: MessageComponentInteraction) => i.user.id === ctx.interaction.user.id;
         const collector = ctx.interaction.channel.createMessageComponentCollector({ filter, time: 120000 });
         ctx.timeoutCollector(collector);
-        ctx.client.database.setCache("adventure", ctx.interaction.user.id);
+        ctx.client.database.setCooldownCache("adventure", ctx.interaction.user.id);
 
         collector.on("collect", async (i: MessageComponentInteraction) => {
             ctx.timeoutCollector(collector);
             i.deferUpdate();
-            ctx.client.database.delCache("adventure", ctx.interaction.user.id);
+            ctx.client.database.delCooldownCache("adventure", ctx.interaction.user.id);
 
             if (i.customId === ctx.interaction.id + ":agree") {
                 await ctx.client.database.getUserData(ctx.interaction.user.id, true);

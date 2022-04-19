@@ -1,5 +1,5 @@
 import type { UserData, Quest, NPC, Stand, Item } from '../@types';
-import { Collection, MessageEmbed } from 'discord.js';
+import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageActionRow } from 'discord.js';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
 import Canvas from 'canvas';
@@ -153,4 +153,9 @@ export const calculateArrayValues = (array: number[]): number => {
       sum += array[i];
     }
     return sum;
-  }
+}
+
+export const actionRow = (components: MessageActionRowComponentResolvable[]): MessageActionRow =>
+  new MessageActionRow({ components });
+
+export const generateID = (): string => [...Array(12)].map(() => (~~(Math.random() * 36)).toString(36)).join(""); 
