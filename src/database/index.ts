@@ -119,7 +119,7 @@ export default class DatabaseHandler {
                 daily_quests: [],
                 side_quests: [],
                 adventureat: Date.now()
-            };
+            }; // g
             await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, chapter_quests, daily_quests, side_quests, adventureat, spb) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`, [
                 newUserData.id,
                 newUserData.tag,
