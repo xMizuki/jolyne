@@ -1,5 +1,5 @@
 import type { Event, InteractionCommand } from '../@types';
-import * as Items from '../database/rpg/Items'
+import * as Items from '../database/rpg/Items';
 import InteractionCommandContext from '../structures/Interaction';
 
 export const name: Event["name"] = "interactionCreate";

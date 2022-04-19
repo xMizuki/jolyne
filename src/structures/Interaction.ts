@@ -1,7 +1,8 @@
 import JolyneClient from './Client';
-import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector } from 'discord.js';
+import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector, Collection, MessageButton, MessageSelectMenu, MessageActionRowComponentResolvable } from 'discord.js';
 import { APIMessage } from 'discord-api-types';
 import * as Util from '../utils/functions';
+const collectorsCache: Collection<string, string> = new Collection();
 
 export default class InteractionCommandContext {
   _timeoutCollector: NodeJS.Timeout;
@@ -80,25 +81,32 @@ export default class InteractionCommandContext {
       .deleteReply();
   }
 
-  async getDisabledComponents(): Promise<object> {
-    const components = await this.interaction.fetchReply().then(r => r.components.map((v: any) => {
-      v.components.map((c: any) => {
-        c.disabled = true;
-        return c;
-      });
-      return v;
-    }));
-    return components;
+  async disableInteractionComponents() {
+    const interaction = await this.interaction.fetchReply();
+    const disabledComponents = interaction.components.map(c => {
+      c.components.map(v => {
+        v.disabled = true;
+        return v;
+      })
+      return c;
+    });
+    this.makeMessage({ components: disabledComponents });
   }
+  
 
   timeoutCollector(collector: InteractionCollector<any>, time = 120000): NodeJS.Timeout {
     clearTimeout(this._timeoutCollector);
+    if (!collectorsCache.has(collector.messageId)) {
+      collectorsCache.set(collector.messageId, collector.messageId);
+      collector.on('end', async () => {
+        collectorsCache.delete(collector.messageId);
+        this.disableInteractionComponents()
+      });
+    }
     return this._timeoutCollector = setTimeout(async () => {
       if (collector.ended) return;
-      const components = await this.getDisabledComponents();
-      await this.makeMessage({ components: components });
       collector.stop();
-    }, time ?? 12000);
+    }, time);
 
   }
 

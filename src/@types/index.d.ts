@@ -1,6 +1,6 @@
 import Client from "../structures/Client";
 import CommandInteractionContext from "../structures/Interaction";
-import type { CommandInteraction, Interaction, ColorResolvable, AutocompleteInteraction } from "discord.js";
+import type { CommandInteraction, Interaction, ColorResolvable, AutocompleteInteraction, Snowflake } from "discord.js";
 
 /**
  * Discord Slash Command Interaction.
@@ -125,7 +125,7 @@ interface UserData {
    * The user's Discord ID.
    * @readonly
    */
-  readonly id: string;
+  readonly id: Snowflake;
   /**
    * The user's Discord Tag.
    */

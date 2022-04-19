@@ -24,32 +24,29 @@ export default class DatabaseHandler {
             if (!oldData) return resolve(oldData);
             const changes: Array<object> = [];
             Object.keys(oldData).filter(r => oldData[r] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: any) => {
-                const oldValue = oldData[key];
-                const newValue = userData[key as keyof UserData];
-                if (typeof key !== "object") {
-                    if (String(newValue) !== String(oldValue)) changes.push({
+                const oldValue: string | object | boolean = oldData[key];
+                const newValue: string | object | boolean = userData[key as keyof UserData];
+                if (typeof oldValue === 'boolean') {
+                    if (newValue !== oldValue) pushChanges()
+                } else if (typeof oldValue !== 'object') {
+                    if (String(newValue) !== String(oldValue)) pushChanges();
+                } else {
+                    if (oldValue instanceof Array) {
+                        if(!arrayEqual(newValue, oldValue)) pushChanges();
+                    } else {
+                        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) pushChanges();
+                    }
+                }
+                function pushChanges() {
+                    changes.push({
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
                     });
-                } else {
-                    if (key instanceof Array) {
-                        if(!arrayEqual(newValue, oldValue)) changes.push({
-                            query: `${key}=$${changes.length + 1}`,
-                            value: newValue
-                        });
-                    } else { // If JSON
-                        if(JSON.stringify(newValue) !== JSON.stringify(oldValue)) changes.push({
-                            query: `${key}=$${changes.length + 1}`,
-                            value: newValue
-                        });
-
-                    }
                 }
-            }); // test
+            });
             if (changes.length > 0) {
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
-                    console.log("ok")
                     userData.chapter_quests = userData.chapter_quests.map((c: Quest) => {
                         if (c.id.startsWith("cc")) {
                             let goal = Number(c.id.split(":")[1]);
@@ -225,7 +222,7 @@ export default class DatabaseHandler {
     }
     
 
-    async getCache(base: string, target?: string): Promise<string | null> {
+    async getCooldownCache(base: string, target?: string): Promise<string | null> {
         if (!target) {
             const keys = await this.redis.client.keys(`tempCache_*${base}`);
             if (keys.filter(r => r.includes(base)).length !== 0) return keys.filter(r => r.includes(base))[0];    
@@ -234,10 +231,10 @@ export default class DatabaseHandler {
         return await this.redis.client.get(`tempCache_${base}:${target}`).then(r => r || null);
     }    
 
-    async setCache(base: string, target: string, value: string | number = 1): Promise<string> {
+    async setCooldownCache(base: string, target: string, value: string | number = 1): Promise<string> {
         return await this.redis.client.set(`tempCache_${base}:${target}`, value);
     }
-    async delCache(base: string, target?: string): Promise<string | number> {
+    async delCooldownCache(base: string, target?: string): Promise<string | number> {
         if (!target) return await this.redis.client.del(`tempCache_*${base}`);
         return await this.redis.client.del(`tempCache_${base}:${target}`);
     }
