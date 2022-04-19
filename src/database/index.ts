@@ -45,7 +45,7 @@ export default class DatabaseHandler {
 
                     }
                 }
-            });
+            }); // test
             if (changes.length > 0) {
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
