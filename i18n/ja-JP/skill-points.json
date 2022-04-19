@@ -1,0 +1,3 @@
+{
+    "BASE_MESSAGE": "{{emojis.dioangry}} **__Dio:__** Here is your current stats:\n\n▬▬▬▬▬▬▬▬▬▬▬**「STATS」**▬▬▬▬▬▬▬▬▬▬▬▬ \n⚡ **• Stamina:** {{userData.skill_points.stamina}} point(s) (increases your agility [stamina/energy])\n❤️ **• Defense:** {{userData.skill_points.defense}} point(s) (increases your health and your resistance)\n💪 **• Strength:** {{userData.skill_points.strength}} point(s) (increases your damages & your stand's damage)\n🍃 **• Perception:** {{userData.skill_points.perception}} point(s) (increases your dodges %)\n\n{{emojis.nextlvl}} You got **{{pointsLeft}}** point(s) left.\n\n▬▬▬▬▬▬▬▬▬▬ **「ADD POINTS」**▬▬▬▬▬▬▬▬▬▬"
+}
