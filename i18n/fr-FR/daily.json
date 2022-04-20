@@ -1,3 +1,6 @@
 {
-    "DAILY_ALREADY_CLAIMED": "{{emojis.jotaro}}**Jotaro:** Yare Yare Daze... T'a déjà récupéré tes bonus quotidien aujourd'hui, reviens dans **{{time}}**."
+    "ALREADY_CLAIMED": "{{emojis.jotaro}} **Jotaro:** Yare Yare Daze... You've already claimed your daily bonuses today. Try again in **{{time}}**.",
+    "CLAIMED_EMBED_DESCRIPTION": "Here is your daily **{{xp}}** {{emojis.xp}} and **{{coins}}** {{emojis.jocoins}}.",
+    "CLAIMED_EMBED_DESCRIPTION_PREMIUM": "Since you're premium, you received an extra **{{xp}}** {{emojis.xp}} and **{{coins}}** {{emojis.jocoins}}.",
+    "CLAIMED_EMBED_FOOTER": "Next streak:"
 }
