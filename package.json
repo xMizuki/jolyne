@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc",
     "start": "node dist/Cluster.js",
     "watch": "tsc --watch",
     "dev": "tsc && node dist/Cluster.js",

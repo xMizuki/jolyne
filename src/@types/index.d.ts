@@ -183,10 +183,6 @@ interface UserData {
    */
   chapter_quests: Array;
   /**
-   * The user's daily quests.
-   */
-  daily_quests: Array;
-  /**
    * The user's side quests.
    */
   side_quests: Array;
@@ -202,6 +198,23 @@ interface UserData {
    * The user's dodge chances.
    */
   dodge_chances?: number;
+  /**
+   * Daily infos.
+   */
+  daily: {
+    claimedAt: number,
+    streak: number,
+    quests: Array<Quest | QuestNPC>
+  },
+  /**
+   * The user's stats (battle won, lost etc).
+   */
+  stats: {
+    rankedBattle?: {
+      wins: number,
+      losses: number
+    }
+  }
 }
 
 /**

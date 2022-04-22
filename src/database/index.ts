@@ -4,6 +4,7 @@ import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
 //import Chapters from './rpg/_chapters';
 import * as Chapters from './rpg/Chapters' ;
+import * as Quests from './rpg/Quests' ;
 import type { UserData, SkillPoints, Quest }  from '../@types';
 
 export default class DatabaseHandler {
@@ -20,12 +21,12 @@ export default class DatabaseHandler {
 
     async saveUserData(userData: UserData): Promise<void> {
         return new Promise(async (resolve) => {
-            const oldData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userData.id]).then(r => r.rows[0] || null);
-            if (!oldData) return resolve(oldData);
+            const oldData: UserData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userData.id]).then(r => r.rows[0] || null);
+            if (!oldData) return resolve(null);
             const changes: Array<object> = [];
-            Object.keys(oldData).filter(r => oldData[r] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: any) => {
-                const oldValue: string | object | boolean = oldData[key];
-                const newValue: string | object | boolean = userData[key as keyof UserData];
+            Object.keys(oldData).filter(r => oldData[r as keyof UserData] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: string | object | boolean | Array<any>) => {
+                const oldValue: string | object | boolean | Array<any> = oldData[key as keyof UserData];
+                const newValue: string | object | boolean | Array<any> = userData[key as keyof UserData];
                 if (typeof oldValue === 'boolean') {
                     if (newValue !== oldValue) pushChanges()
                 } else if (typeof oldValue !== 'object') {
@@ -42,7 +43,7 @@ export default class DatabaseHandler {
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
                     });
-                }
+                };
             });
             if (changes.length > 0) {
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
@@ -61,7 +62,7 @@ export default class DatabaseHandler {
                         }
                         return c;
                     });
-                    userData.daily_quests = userData.daily_quests.map((c: Quest) => {
+                    userData.daily.quests = userData.daily.quests.map((c: Quest) => {
                         if (c.id.startsWith("cc")) {
                             let goal = Number(c.id.split(":")[1]);
                             if (c.completed) return c;
@@ -113,11 +114,16 @@ export default class DatabaseHandler {
                 },
                 items: ["pizza", "pizza", "pizza"],
                 chapter_quests: Chapters.C1.quests,
-                daily_quests: [],
                 side_quests: [],
-                adventureat: Date.now()
+                adventureat: Date.now(),
+                daily: {
+                    claimedAt: 0,
+                    streak: 0,
+                    quests: []
+                },
+                stats: {}
             };
-            await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, chapter_quests, daily_quests, side_quests, adventureat, spb) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`, [
+            await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, chapter_quests, side_quests, adventureat, spb, daily, stats) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`, [
                 newUserData.id,
                 newUserData.tag,
                 newUserData.xp,
@@ -132,10 +138,11 @@ export default class DatabaseHandler {
                 newUserData.skill_points,
                 newUserData.items,
                 newUserData.chapter_quests,
-                newUserData.daily_quests,
                 newUserData.side_quests,
                 newUserData.adventureat,
-                newUserData.spb
+                newUserData.spb,
+                newUserData.daily,
+                newUserData.stats
             ]);
             this.fixStats(newUserData);
             await this.redis.client.set(`cachedUser:${userId}`, JSON.stringify(newUserData));
@@ -173,11 +180,12 @@ export default class DatabaseHandler {
                     skill_points: cachedUser.skill_points,
                     items: cachedUser.items,
                     chapter_quests: cachedUser.chapter_quests,
-                    daily_quests: cachedUser.daily_quests,
                     side_quests: cachedUser.side_quests,
                     adventureat: Number(cachedUser.adventureat),
                     spb: cachedUser.spb,
-                    stand: cachedUser.stand
+                    stand: cachedUser.stand,
+                    daily: cachedUser.daily,
+                    stats: cachedUser.stats // Automatically fixed with the fixStats function
                 };
                 if (!this.languages.get(userId) || this.languages.get(userId) !== cachedUser.language) this.languages.set(userId, cachedUser.language);
                 this.fixStats(finalData);
@@ -205,6 +213,20 @@ export default class DatabaseHandler {
 
         if (!userData.stamina && userData.stamina !== 0) userData.stamina = 60;
         if (!userData.health && userData.health !== 0) userData.health = 100;
+        if (!userData.stats) userData.stats = {}
+        if (!userData.stats.rankedBattle) userData.stats.rankedBattle = {
+            wins: 0,
+            losses: 0
+          }
+
+          if (!userData.daily || userData.daily.claimedAt === undefined) {
+            userData.daily = {
+                claimedAt: 0,
+                streak: 0,
+                quests: []
+            }
+        }
+        
 
         // Why am I roundifying everything ?
         // ---> Because Integers cannot be decimal numbers
@@ -219,6 +241,11 @@ export default class DatabaseHandler {
         userData.max_health += Math.round(((userData.level + health) * 10) + ((userData.level + health) * 6 / 100) * 100);
         userData.max_stamina += Math.round((userData.level + stamina) + ((userData.level + stamina) * 5 / 100) * ((userData.level + stamina) * 30));
         userData.dodge_chances = Math.round(Math.round((userData.level / 2) + (perception / 1.15)));
+    }
+
+    // TODO: Finish this code
+    async updateDailyQuests(userData: UserData) {
+        await this.saveUserData(userData);
     }
     
 
@@ -259,7 +286,7 @@ function arrayEqual(array1: any, array2: any) {
             }
 
         }
-        else if (array1[i].startsWith("{")) { // JSON stringified. IK that's dumb but yes I messed up somewhere.
+        else if (array1[i].startsWith("{")) { // TODO: remove this
             if (JSON.stringify(array1[i]) === JSON.stringify(array2[i])) {
                 changed = true;
                 break;

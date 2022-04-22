@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import { Manager } from 'discord-hybrid-sharding';
-import { config } from 'dotenv';
 import redis from 'ioredis';
 const TempRedis = new redis();
 
@@ -11,7 +11,6 @@ TempRedis.keys('*tempCache_*').then(keys => {
     TempRedis.quit();
 });
 
-config();
 
 const manager = new Manager(`${__dirname}/index.js`, { // compiled file
     totalShards: 'auto',
