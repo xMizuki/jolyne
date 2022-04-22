@@ -24,5 +24,19 @@
     "CONFIRM": "Confirm",
     "CANCEL": "Cancel",
     "NO_ITEMS": "{{emojis.pucciSerious}} You don't have any items.",
-    "SELECT_ITEM": "Select an item"
+    "SELECT_ITEM": "Select an item",
+    "SMALL_MONTHS": [
+        "Jan",
+        "Feb",
+        "March",
+        "Apr",
+        "May",
+        "June",
+        "July",
+        "August",
+        "Sept",
+        "Oct",
+        "Nov",
+        "Dec"
+    ]
 }
