@@ -53,7 +53,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         collector.on("collect", async (i: MessageComponentInteraction) => {
             ctx.timeoutCollector(collector);
-            i.deferUpdate();
+            i.deferUpdate().catch(() => {});
             ctx.client.database.delCooldownCache("adventure", ctx.interaction.user.id);
 
             if (i.customId === ctx.interaction.id + ":agree") {
@@ -93,7 +93,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         collector.on("collect", async (i: MessageComponentInteraction) => {
             ctx.timeoutCollector(collector);
-            await i.deferUpdate();
+            i.deferUpdate().catch(() => {});
             if (i.customId === ctx.interaction.id + ":final_confirm") {
                 await ctx.client.database.delUserData(ctx.interaction.user.id);
                 ctx.sendT("adventure:ADVENTURE_RESET_MESSAGE", {

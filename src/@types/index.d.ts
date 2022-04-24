@@ -181,7 +181,7 @@ interface UserData {
   /**
    * The user's chapter quests.
    */
-  chapter_quests: Array;
+  chapter_quests: Quest[];
   /**
    * The user's side quests.
    */
@@ -234,24 +234,7 @@ interface Quest {
    * If the quest has been completed
    */
   completed?: boolean = false;
-  /**
-   * The quest's title.
-   */
-  title?: JSON<{
-    "en-US": string;
-    "fr-FR": string;
-    "es-ES": string;
-    "de-DE": string;
-  }>;
-  /**
-   * The quest's description.
-   */
-  description?: JSON<{
-    "en-US": string;
-    "fr-FR": string;
-    "es-ES": string;
-    "de-DE": string;
-  }>;
+
   /**
    * The quest's rewards.
    */
@@ -261,11 +244,12 @@ interface Quest {
    */
   emoji?: string;
   /**
-   * ,
+   * ...
    */
   timeout?: number;
   health?: number;
   i18n?: string;
+  npc?: NPC;
 }
 
 /**
@@ -593,17 +577,66 @@ interface Mail {
  */
 interface NPC {
   /**
-   * The mail's author's name.
+   * The NPC's ID.
+   */
+  readonly id: string;
+  /**
+   * The NPC's author's name.
    */
   readonly name: string;
   /**
-   * The mail's author's e-mail.
+   * The NPC's author's e-mail.
    */
   readonly email?: string;
   /**
-   * The mail's author emoji
+   * The NPC's author emoji
    */
   readonly emoji: string;
+    /**
+   * The NPC's level.
+   * @readonly
+   * @type {number}
+   * @memberof QuestNPC
+   */
+  readonly level?: number;
+  /**
+   * The NPC's max health.
+   * @type {number}
+   * @memberof QuestNPC
+   */
+  max_health?: number;
+  /**
+   * The QuestNPC's stamina.
+   * @type {number}
+   * @memberof QuestNPC
+   */
+  max_stamina?: number; // NPCs doesn't have max_stamina
+  /**
+   * The QuestNPC's skill-points.
+   * @memberof QuestNPC
+   * @readonly
+   */
+  readonly skill_points?: SkillPoints;
+  /**
+   * The QuestNPC's stand.
+   * @type {string}
+   * @memberof QuestNPC
+   * @readonly
+   */
+  readonly stand?: string;
+  /**
+   * The NPC's rewards when he's defeated.
+   */
+  fight_rewards?: Prize;
+
+  /**
+   * BATTLE VALUES
+   */
+   stamina?: number;
+   health?: number;
+ 
+
+  
 }
 
 interface Prize {

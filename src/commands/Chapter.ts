@@ -25,39 +25,41 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const fixedChapterContent: Array<object> = [];
         const dftArray: Array<string> = [];
 
-        for (const quest of UserChapter.quests) {
+        for (const quest of userData.chapter_quests) {
             let bar: string;
             const output = Quests.getStatus(quest, userData);
-            percent += output;
+            console.log(output);
             if (quest.i18n) {
+                percent += output;
                 bar = ctx.translate(`quest:${quest.i18n}.DESCRIPTION`, {
                     cc: Util.localeNumber(Number(quest.id.split(":")[1])),
                     s: Util.s(Number(quest.id.split(":")[1]))
                 }) + " " + (quest.emoji ? quest.emoji : "");
                 if (!isNaN(Number(quest.id.split(":")[1]))) {
                     const goal = Number(quest.id.split(":")[1]);
-                    const fixPercent: number = (output / goal) * 100;
                     fixedChapterContent.push({
                         content: bar,
-                        status: `(${quest.total}/${Util.localeNumber(goal)}) ${fixPercent.toFixed(2)}%`,
+                        status: `(${quest.total}/${Util.localeNumber(goal)}) ${output.toFixed(2)}%`,
                     });
                 } else {
                     fixedChapterContent.push({
                         content: bar,
-                        status: percent + "%"
+                        status: output + "%"
                     });
                 }
                 
             } else {
                 if (quest.id.startsWith("defeat")) {
                     const max = userData.chapter_quests.filter((r: Quest) => r.id === quest.id).length;
-                    const count = userData.chapter_quests.filter((r: Quest) => r.id == quest.id && r.completed).length;
+                    const count = userData.chapter_quests.filter((r: Quest) => r.id == quest.id && r.health === 0).length;
 
                     if (dftArray.filter(r => r === quest.id).length !== 0) {
                         if (quest.completed) percent += 100;
                         continue;
                     }
-                    bar = `Defeat ${max} ${quest.name}`;
+                    if (max === 1) bar = `Defeat ${quest.npc.name}`;
+                    else bar = `Defeat ${max} ${quest.npc.name}`;
+
                     const perc: number = (count * 100)/max;
                     percent += perc;
                     dftArray.push(quest.id); 
@@ -78,7 +80,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             content += `${emoji} ${cn.content} ||${cn.status}||\n`;
         }
         ctx.makeMessage({
-            content: `${Quests.adapt(userData, UserChapter)[userData.chapter as keyof typeof Quests.adapt]}\n\`\`\`\n${UserChapter.description[userData.language]}\n\`\`\`\n\n:scroll: **__Quests:__** (${percent.toFixed(2)}%)\n${content}`,
+            content: `${Quests.adapt(userData, UserChapter)[userData.chapter as keyof typeof Quests.adapt]}\n\`\`\`\n${UserChapter.description[userData.language]}\n\`\`\`\n\n:scroll: **__Quests:__** (${(percent / userData.chapter_quests.length).toFixed(2)}%)\n${content}`,
         });
 
     }

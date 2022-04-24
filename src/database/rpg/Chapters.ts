@@ -1,6 +1,6 @@
 import type { Chapter } from '../../@types';
 import * as Quests from './Quests';
-import * as NPCs from './QuestNPCs';
+import * as NPCs from './NPCs';
 
 export const C1: Chapter = {
     description: {
@@ -22,7 +22,7 @@ export const C1: Chapter = {
         'de-DE': ["Du kannst das `/loot`-Kommando benutzen, bis du eine bestimmte Anzahl an Münzen sammeln kannst, um einige deiner Aufgaben zu erfüllen"]
     },
     quests: [
-        NPCs.kakyoin,
+        Quests.Defeat(NPCs.Kakyoin),
         Quests.ClaimCoins(3500),
         Quests.Awaken_Stand,
         Quests.LootCoins(100),

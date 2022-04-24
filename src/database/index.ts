@@ -2,7 +2,6 @@ import postgres from './postgres';
 import redis from './redis';
 import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
-//import Chapters from './rpg/_chapters';
 import * as Chapters from './rpg/Chapters' ;
 import * as Quests from './rpg/Quests' ;
 import type { UserData, SkillPoints, Quest }  from '../@types';
@@ -232,9 +231,9 @@ export default class DatabaseHandler {
         // ---> Because Integers cannot be decimal numbers
 
         const strength = userData.skill_points?.strength ?? 0;
-        const stamina = Math.round((userData.skill_points?.stamina ?? 0) / 10);
-        const health = userData.skill_points?.defense ?? 0;
-        const perception = userData.skill_points?.perception ?? 0;
+        const stamina = Math.round((userData.spb?.stamina ?? 0) / 10);
+        const health = userData.spb?.defense ?? 0;
+        const perception = userData.spb?.perception ?? 0;
 
         userData.max_health = 100;
         userData.max_stamina = 60;

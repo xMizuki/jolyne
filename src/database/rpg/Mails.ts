@@ -1,8 +1,9 @@
 import type { Mail, Quest, QuestNPC, Chapter } from '../../@types';
 import * as Emojis from '../../emojis.json';
 import * as Items from './Items';
-import * as NPCs from './QuestNPCs';
+import * as NPCs from './NPCs';
 import * as MailAuthors from './NPCs';
+import * as Quests from './Quests';
 
 export const P1C1_GP: Mail = {
     id: "p1c1_gp",
@@ -58,15 +59,15 @@ BTW today somes **bandits** attacked my sister, but I can't do anything since i'
     date: Date.now(),
     footer: 'DONT LOSE OR ELSE ILL KILL YOU!1!111!1',
     chapter_quests: [
-        NPCs.Weak_Bandit,
-        NPCs.Weak_Bandit,
-        NPCs.Weak_Bandit,
-        NPCs.Weak_Bandit,
-        NPCs.Weak_Bandit,
-        NPCs.Strong_Bandit,
-        NPCs.Strong_Bandit,
-        NPCs.Strong_Bandit,
-        NPCs.Bandit_Boss
+        Quests.Defeat(NPCs.Weak_Bandit),
+        Quests.Defeat(NPCs.Weak_Bandit),
+        Quests.Defeat(NPCs.Weak_Bandit),
+        Quests.Defeat(NPCs.Weak_Bandit),
+        Quests.Defeat(NPCs.Weak_Bandit),
+        Quests.Defeat(NPCs.Strong_Bandit),
+        Quests.Defeat(NPCs.Strong_Bandit),
+        Quests.Defeat(NPCs.Strong_Bandit),
+        Quests.Defeat(NPCs.Bandit_Boss)
     ],
     prize: {
         items: [
