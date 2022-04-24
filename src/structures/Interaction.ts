@@ -33,7 +33,7 @@ export default class InteractionCommandContext {
   private resolveMessage(message: Message | APIMessage | null): Message | null {
     if (!message) return null;
     if (message instanceof Message) return message;
-    // @ts-expect-error Message constructor is private, but we beed it.
+    // @ts-expect-error Message constructor is private, but we need it.
     return new Message(this.client, message);
   }
 
@@ -86,6 +86,7 @@ export default class InteractionCommandContext {
     const disabledComponents = interaction.components.map(c => {
       c.components.map(v => {
         v.disabled = true;
+        if (v.type) v.type = 2; // If it's a button: set color to grey
         return v;
       })
       return c;

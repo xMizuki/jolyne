@@ -1,7 +1,6 @@
 // Import Structures
 import JolyneClient from './structures/Client';
 import { Intents } from 'discord.js';
-import { config } from 'dotenv';
 import DJSLIGHT from 'discord.js-light';
 import Cluster from 'discord-hybrid-sharding';
 import fs from 'fs';
@@ -14,7 +13,6 @@ import * as Emojis from './emojis.json';
 // Import types
 import type { SlashCommand, Event } from './@types';
 
-config();
 
 const client = new JolyneClient({
     shards: Cluster.data.SHARD_LIST,

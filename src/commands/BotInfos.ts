@@ -90,20 +90,6 @@ const lastXDayss = (numberOfDays: number, monthIndex: any[]) => {
     }
     return days.reverse();
 };
-const m = [
-    "Jan",
-    "Feb",
-    "March",
-    "Apr",
-    "May",
-    "June",
-    "July",
-    "August",
-    "Sept",
-    "Oct",
-    "Nov",
-    "Dec"
-];
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
@@ -113,13 +99,16 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const userss = await ctx.client.database.redis.client.keys("*cachedUser*");
     let user = [];
     for (const u of userss) {
-        const cachedUser = JSON.parse(await ctx.client.database.redis.client.get(u));
+        const cachedUser: UserData = JSON.parse(await ctx.client.database.redis.client.get(u));
         if (cachedUser.adventureat) user.push(cachedUser);
     }
     user = user.sort((a: UserData, b: UserData) => b.adventureat - a.adventureat);
     let days: any[] = [];
+    const m: any = ctx.translate("base:SMALL_MONTHS", {
+        returnObjects: true
+    });
     for (const u of user) {
-        const date = new Date(Number(u.adventureat));
+        const date = new Date(u.adventureat);
         const day = date.getDate();
         const month = m[date.getMonth()];
         let dayIndex = days.find(r => r.date === `${day} ${month}`);
@@ -140,6 +129,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     lastXDays.length = lastXDays.length - 1;
     const attachment = await generateCanvas(joinedXDays, lastXDays);
 
+    const clusterPromises = await Promise.all([
+        ctx.client.cluster.broadcastEval('this.guilds.cache.size'),
+        ctx.client.cluster.broadcastEval('this.guilds.cache.reduce((acc, guild) => acc + (guild.memberCount || 0), 0)'),
+        ctx.client.cluster.broadcastEval('Number(Number(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2))')
+    ]);
+    const guilds = clusterPromises[0].reduce((acc, guild) => acc + guild, 0);
+    const members = clusterPromises[1].reduce((acc, member) => acc + member, 0);
+    const memory = clusterPromises[2].reduce((acc, mem) => acc + mem, 0);
+
     return ctx.interaction.editReply({
         files: [attachment],
         embeds: [{
@@ -149,12 +147,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             },
             fields: [{
                     name: ctx.translate("infos:USERS"),
-                    value: localeNumber(ctx.client.guilds.cache.map(v=>v.memberCount).reduce((accumulator, curr) => accumulator + curr)),
+                    value: localeNumber(members),
                     inline: true
                 },
                 {
                     name: ctx.translate("infos:SERVERS"),
-                    value: 'ctx.client.guilds.cache.size',
+                    value: localeNumber(guilds),
                     inline: true
                 },
                 {
@@ -175,7 +173,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 },
                 {
                     name: ctx.translate("infos:RAM_USAGE"),
-                    value: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}mb / 7978.38mb (${((process.memoryUsage().heapUsed / 1024 / 1024)/7978.38*100).toFixed(2)}%)`,
+                    value: `${(memory).toFixed(2)}mb / 7978.38mb (${((process.memoryUsage().heapUsed / 1024 / 1024)/7978.38*100).toFixed(2)}%)`,
                     inline: true
                 },
                 {
@@ -191,7 +189,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 {
                     name: ctx.translate("infos:NEW_PLAYERS"),
                     value: ctx.translate("infos:NEW_PLAYERS_VALUE", {
-                        new: joinedXDays[joinedXDays.length - 1]
+                        new: user.filter(r => new Date(r.adventureat).getUTCDate() === new Date().getUTCDate()).length,
                     })
                 }
 

@@ -57,7 +57,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     await updateMessage(userData);
     const filter = async (i: MessageComponentInteraction) => {
         i.deferUpdate().catch(() => {});
-        return i.user.id === ctx.interaction.user.id && i.message.interaction.id === ctx.interaction.id;
+        return i.user.id === ctx.interaction.user.id;// removing this cuz try it and you'll see what happens when you use this command 2 times || && i.message.interaction.id === ctx.interaction.id;
     }
     const collector = ctx.interaction.channel.createMessageComponentCollector({ filter });
     ctx.timeoutCollector(collector);

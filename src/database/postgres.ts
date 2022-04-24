@@ -26,7 +26,7 @@ export default class PostgresHandler {
             }
         })
         .on("error", (e) => {
-            log("[POSTGRESQL ERROR]: " + e, "error");
+            throw new PostgreSQLError(e.stack);
         });
 
         this.client.connect();
@@ -35,11 +35,18 @@ export default class PostgresHandler {
         return new Promise((resolve, reject) => {
             this.client.query(query, args, (error, results) => {
                 if (error)
-                    reject(error);
+                    reject(new PostgreSQLError(error.stack.replace("error: ", "")));
                 else
                     resolve(results);
             });
         });
     }
 
+}
+
+class PostgreSQLError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "PostgreSQLError";
+    }
 }

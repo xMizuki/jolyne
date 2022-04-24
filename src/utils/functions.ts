@@ -159,3 +159,18 @@ export const actionRow = (components: MessageActionRowComponentResolvable[]): Me
   new MessageActionRow({ components });
 
 export const generateID = (): string => [...Array(12)].map(() => (~~(Math.random() * 36)).toString(36)).join(""); 
+
+export const calcDodgeChances = (data: UserData | NPC): number => {
+    const perception = isNPC(data) ? data.skill_points.perception : data.spb.perception;
+    return Math.round(Math.round((data.level / 2) + (perception / 1.15)));
+};
+
+export const isNPC = function isNPC(crusader: NPC | UserData): crusader is NPC {
+    return (crusader as NPC).email !== undefined;
+}
+//     return Math.round(5 + Math.round((userData.spb.strength * 0.675) + ((Number(userData.level) * 1.50) + ((5 / 100) * 15)) / 2));
+
+export const calcATKDMG = (data: UserData | NPC): number => {
+    const strength = isNPC(data) ? data.skill_points.perception : data.spb.perception;
+    return Math.round(5 + Math.round((strength * 0.675) + ((Number(data.level) * 1.50) + ((5 / 100) * 15)) / 2));
+};
