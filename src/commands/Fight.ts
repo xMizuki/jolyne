@@ -1,5 +1,5 @@
-import type { SlashCommand, UserData, NPC, Stand, Ability } from '../@types';
-import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
+import type { SlashCommand, UserData, NPC, Stand, Ability, Turn } from '../@types';
+import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, Message } from 'discord.js';
 import InteractionCommandContext from '../structures/Interaction';
 import type { Quest, Chapter } from '../@types';
 import * as Util from '../utils/functions';
@@ -75,21 +75,25 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (lastDailyEnnemyQuest) return startBattle(lastDailyEnnemyQuest.npc, "daily.quests");
     }
 
-    function startBattle(opponent: UserData | NPC, type: "chapter_quests" | "daily.quests" | "ranked" | "friendly" | "custom") {
+    function startBattle(opponent: UserData | NPC, type: "chapter_quests" | "daily.quests" | "side_quests" | "ranked" | "friendly" | "custom") {
         const attackID = Util.generateID();
         const defendID = Util.generateID();
         const forfeitID = Util.generateID();
         const standID = Util.generateID();
+        const nextID = Util.generateID();
+        const homeID = Util.generateID();
+        let ended = false;
 
-        const promises: Promise<any>[] = []; // Game promises
-        const promisesOptions = {
-            timestop_cd: 0
-        }
+        const functions: Array<Function> = []; // Game functions
+        const gameOptions: any = {
+            trns: 0,
+            pushnow: () => pushTurn()
+        };
         /** EXAMPLE
         promises.push((async () => {
-            if (promisesOptions.timestop_cd !== 0) {
-                trns++;
-                promisesOptions.timestop_cd--;
+            if (gameOptions.timestop_cd !== 0) {
+                gameOptions.trns++;
+                gameOptions.timestop_cd--;
             }
         })());
         */
@@ -112,8 +116,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             move: string,
             cooldown: number
         }> = [];
-        const UserStand: Stand | null = userData.stand ? Stands[`${Util.getStand(userData.stand)}` as keyof typeof Stands] : null;
-        const OpponentStand: Stand | null = opponent.stand ? Stands[`${Util.getStand(opponent.stand)}` as keyof typeof Stands] : null;
+        const UserStand: Stand | null = userData.stand ? Util.getStand(userData.stand) : null;
+        const OpponentStand: Stand | null = opponent.stand ? Util.getStand(opponent.stand) : null;
         if (UserStand) for (const ability of UserStand.abilities) {
             cooldowns.push({
                 id: userData.id,
@@ -135,11 +139,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setLabel("Attack")
             .setEmoji("⚔️")
             .setStyle("PRIMARY");
-        const defendBTN = new MessageButton()
-            .setCustomId(defendID)
-            .setLabel("Defend")
-            .setEmoji("🛡")
-            .setStyle("PRIMARY");
         const forfeitBTN = new MessageButton()
             .setCustomId(forfeitID)
             .setLabel("Forfeit")
@@ -149,9 +148,18 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setCustomId('[@ny]')
             .setLabel('[Waiting for your turn...]')
             .setDisabled(true)
-            .setStyle('DANGER')
+            .setStyle('DANGER');
+        const nxtbtn = new MessageButton()
+            .setCustomId(nextID)
+            .setLabel('Next Battle')
+            .setEmoji("943187898495303720")
+            .setStyle("PRIMARY");
+        const homeBTN = new MessageButton()
+            .setCustomId(homeID)
+            .setEmoji("943188053390929940") // No label
+            .setStyle("SECONDARY");
 
-        const standBTN = (povData: NPC | UserData) => {
+        const standBTN = function standBTN(povData: NPC | UserData): MessageButton {
             const stand = Util.getStand(povData.stand ?? "");
             return new MessageButton()
                 .setCustomId(standID)
@@ -159,24 +167,37 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 .setEmoji(stand.emoji)
                 .setStyle("SECONDARY");
         }
-        const turns: Array<{
-            lastMove: string,
-            lastUser: string,
-            logs: Array<string>,
-            lastDamage: number
-        }> = [];
-        let trns = 0//Util.getRandomInt(0, 10);
+        const defendBTN = function defendBTN(povData: NPC | UserData): MessageButton {
+            return new MessageButton()
+            .setCustomId(defendID)
+            .setLabel("Defend")
+            .setEmoji("🛡")
+            .setDisabled(cooldowns.find(r => r.id === povData.id && r.move === "defend") ? (cooldowns.find(r => r.id === povData.id && r.move === "defend").cooldown === 0 ? false : true) : false )
+            .setStyle("PRIMARY");
+        }
+
+        const turns: Turn[] = [];
+        gameOptions.trns = 0//Util.getRandomInt(0, 10);
         turns.push({
             lastMove: "",
-            lastUser: Util.isNPC(opponent) ? opponent.name : user.username,
             logs: [],
             lastDamage: 0
         })
         loadBaseEmbed();
 
         collector.on("collect", async (i: MessageComponentInteraction) => {
-            const povData = whosTurn();
-            if (Util.isNPC(povData)) return;
+            if (i.customId === nextID) {
+                // ANTI-CHEAT, ANTI-DUPES, ANTI-BUG, ANTI-GLITCH
+                userData = await ctx.client.database.getUserData(i.user.id);
+                ctx.client.commands.get("fight").execute(ctx, userData);
+                /*
+                const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0)[0];
+                const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
+                if (lastChapterEnnemyQuest) startBattle(lastChapterEnnemyQuest.npc, "chapter_quests");
+                if (lastDailyEnnemyQuest) startBattle(lastDailyEnnemyQuest.npc, "daily.quests");*/
+                return collector.stop();
+            }
+            const povData = whosTurn() as UserData;
             if (i.user.id !== whosTurn().id) return; // If it's not the turn of the player
 
             const before = whosTurn();
@@ -185,9 +206,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             const dodgesNumerator = 90 + (!Util.isNPC(before) ? before.spb?.perception : before.skill_points.perception);
             const dodgesPercent = Util.getRandomInt(0, Math.round(dodgesNumerator));
             if (dodgesPercent < dodges) dodged = true;
+            if (gameOptions.invincible) dodged = false;
+
 
             const currentTurn = turns[turns.length - 1];
             let output: any; // chng to string après
+
 
             switch (i.customId) {
                 case attackID:
@@ -197,81 +221,168 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 case defendID:
                     output = defend();
                     break;
-            }
-            await Promise.all(promises);
+                case standID:
+                    sendStandPage(Util.getStand(povData.stand), povData);
+                    return;
+                case homeID:
+                    loadBaseEmbed();
+                    return;
+                default:
+                    if (i.customId.startsWith("abil++")) {
+                        const ability = i.customId.split("++")[1];
+                        const abilityName = ability.split("_")[1];
 
-            currentTurn.logs.push(output);
+                        const standData = Util.getStand(ability.split("_")[0]);
+                        const abilityData = standData.abilities.find(v => v.name === abilityName);
+
+
+                        const input = triggerAbility(abilityData, povData, dodged, currentTurn);
+                        output = input;
+                        break;
+                    } else return;
+            }
+            //console.log(await Promise.all(promises));
+
+            if (output) currentTurn.logs.push(output);
             pushTurn();
-            trns++;
+            functions.forEach(f => f());
+            gameOptions.trns++;
             await loadBaseEmbed();
+            if (whosTurn().health <= 0) return end();
+            if (beforeTurn().health <= 0) return end();
             if (whosTurn().id === opponent.id && Util.isNPC(opponent)) await NPCAttack(); 
         });
 
-        function pushTurn() {
-            if (turns[turns.length - 1].logs.length >= 2 && turns[turns.length - 1].lastMove !== "TS") turns.push({
-                lastMove: turns[turns.length - 1].lastMove,
-                lastUser: beforeTurnUsername(),
-                logs: [],
-                lastDamage: turns[turns.length - 1].lastDamage
-            });
+        function getUserQuests(): Quest[] {
+            switch (type) {
+                case "chapter_quests":
+                    return userData.chapter_quests;
+                case "daily.quests":
+                    return userData.daily.quests;
+                case "side_quests":
+                    return userData.side_quests;
+            }
         }
 
-        function attack(input: { damages: number, username: string }, dodged: boolean, turn: { lastMove: string, lastUser: string, logs: Array<string> }) {
+        function pushTurn() {
+            if (gameOptions.donotpush) return;
+            if (turns[turns.length - 1].logs.filter(r => r).length >= 2 && turns[turns.length - 1].lastMove !== "TS") {
+                turns.push({
+                    lastMove: turns[turns.length - 1].lastMove,
+                    logs: [],
+                    lastDamage: turns[turns.length - 1].lastDamage
+                });
+                cooldowns.forEach(c => {
+                    if (c.cooldown !== 0) c.cooldown--;
+                });
+            }
+        }
+
+        function attack(input: { damages: number, username: string }, dodged: boolean, turn: Turn) {
             if (dodged) {
-                return `🌬️ **${input.username}** attacked but ${turn.lastUser} dodged.`;
+                turn.lastMove = "attack";
+                return `🌬️ **${input.username}** attacked but ${beforeTurnUsername()} dodged.`;
             } else if (turn.lastMove === "defend") {
+                turn.lastMove = "attack";
                 const then = attackShield(beforeTurn().id, input.damages);
                 if (then.left === 0) {
                     regenerateShieldToUser(beforeTurn().id);
                     removeHealthToLastGuy(input.damages * 1.75);
-                    return `**${input.username}** attacked and broke ${turn.lastUser}'s guard for ${input.damages * 1.75} damages.`;
+                    return `**${input.username}** attacked and broke ${beforeTurnUsername()}'s guard for ${input.damages * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
                 } else {
-                    return `**${input.username}** attacked but ${turn.lastUser} blocked. (:shield: ${then.left}/${then.max} left).`;
+                    turn.lastMove = "attack";
+                    return `**${input.username}** attacked but ${beforeTurnUsername()} blocked. (:shield: ${then.left}/${then.max} left).`;
                 }
             } else {
+                turn.lastMove = "attack";
                 removeHealthToLastGuy(input.damages);
-                return `**${input.username}** attacked and did ${input.damages} damages.`;
+                return `**${input.username}** attacked and did ${input.damages} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health} left).`;
             }
         }
 
         async function NPCAttack() {
+            if (ended) return;
             await Util.wait(1200);
             const NPC = whosTurn();
             if (!Util.isNPC(NPC)) return; //typeguard
             let possibleMoves: Array<string | Ability> = ["attack", "defend"];
 
-            /*
+            
             if (OpponentStand) {
                 for (const ability of OpponentStand.abilities) {
                     if (cooldowns.find(c => c.id === NPC.id && c.move === ability.name).cooldown === 0) {
                         possibleMoves.push(ability);
                     }
                 }
-            }*/
+            }
             const choosedMove = Util.randomArray(possibleMoves);
+
+            const before = whosTurn();
+            let dodged: boolean = false;
+            const dodges = Util.calcDodgeChances(before);
+            const dodgesNumerator = 90 + (!Util.isNPC(before) ? before.spb?.perception : before.skill_points.perception);
+            const dodgesPercent = Util.getRandomInt(0, Math.round(dodgesNumerator));
+            if (dodgesPercent < dodges) dodged = true;
+            if (gameOptions.invincible) dodged = false;
+
             switch (choosedMove) {
                 case "attack":
-                    const input = attack({ damages: Util.calcATKDMG(NPC), username: NPC.name }, false, turns[turns.length - 1]);
+                    const input = attack({ damages: Util.calcATKDMG(NPC), username: NPC.name }, dodged, turns[turns.length - 1]);
                     turns[turns.length - 1].logs.push(input);
                     break;
                 case "defend":
                     defend();
                     break;
+                default:
+                    const ability = choosedMove as Ability;
+                    const input2 = triggerAbility(ability, NPC, dodged, turns[turns.length - 1]);
+                    turns[turns.length - 1].logs.push(input2);
+                    break;
             }
-            trns++;
+            gameOptions.trns++;
             pushTurn();
             await loadBaseEmbed();
         }
-        function triggerAbility(ability: Ability) {
-            //if (ability)
+        function triggerAbility(ability: Ability, user: UserData | NPC, dodged: boolean, turn: Turn) {
+            if (ability.trigger) {
+                if (ability.damages === 0) { // Then it's a special one
+                    return ability.trigger(ctx, functions, gameOptions, user, beforeTurn(), gameOptions.trns, turns);
+                } else ability.trigger(ctx, functions, gameOptions, user, beforeTurn(), gameOptions.trns, turns);
+            }
+            const damage = Util.calcAbilityDMG(ability, user);
+            const userStand = Util.getStand(user.stand);
+            if (dodged && ability.dodgeable) {
+                turn.lastMove = "attack";
+                return `🌬️ **${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** but ${beforeTurnUsername()} dodged.`;
+            } else if (turn.lastMove === "defend") {
+                turn.lastMove = "attack";
+                if (ability.blockable) {
+                    const then = attackShield(beforeTurn().id, damage);
+                    if (then.left === 0) {
+                        regenerateShieldToUser(beforeTurn().id);
+                        removeHealthToLastGuy(damage * 1.75);
+                        return `**${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** and broke ${beforeTurnUsername()}'s guard for ${damage * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
+                    } else {
+                        return `**${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** but ${beforeTurnUsername()} blocked. (:shield: ${then.left}/${then.max} left).`;
+                    }
+                } else {
+                    // they broke their guard
+                    turn.lastMove = "attack";
+                    removeHealthToLastGuy(damage * 1.75);
+                    return `**${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** and broke ${beforeTurnUsername()}'s guard for ${damage * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
+                }
+            } else {
+                removeHealthToLastGuy(damage);
+                turn.lastMove = "attack";
+                return `**${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** and did ${damage} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health} left).`;
+            }
+            
         }
         function defend() {
             turns[turns.length - 1].lastMove = "defend";
-            turns[turns.length - 1].lastUser = beforeTurnUsername();
             turns[turns.length - 1].logs.push(`> :shield: ${whosTurnUsername()} is now defending.`);
-            loadBaseEmbed();
         }
-        function isAbility(ability: string | Ability): ability is Ability {
+        function isAbility(ability: Ability): ability is Ability {
             return (ability as Ability).cooldown !== undefined;
         }
 
@@ -279,12 +390,22 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             const povData = whosTurn();
             const components: Array<MessageButton> = [];
             const footer: { text: string } = Util.isNPC(povData) ? { text: "" } : { text: `⚡ You have ${povData.stamina} stamina left.` };
-            const content: string = Util.isNPC(povData) ? "[Waiting for your turn...]" : `It's ${ctx.client.users.cache.get(povData.id).username ?? "?"}'s turn.`;
+            const winner = beforeTurn();
+            const winnerUsername = Util.isNPC(winner) ? winner.name : ctx.client.users.cache.get(winner.id)?.username ?? "?";
+
+            const content: string = !ended ? (Util.isNPC(povData) ? "[Waiting for your turn...]" : `It's ${ctx.client.users.cache.get(povData.id).username ?? "?"}'s turn.`) : `${winnerUsername} won!`;
 
             // BTNS
-            if (Util.isNPC(povData)) components.push(NPCBTN);
+            if (Util.isNPC(povData)) {
+                if (!ended) components.push(NPCBTN);
+                else {
+                    if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
+                        components.push(nxtbtn);
+                    } else collector.stop();
+                }
+            }
             else {
-                components.push(attackBTN, defendBTN);
+                components.push(attackBTN, defendBTN(povData));
                 if (povData.stand) components.push(standBTN(povData));
                 components.push(forfeitBTN);
             }
@@ -299,28 +420,28 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
             await ctx.makeMessage({
                 content: content,
-                components: [Util.actionRow(components)],
+                components: components.length === 0 ? [] : [Util.actionRow(components)],
                 embeds: [{
-                    title: "Battle ⚔️",
-                    description: `\`>>>\` ${ctx.interaction.user.username} (${userData.stand ?? "Stand-less"}) ${Emojis.vs} ${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"} (${opponent.stand ?? "Stand-less"})\n\n`
+                    title: ended ? "Battle Ended ⚔️" : "Battle in progress ⚔️",
+                    description: `\`>>>\` ${ctx.interaction.user.username} (${userData.stand ? UserStand.name : "Stand-less"}) ${Emojis.vs} ${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"} (${opponent.stand ? OpponentStand.name : "Stand-less"})\n\n`
                     + `:heart: \`${ctx.interaction.user.username}\` ${userData.health}/${userData.max_health}\n:heart: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${opponent.health}/${opponent.max_health}\n----------------------------------\n`
                     + `:shield: \`${ctx.interaction.user.username}\` ${getShieldStats(userData.id).left}/${getShieldStats(userData.id).left}\n:shield: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${getShieldStats(opponent.id).left}/${getShieldStats(opponent.id).max}\n\n`,
                     footer: footer,
-                    color: "BLURPLE",
+                    color: ended ? "RED" : "YELLOW",
                     thumbnail: {
                         url: !Util.isNPC(povData) ? ctx.client.users.cache.get(povData.id).displayAvatarURL({dynamic: true}) : ""
                     },
                     fields: fields
                 }]
-            })
+            });
             
         }
 
         function whosTurn(): NPC | UserData {
-            return trns % 2 === 0 ? userData as UserData : opponent as NPC;
+            return gameOptions.trns % 2 === 0 ? userData as UserData : opponent as NPC;
         }
         function beforeTurn() {
-            return trns % 2 !== 0 ? userData as UserData : opponent as NPC;
+            return gameOptions.trns % 2 !== 0 ? userData as UserData : opponent as NPC;
         }
         function beforeTurnUsername() {
             const bft = beforeTurn();
@@ -342,6 +463,20 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             return shield;
         }
         function regenerateShieldToUser(id: string) {
+            if (cooldowns.find(r => r.id === id && r.move === "defend")) {
+                cooldowns.forEach(c => {
+                    if (c.id === id && c.move === "defend") {
+                        c.cooldown = 1
+                    }
+                });
+            } else {
+                cooldowns.push({
+                    id: id,
+                    move: "defend",
+                    cooldown: 2
+                });
+            }
+
             const shield = getShieldStats(id);
             shield.left = shield.max;
         }
@@ -349,13 +484,110 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             turns[turns.length - 1].lastDamage = damage;
             const lastGuy = beforeTurn();
             lastGuy.health -= damage;
-            if (lastGuy.health < 0) lastGuy.health = 0;
+            if (lastGuy.health <= 0) {
+                lastGuy.health = 0;
+                end()
+            }
+        }
+        async function end() {
+            ended = true;
+            loadBaseEmbed();
+
+            // check who's the winner & the loser and adapt them if npc or not
+            const winner = beforeTurn();
+            const loser = whosTurn();
+            const winnerUsername = Util.isNPC(winner) ? winner.name : ctx.client.users.cache.get(winner.id)?.username ?? "?";
+            const loserUsername = Util.isNPC(loser) ? loser.name : ctx.client.users.cache.get(loser.id)?.username ?? "?";
+
+            // NPC
+            if (Util.isNPC(loser) && Util.isNPC(opponent)) {
+                let editedNPC = false;
+                getUserQuests().map(n => {
+                    if (n.id === opponent.id && !n.completed && !editedNPC) {
+                        n.npc.health = 0;
+                        n.completed = true;
+                        editedNPC = true;
+                    }
+                });
+                const rewardsArr: string[] = [];
+                Object.keys(opponent.fight_rewards).map((r) => {
+                    const reward = opponent.fight_rewards[r as keyof typeof opponent.fight_rewards];
+                    if (typeof reward === "number") {
+                        const emoji = r === "xp" ? Emojis.xp : Emojis.jocoins;
+                        // @ts-expect-error 
+                        userData[r as keyof typeof userData[xp]] += reward;
+                        rewardsArr.push(`${emoji} +${Util.localeNumber(reward)} ${r.replace("money", "coins")}`);
+                    } else {
+                        for (const rewardItem of reward) {
+                            userData.items.push(rewardItem.id);
+                        }
+                        const uniqueItems = [...new Set(reward.map(r => r))];
+                        for (const item of uniqueItems) {
+                            const itemCount = reward.filter(r => r.id === item.id).length;
+                            rewardsArr.push(`+${itemCount} ${item} ${item.emoji}`);
+                        }
+                    }    
+                });
+                ctx.client.database.saveUserData(userData);
+                ctx.followUp({
+                    content: `:crossed_swords: **${winnerUsername}** has defeated **${loserUsername}**! They got ${rewardsArr.length > 0 ? rewardsArr.join(", ") : "nothing"}.`,
+                });                                   
+            } else if (!Util.isNPC(loser) && Util.isNPC(opponent)) {
+                ctx.followUp({
+                    content: `:skull: **${winnerUsername}** has defeated **${loserUsername}**...`,
+                });           
+                ctx.client.database.saveUserData(userData);                        
+
+            }
         }
 
+        function sendStandPage(stand: Stand, userData: UserData): Promise<Message<boolean>> {
+            const fields: Array<{
+                name: string;
+                value: string;
+                inline?: boolean;
+            }> = [];
+            const userATKDMG = Util.calcATKDMG(userData);
+            const buttons: MessageButton[] = [homeBTN];
+        
+            for (const ability of stand.abilities) {
+                const damage: number = Util.calcAbilityDMG(ability, userData);
+                const onCooldown = cooldowns.find(r => r.id === userData.id && r.move === ability.name)?.cooldown > 0;
+                const outOfStamina = userData.stamina < ability.stamina;
+                const cdLeft = cooldowns.find(r => r.id === userData.id && r.move === ability.name)?.cooldown ?? 0;
+                buttons.push(new MessageButton()
+                    .setCustomId(`abil++${stand.name}_${ability.name}`)
+                    .setLabel(ability.name)
+                    .setStyle(onCooldown ? "SECONDARY": (outOfStamina ? "DANGER" : "PRIMARY"))
+                    //.setDisabled((onCooldown || outOfStamina) ? true : false)
+                    )
+                fields.push({
+                    name: `${ability.ultimate ? "⭐" : ""}${ability.name}`,
+                    inline: ability.ultimate ? false : true,
+                    value: `**\`Damages:\`** ${damage}
+**\`Stamina Cost:\`** ${ability.stamina}
+**\`Cooldown?:\`** ${(cdLeft === 0 ? "READY": `${cdLeft} turn(s)`)}
+                            
+*${ability.description}*
+${ability.ultimate ? "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" : "▬▬▬▬▬▬▬▬▬"}`
+                });
+            }
+            const embed = new MessageEmbed()
+            .setAuthor({ name: stand.name, iconURL: stand.image })
+            .addFields(fields)
+            .setDescription(stand.description + "\n" + `
+**BONUSES:** +${Object.keys(stand.skill_points).map(v => stand.skill_points[v as keyof typeof stand.skill_points]).reduce((a, b) => a + b, 0)} Skill-Points:
+${Object.keys(stand.skill_points).map(r =>  `  • +${stand.skill_points[r as keyof typeof stand.skill_points]} ${r}`).join("\n")}
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+        `)
+            .setFooter({ text: `Rarity: ${stand.rarity} | RED BUTTON = OUT OF STAMINA | GREY BUTTON = ON COOLDOWN` })
+            .setColor(stand.color)
+            .setThumbnail(stand.image);
+            return ctx.makeMessage({
+                embeds: [embed],
+                components: [Util.actionRow(buttons)]
+            });
+        }
 
     }
 };
-
-/* TODO list
-- cooldowns when guard broke on function
-*/
