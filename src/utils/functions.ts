@@ -1,5 +1,5 @@
-import type { UserData, Quest, NPC, Stand, Item } from '../@types';
-import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageActionRow } from 'discord.js';
+import type { UserData, Quest, NPC, Stand, Item, Ability } from '../@types';
+import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageActionRow, ColorResolvable } from 'discord.js';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
 import Canvas from 'canvas';
@@ -74,15 +74,15 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
     const ctx = canvas.getContext("2d");
     const image = await Canvas.loadImage(stand.image);
     let card_link;
-    let color;
+    let color: ColorResolvable;
     if (stand.rarity === "S") {
-        color = "2b82ab";
+        color = "#2b82ab";
         card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480216277905418/S_CARD.png";
     } else if (stand.rarity === "A") {
-        color = "3b8c4b";
+        color = "#3b8c4b";
         card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959459394205126726/A_CARD.png";
     } else if (stand.rarity === "B") {
-        color = "786d23"
+        color = "#786d23"
         card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480058651766874/B_CARD.png";
     } else if (stand.rarity === "C") {
         color = "#181818";
@@ -174,3 +174,46 @@ export const calcATKDMG = (data: UserData | NPC): number => {
     const strength = isNPC(data) ? data.skill_points.perception : data.spb.perception;
     return Math.round(5 + Math.round((strength * 0.675) + ((Number(data.level) * 1.50) + ((5 / 100) * 15)) / 2));
 };
+
+export const generateStandEmbed = function generateStandEmbed(stand: Stand, userData: UserData): MessageEmbed {
+    const fields: Array<{
+        name: string;
+        value: string;
+        inline?: boolean;
+    }> = [];
+    const userATKDMG = calcATKDMG(userData);
+
+    for (const ability of stand.abilities) {
+        const damage: number = (() => {
+            if (ability.damages === 0) return 0;
+            const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
+            return ability.damages + (userATKDMG - diff) * 1.25;
+        })();
+        fields.push({
+            name: `${ability.ultimate ? "⭐" : ""}${ability.name}`,
+            inline: ability.ultimate ?? false,
+            value: `**\`Damages:\`** ${damage}
+**\`Stamina Cost:\`** ${ability.stamina}
+                    
+*${ability.description}*
+${ability.ultimate ? "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" : "▬▬▬▬▬▬▬▬▬"}`
+        });
+    }
+    return new MessageEmbed()
+    .setAuthor({ name: stand.name, iconURL: stand.image })
+    .addFields(fields)
+    .setDescription(stand.description + "\n\n" + `
+**Skill-Point Bonuses:** +${Object.keys(stand.skill_points).map(v => stand.skill_points[v as keyof typeof stand.skill_points]).reduce((a, b) => a + b, 0)})} Skill-Points:\n
+${Object.keys(stand.skill_points).map(r =>  `  • +${stand.skill_points[r as keyof typeof stand.skill_points]} ${r}`).join("\n")}`)
+    .setFooter({ text: `Rarity: ${stand.rarity}` })
+    .setColor(stand.color)
+    .setThumbnail(stand.image);
+}
+
+export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData: UserData | NPC): number {
+    const userATKDMG = calcATKDMG(userData);
+    if (ability.damages === 0) return 0;
+    const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
+    const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
+    return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));
+}

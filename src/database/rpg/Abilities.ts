@@ -1,4 +1,6 @@
-import type { Ability } from '../../@types';
+import type { Ability, UserData, NPC, Turn } from '../../@types';
+import * as Util from '../../utils/functions';
+import CommandInteractionContext from '../../structures/Interaction';
 
 export const Stand_Barrage: Ability = {
     name: 'Barrage',
@@ -37,7 +39,44 @@ export const Time_Stop: Ability = {
     damages: 0,
     blockable: false,
     dodgeable: false,
-    stamina: 100
+    stamina: 100,
+    ultimate: true,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        turns[turns.length - 1].lastMove = "attack";
+        const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const callerStand = Util.getStand(caller.stand);
+        const victimStand = Util.getStand(victim.stand);
+        const canCounter = victimStand.abilities.find(ability => ability.name === 'Time Stop') ? true : false;
+
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: canCounter ? 2 : 4,
+            completed: false
+        };
+
+        turns[turns.length - 1].logs.push(`!!! **${callerUsername}:** ${callerStand.name}: ${callerStand.text.timestop_text}`);
+        const func = (async () => {
+            if (gameOptions[tsID].completed) return;
+            gameOptions.donotpush = true;
+            gameOptions.invincible = true;
+            gameOptions.trns--;
+            if (gameOptions[tsID].cd !== 0) {
+                gameOptions[tsID].cd--;
+                if (gameOptions[tsID].cd === 0) {
+                    gameOptions[tsID].completed = true;
+                    gameOptions.donotpush = false;
+                    gameOptions.invincible = false;
+                    gameOptions.trns--;
+                    canCounter ? turns[turns.length - 1].logs.push(`::: ${victimUsername}'s ${victimStand.name} countered the time stop`) :                     turns[turns.length - 1].logs.push(`??? **${callerUsername}:** ${callerStand.text.timestop_end_text}`);
+                    gameOptions.pushnow();
+                }
+            }
+        });
+
+        promises.push(func);
+
+    }
 };
 
 export const Road_Roller: Ability = {
@@ -127,7 +166,33 @@ export const Bakugo: Ability = {
     damages: 45,
     blockable: false,
     dodgeable: false,
-    stamina: 50
+    stamina: 50,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const callerStand = Util.getStand(caller.stand);
+        const victimStand = Util.getStand(victim.stand);
+        const canCounter = victimStand.abilities.find(ability => ability.name === 'Time Stop') ? true : false;
+        const damage = Math.round(Util.calcAbilityDMG(Bakugo, caller) / 10);
+
+
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 3,
+        };
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
+            victim.health -= damage;
+            if (victim.health <= 0) {
+                victim.health = 0;
+                turns[turns.length - 1].logs.push(`:fire:${victimUsername} died by burning`);
+            }
+        });
+
+        promises.push(func);
+    }
 }
 
 export const Vine_Slap: Ability = {

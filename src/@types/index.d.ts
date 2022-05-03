@@ -185,7 +185,7 @@ interface UserData {
   /**
    * The user's side quests.
    */
-  side_quests: Array;
+  side_quests: Quest[];
   /**
    * The date when the user started their adventure.
    */
@@ -384,6 +384,14 @@ interface Ability {
    * How much stamina the ability costs.
    */
   readonly stamina: number;
+  /**
+   * If the ability is an ultimate ability.
+   */
+  readonly ultimate?: boolean;
+  /**
+   * Trigger the ability (only if it's a special ability).
+   */
+  trigger?: (ctx: CommandInteractionContext, promises: any, promisesOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => any;
 }
 
 /**
@@ -438,6 +446,8 @@ interface Stand {
 interface StandText {
   awaken_text: string;
   awakening_text: string;
+  timestop_text?: string;
+  timestop_end_text?: string;
 }
 
 /**
@@ -643,4 +653,10 @@ interface Prize {
   xp?: number,
   money?: number,
   items?: Item[],
+}
+
+interface Turn {
+  lastMove: string,
+  logs: Array<string>,
+  lastDamage: number
 }

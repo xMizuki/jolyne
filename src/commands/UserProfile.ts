@@ -55,8 +55,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             color = "#9b8c4b";
         } else {
             color = "#9b8c4b";
-        }
-    
+        }            
     }
 
 
@@ -66,7 +65,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             rUnix: `<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
             dUnix: `<t:${(userData.adventureat/1000).toFixed(0)}:D>`,
         }))
-        .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${userData.money}`, true)
+        .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${Util.localeNumber(userData.money)}`, true)
         .addField("Rank", `:globe_with_meridians: \`${userPosition}\`/\`${rows.length}\``, true)
         .setColor(color)
         .addField("Player Infos", `:heart: HP: ${Util.localeNumber(userData.health)}/${Util.localeNumber(userData.max_health)}\n:zap: Stamina: ${Util.localeNumber(userData.stamina)}/${Util.localeNumber(userData.max_stamina)}`, true)
