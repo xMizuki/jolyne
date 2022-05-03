@@ -4,6 +4,6 @@
     "ADVENTURE_RESET_MESSAGE": "Vos informations ont été supprimées.",
     "ADVENTURE_RESET_BITE": "Alors vous voulez BITES THE DUST... Cela réinitialisera toutes vos données et ne pourra pas être restoré.",
     "CONFIRM": "{{emojis.JolyneTray}} **Jolyne:** Ohhhh great, you're one step away from starting your bizarre adventure! Our [Privacy Policy](<https://jolyne.wtf/privacy>) and [Terms of Use](<https://jolyne.wtf/terms>) apply. After starting your bizarre adventure, you agree that you should never abuse of bugs, __cheat by any means__, trade an item from our services for any type of currency outside of our services and spread false informations regarding our services. By starting your adventure, we consider that you have read & approved them.",
-    "AGREE": "I agree",
-    "DISAGREE": "I disagree"
+    "AGREE": "J'accepte",
+    "DISAGREE": "Je refuse"
 }

@@ -1,0 +1,10 @@
+{
+    "MYSTERIOUS_ARROW": {
+        "NAME": "Flèche Mystérieuse",
+        "DESCRIPTION": "Une flèche mystérieuse...",
+        "ALREADY_STAND": "{{emojis.mysterious_arrow}} **Mysterious Arrow:** The arrow doesn't respond...",
+        "ALREADY_STAND2": "{{emojis.mysterious_arrow}} **Mysterious Arrow:** The arrow doesn't respond...\n\nLooks like you already have a stand. Reset it by using `/stand delete` or store it by using `/stand store` and then try again.",
+        "MANIFESTING": "{{emojis.mysterious_arrow}} **Mysterious Arrow:** Your spirit is manifesting...",
+        "INVADING": "{{emojis.mysterious_arrow}} **Mysterious Arrow:** You feel like that a spirit invades you..."
+    }
+}

@@ -25,12 +25,12 @@
         "DESCRIPTION": "Claim your daily reward {{cc}} time{{s}} (using the `/loot` command)"
     },
     "CLAIM_COINS": {
-        "DESCRIPTION": "Claim {{cc}} coins"
+        "DESCRIPTION": "Réclamer {{cc}} pièces"
     },
     "USE_LOOT": {
-        "DESCRIPTION": "Use the `/loot` command {{cc}} time{{s}}"
+        "DESCRIPTION": "Utiliser la commande `/loot` {{cc}} fois{{s}}"
     },
     "USE_ASSAULT": {
-        "DESCRIPTION": "Use the `/assault` command {{cc}} time{{s}}"
+        "DESCRIPTION": "Utiliser la commande `/assault` {{cc}} fois{{s}}"
     }
 }

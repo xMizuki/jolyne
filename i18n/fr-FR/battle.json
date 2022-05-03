@@ -10,5 +10,5 @@
     "CONFUSED": "{{emojis.pucciSerious}} Hein ? Si tu veut de battre contre un PNJ, ignore la catégorie 'user' et 'type'.",
     "BAD_CONDITIONS": "{{emojis.jolyne}} Vous ne pouvez pas vous battre dans ces conditions. Soignez vous et réessayez.",
     "DIFFERENCE_TOO_BIG": "The difference between you and **{{user_option.username}}** is too big. Try someone else or choose the **Friendly** mode.",
-    "TURN_CONTENT": "It's {{w}}'s turn"
+    "TURN_CONTENT": "C'est au tour de {{w}}"
 }
