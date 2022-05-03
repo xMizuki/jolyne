@@ -50,6 +50,8 @@ export const The_World: Stand = {
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
         awaken_text: "WRRRRYYYYYYYY !!!!",
+        timestop_text: "Toki wo TAMARE!",
+        timestop_end_text: "Zero...",
     },
     emoji: Emojis.the_world,
     available: false
@@ -71,6 +73,9 @@ export const The_World__Over_Heaven: Stand = {
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
         awaken_text: "WRRRRYYYYYYYY !!!!",
+        timestop_text: "Toki wo TAMARE!",
+        timestop_end_text: "Toki wa Ugokidasu.",
+
     },
     emoji: "<:sp:925699121745104918>",
     available: true
