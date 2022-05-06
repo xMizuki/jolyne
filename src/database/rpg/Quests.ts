@@ -93,7 +93,7 @@ export const Assault = (cc: number) => {
 
 export const getStatus = function getQuestStatus(quest: QuestNPC | Quest, userData: UserData): number {
     if (quest.id.startsWith("defeat") || quest.id.startsWith("action")) {
-        if (quest.completed) 100;
+        if (quest.completed) return 100;
         else if (quest.health && quest.health === 0) return 100;
         else return 0;
     }
