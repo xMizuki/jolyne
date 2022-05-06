@@ -16,7 +16,7 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    let pointsLeft = (Number(userData.level) * 4) - (userData.skill_points["stamina"] + userData.skill_points["defense"] + userData.skill_points["strength"] + userData.skill_points["perception"]);
+    let pointsLeft = (userData.level * 4) - (userData.skill_points["stamina"] + userData.skill_points["defense"] + userData.skill_points["strength"] + userData.skill_points["perception"]);
     const staminaID = Util.generateID();
     const strengthID = Util.generateID();
     const defenseID = Util.generateID();

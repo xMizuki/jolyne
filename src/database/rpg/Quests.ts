@@ -32,7 +32,7 @@ export const bring_kakyoin_hospital: Quest = {
 
 
 export const Awaken_Stand: Quest = {
-    id: "action:awaken_stand",
+    id: "getstand",
     i18n: "AWAKE_STAND",
     emoji: Emojis.mysterious_arrow,
     completed: false
@@ -52,33 +52,33 @@ export const LootCoins = (cc: number) => {
 };
 
 export const ClaimDaily = (cc: number) => {
-    const LootQuest: Quest = {
+    const ClaimDaily: Quest = {
         id: "cdaily:" + cc,
         i18n: "CLAIM_DAILY",
         total: 0,
         completed: false
     };
-    return LootQuest;
+    return ClaimDaily;
 };
 
 export const ClaimCoins = (cc: number) => {
-    const LootQuest: Quest = {
+    const ClaimCoins: Quest = {
         id: "cc:" + cc,
         i18n: "CLAIM_COINS",
         total: 0,
         completed: false
     };
-    return LootQuest;
+    return ClaimCoins;
 };
 
 export const UseLoot = (cc: number) => {
-    const LootQuest: Quest = {
+    const UseLoot: Quest = {
         id: "lloot:" + cc,
         i18n: "USE_LOOT",
         total: 0,
         completed: false
     };
-    return LootQuest;
+    return UseLoot;
 };
 
 export const Assault = (cc: number) => {
@@ -93,7 +93,7 @@ export const Assault = (cc: number) => {
 
 export const getStatus = function getQuestStatus(quest: QuestNPC | Quest, userData: UserData): number {
     if (quest.id.startsWith("defeat") || quest.id.startsWith("action")) {
-        if (quest.completed) 100;
+        if (quest.completed) return 100;
         else if (quest.health && quest.health === 0) return 100;
         else return 0;
     }
@@ -105,10 +105,11 @@ export const getStatus = function getQuestStatus(quest: QuestNPC | Quest, userDa
     if (quest.id === "getstand") {
         if (userData.stand) return 100;
         else return 0;
-    }
+    } 
 };
 
-export const validate = function validateQuest(quests: Array<Quest>, id: string) {
+export const validate = function validateQuest(quests: Quest[], id: string) {
+    console.log("on valide!")
     let validé = false;
     return quests.map(c => {
         if (c.id === id && !validé) {
@@ -117,7 +118,6 @@ export const validate = function validateQuest(quests: Array<Quest>, id: string)
         }
         return c;
     });
-
 };
 
 export const adapt = function adaptQuest(userData: UserData, UserChapter: Chapter): object {

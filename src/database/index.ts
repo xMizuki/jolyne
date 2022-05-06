@@ -24,8 +24,8 @@ export default class DatabaseHandler {
             if (!oldData) return resolve(null);
             const changes: Array<object> = [];
             Object.keys(oldData).filter(r => oldData[r as keyof UserData] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: string | object | boolean | Array<any>) => {
-                const oldValue: string | object | boolean | Array<any> = oldData[key as keyof UserData];
-                const newValue: string | object | boolean | Array<any> = userData[key as keyof UserData];
+                const oldValue: any = oldData[key as keyof UserData];
+                const newValue: any = userData[key as keyof UserData];
                 if (typeof oldValue === 'boolean') {
                     if (newValue !== oldValue) pushChanges()
                 } else if (typeof oldValue !== 'object') {

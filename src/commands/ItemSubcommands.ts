@@ -125,6 +125,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     // @ts-expect-error Cannot assign to 'id' because it is a read-only property.ts(2540), WHILE v CAN'T BE ID SMH
                     if (userData[`max_${v}` as keyof typeof userData] && userData[`max_${v}` as keyof typeof userData] < userData[v as keyof typeof userData]) userData[v as keyof typeof userData] = userData[`max_${v}` as keyof typeof userData];
                     if (!changed[v]) changed[v] = 0;
+                    // @ts-expect-error
                     changed[v] += (userData[v as keyof typeof userData] - oldValue);
                 });
             }

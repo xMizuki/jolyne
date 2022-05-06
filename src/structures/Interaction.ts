@@ -83,6 +83,7 @@ export default class InteractionCommandContext {
 
   async disableInteractionComponents() {
     const interaction = await this.interaction.fetchReply();
+    if (interaction.components.length === 0) return;
     const disabledComponents = interaction.components.map(c => {
       c.components.map(v => {
         v.disabled = true;
@@ -95,13 +96,13 @@ export default class InteractionCommandContext {
   }
   
 
-  timeoutCollector(collector: InteractionCollector<any>, time = 120000): NodeJS.Timeout {
+  timeoutCollector(collector: InteractionCollector<any>, time = 120000, disableComponents?: boolean): NodeJS.Timeout {
     clearTimeout(this._timeoutCollector);
     if (!collectorsCache.has(collector.messageId)) {
       collectorsCache.set(collector.messageId, collector.messageId);
       collector.on('end', async () => {
         collectorsCache.delete(collector.messageId);
-        this.disableInteractionComponents()
+        if (!disableComponents) this.disableInteractionComponents()
       });
     }
     return this._timeoutCollector = setTimeout(async () => {
