@@ -1,3 +1,6 @@
 {
-    "REMOVE_THING_KAKYOIN": "You tried to"
+    "NO_ACTIONS": "You can't do anything for the moment.",
+    "REMOVE_THING_KAKYOIN": "You tried to remove the thing...",
+    "REMOVE_THING_KAKYOIN_FAILED": "And you failed. Your only choice now is to bring kakyoin to the hospital.",
+    "REMOVE_THING_KAKYOIN_SUCCESS": "And you succeeded."
 }

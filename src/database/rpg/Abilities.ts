@@ -45,17 +45,30 @@ export const Time_Stop: Ability = {
         turns[turns.length - 1].lastMove = "attack";
         const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
-        const callerStand = Util.getStand(caller.stand);
-        const victimStand = Util.getStand(victim.stand);
-        const canCounter = victimStand.abilities.find(ability => ability.name === 'Time Stop') ? true : false;
+        const callerStand = caller.stand ? Util.getStand(caller.stand) : null;
+        const victimStand = victim.stand ? Util.getStand(victim.stand) : null;
+        const canCounter = victimStand ? (victimStand.abilities.find(ability => ability.name === 'Time Stop') ? true : false) : false;
 
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: canCounter ? 2 : 4,
+            cd: canCounter ? 3 : 4,
             completed: false
         };
 
         turns[turns.length - 1].logs.push(`!!! **${callerUsername}:** ${callerStand.name}: ${callerStand.text.timestop_text}`);
+        if (gameOptions.cooldowns.find((r: any) => r.id === caller.id && r.move === "defend")) {
+            gameOptions.cooldowns.forEach((c: any) => {
+                if (c.id === caller.id && c.move === "defend") {
+                    c.cooldown = gameOptions[tsID].cd-2
+                }
+            });
+        } else {
+            gameOptions.cooldowns.push({
+                id: caller.id,
+                move: "defend",
+                cooldown: gameOptions[tsID].cd-2
+            });
+        }
         const func = (async () => {
             if (gameOptions[tsID].completed) return;
             gameOptions.donotpush = true;
@@ -73,8 +86,50 @@ export const Time_Stop: Ability = {
                 }
             }
         });
+        if (gameOptions.opponentNPC === caller.id) {
+            gameOptions.donotpush = true;
+            gameOptions.invincible = true;
+            for (let i = 0; i < gameOptions[tsID].cd-1; i++) {
+                //gameOptions.NPCAttack("f", caller, i === 0 ? true : false);
+                let possibleMoves: Array<string | Ability> = ["attack"];
+                if (callerStand) {
+                    for (const ability of callerStand.abilities) {
+                        if (gameOptions.cooldowns.find((r: any) => r.id === caller.id && r.move === ability.name)?.cooldown <= 0) {
+                            possibleMoves.push(ability);
+                        }
+                    }
+                }
+                const choosedMove = Util.randomArray(possibleMoves);
+                const before = victim;
+                let dodged: boolean = false;
+                const dodges = Util.calcDodgeChances(before);
+                const dodgesNumerator = 90 + (!Util.isNPC(before) ? before.spb?.perception : before.skill_points.perception);
+                const dodgesPercent = Util.getRandomInt(0, Math.round(dodgesNumerator));
+                if (dodgesPercent < dodges) dodged = true;
+                if (gameOptions.invincible) dodged = false;
+                switch (choosedMove) {
+                    case "attack":
+                        const input = gameOptions.attack({ damages: Util.calcATKDMG(caller), username: (caller as NPC).name }, dodged, turns[turns.length - 1]);
+                        turns[turns.length - 1].logs.push(input);
+                        break;
+                    case "defend":
+                        gameOptions.defend();
+                        break;
+                    default:
+                        const ability = choosedMove as Ability;
+                        const input2 = gameOptions.triggerAbility(ability, caller, dodged, turns[turns.length - 1]);
+                        turns[turns.length - 1].logs.push(input2);
+                        break;
+                }
 
-        promises.push(func);
+            }
+            gameOptions.donotpush = false;
+            gameOptions.invincible = false;
+            canCounter ? turns[turns.length - 1].logs.push(`::: ${victimUsername}'s ${victimStand.name} countered the time stop`) :                     turns[turns.length - 1].logs.push(`??? **${callerUsername}:** ${callerStand.text.timestop_end_text}`);
+            gameOptions.loadBaseEmbed();
+
+
+        } else promises.push(func);
 
     }
 };

@@ -10,6 +10,8 @@ export const remove_thing_kakyoin = async (ctx: InteractionCommandContext, userD
     const failedText = ctx.translate("action:REMOVE_THING_KAKYOIN_FAILED");
     const successText = ctx.translate("action:REMOVE_THING_KAKYOIN_SUCCESS");
 
+    ctx.client.database.setCooldownCache("cooldown", userData.id);
+
     await ctx.makeMessage({
         content: baseText,
         components: []
@@ -21,18 +23,18 @@ export const remove_thing_kakyoin = async (ctx: InteractionCommandContext, userD
             content: baseText + " " + failedText,
             components: []
         });
-        userData.chapter_quests = userData.chapter_quests.map((v: Quest) => {
+        userData.chapter_quests.forEach(v => {
             if (v.id === "action:remove_thing_kakyoin") {
                 v = Quests.bring_kakyoin_hospital;
             }
-            return v;
         });
     } else {
         await ctx.makeMessage({
             content: baseText + " " + successText,
             components: []
         });
-        Quests.validate(userData.chapter_quests, "action:bring_kakyoin_hospital");
+        userData.chapter_quests.find(q => q.id === "action:remove_thing_kakyoin").completed = true;
     }
+    ctx.client.database.delCooldownCache("cooldown", userData.id);
     ctx.client.database.saveUserData(userData);    
 };

@@ -250,6 +250,7 @@ interface Quest {
   health?: number;
   i18n?: string;
   npc?: NPC;
+  action?: (...args: any) => void;
 }
 
 /**

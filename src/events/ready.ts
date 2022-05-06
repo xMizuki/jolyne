@@ -25,6 +25,11 @@ export const execute: Event["execute"] = async (client: Client) => {
         client.database.redis.client.set("jolyne:commands", JSON.stringify(commandsData));
         client.log('Slash commands are up to date & have been loaded.', 'cmd');    
     } else client.log('Slash commands are already up to date.', 'cmd');
+
+    // Daily quests
+    if (client.guilds.cache.random().shardId === 0) {
+        
+    }
     client._ready = true;
     client.user.setActivity({ name: "The Way To Heaven", type: "WATCHING" });
     client.log(`Ready! Logged in as ${client.user.tag} (${client.user.id})`);
