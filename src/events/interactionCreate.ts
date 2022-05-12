@@ -17,7 +17,54 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
         if (!userData && command.name !== "adventure" && interaction.options.getSubcommand() !== "start") return interaction.reply({ content: interaction.client.translations.get("en-US")("base:NO_ADVENTURE", {
             emojis: Emojis
         })});
-        command.execute(new InteractionCommandContext(interaction), userData);
+        if (command.name === "adventure" && interaction.options.getSubcommand() === "start") command.execute(new InteractionCommandContext(interaction), userData);
+
+
+        // Quests checker
+        let hasChanged: boolean = false;
+        for (let i = 0; i < userData.chapter_quests.length; i++) {
+            const quest = userData.chapter_quests[i];
+            if (quest.completed) continue;
+
+            if (quest.id.startsWith("wait")) {
+                if (quest.timeout < Date.now()) {
+                    hasChanged = true;
+                    quest.completed = true;
+                    if (quest.mails_push_timeout) {
+                        for (const mail of quest.mails_push_timeout) {
+                            userData.mails.push(mail);
+                            if (quest.mustRead) {
+                                userData.chapter_quests.push({
+                                    id: `rdem+${mail.id}`,
+                                    completed: false
+                                });
+                            }
+                        }
+                    }
+                    userData.chapter_quests[i] = quest;
+                }
+                continue;
+            }
+
+        }
+        if (hasChanged) interaction.client.database.saveUserData(userData);
+    
+        await command.execute(new InteractionCommandContext(interaction), userData);
+
+        // Misc
+        if (interaction.replied) {
+            const newMails = await interaction.client.database.redis.client.get(`jjba:newUnreadMails:${interaction.user.id}`);
+            if (newMails) {
+                interaction.client.database.redis.client.del(`jjba:newUnreadMails:${interaction.user.id}`);
+                interaction.followUp({
+                    content: interaction.client.translations.get(userData.language)("base:NEW_MAILS", {
+                        count: newMails
+                    })
+                });
+
+            }
+
+        }
     } else command.execute(new InteractionCommandContext(interaction));
 
 };
