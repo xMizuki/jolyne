@@ -16,6 +16,13 @@ export const Jolyne_Team: NPC = {
     emoji: Emojis.happyjolyne
 }
 
+export const SPEEDWAGON_FOUNDATION: NPC = {
+    id: 'speedwagon_foundation',
+    email: 'contact@speedwagon.net',
+    name: "SPEEDWAGON FOUNDATION",
+    emoji: '🔬'
+}
+
 export const Kakyoin: NPC = {
     id: 'kakyoin',
     email: 'kakyoin69@mori.oh',
@@ -35,7 +42,7 @@ export const Kakyoin: NPC = {
         xp: 1000,
         money: 500
     },
-    stand: Stands.Hierophant_Green.name
+    stand: Stands.Hierophant_Green["name"]
 
 }
 
@@ -73,7 +80,7 @@ export const Star_Platinum_User: NPC = {
         perception: 5,
         stamina: 2
     },
-    stand: Stands.Star_Platinum.name,
+    stand: Stands.Star_Platinum["name"],
     fight_rewards: {
         xp: 4000,
         money: 1000
@@ -158,5 +165,80 @@ export const Bandit_Boss: NPC = {
         xp: 4000,
         money: 1000
     },
-    stand: Stands.Aerosmith.name
+    stand: Stands.Aerosmith["name"]
 };
+
+export const Taxi_Driver: NPC = {
+    id: 'taxi_driver',
+    name: 'Taxi Driver',
+    emoji: '🚕'
+}
+
+export const Mohammed_Avdol: NPC = {
+    id: 'mohammed_avdol',
+    name: 'Mohammed Avdol',
+    emoji: '<:avdolHMMM:946797121313603584>',
+    level: 20,
+    health: 700,
+    max_health: 700,
+    stamina: 200,
+    skill_points: {
+        strength: 40,
+        defense: 20,
+        perception: 20,
+        stamina: 20
+    },
+    fight_rewards: {
+        xp: 10000,
+        money: 10000
+    },
+    stand: Stands.Magicians_Red["name"]
+}
+
+export const Lisa: NPC = {
+    id: 'lisa',
+    name: 'Lisa',
+    emoji: Emojis.cryyy
+}
+
+export const Polnareff: NPC = {
+    id: 'polnareff',
+    name: 'Jean-Pierre Polnareff',
+    emoji: Emojis.Polnareff,
+    level: 20,
+    health: 500,
+    max_health: 500,
+    stamina: 300,
+    skill_points: {
+        strength: 20,
+        defense: 20,
+        perception: 10,
+        stamina: 20
+    },
+    fight_rewards: {
+        xp: 10000,
+        money: 10000
+    },
+    stand: Stands.Silver_Chariot["name"]
+}
+
+export const Devo: NPC = {
+    id: 'devo',
+    name: 'Devo',
+    emoji: Stands.Ebony_Devil["emoji"],
+    level: 10,
+    health: 120,
+    max_health: 120,
+    stamina: 120,
+    skill_points: {
+        strength: 5,
+        defense: 5,
+        perception: 5,
+        stamina: 5
+    },
+    fight_rewards: {
+        xp: 1000,
+        money: 500
+    },
+    stand: Stands.Ebony_Devil["name"],
+}

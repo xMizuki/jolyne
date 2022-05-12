@@ -223,11 +223,7 @@ export const Bakugo: Ability = {
     dodgeable: false,
     stamina: 50,
     trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
-        const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
-        const callerStand = Util.getStand(caller.stand);
-        const victimStand = Util.getStand(victim.stand);
-        const canCounter = victimStand.abilities.find(ability => ability.name === 'Time Stop') ? true : false;
         const damage = Math.round(Util.calcAbilityDMG(Bakugo, caller) / 10);
 
 
@@ -249,6 +245,42 @@ export const Bakugo: Ability = {
         promises.push(func);
     }
 }
+
+export const OhMyGod: Ability = {
+    name: 'Oh my God',
+    description: "Boosts your damage for 5 turns (+10 strength).",
+    cooldown: 8,
+    damages: 0,
+    blockable: false,
+    dodgeable: false,
+    stamina: 50,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
+        const tsID = Util.generateID();
+        function addSkillPointsToCaller(amout: number) {
+            if (Util.isNPC(caller)) {
+                caller.skill_points["strength"] += amout;
+            } else caller.spb["strength"] += amout;
+        }
+        addSkillPointsToCaller(10);
+        gameOptions[tsID] = {
+            cd: 5,
+        };
+        turns[turns.length - 1].logs.push(`OH MY GOD! ${callerUsername} boosted their strength by 10 for 5 turns`);
+
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            if (gameOptions[tsID].cd === 0) {
+                addSkillPointsToCaller(-10);
+                turns[turns.length - 1].logs.push(`OH MY GOD! ${callerUsername}'s strength boost has expired`);
+            }
+        });
+
+        promises.push(func);
+    }
+}
+
 
 export const Vine_Slap: Ability = {
     name: 'Vine Slap',
@@ -289,4 +321,13 @@ export const Finisher: Ability = {
     dodgeable: false,
     stamina: 35
 }
-    
+
+export const Hatred_powered_Object_Possession: Ability = {
+    name: 'Hatred-powered Object Possession',
+    description: "Ebony Devil is powered by Devo's own grudge, which automatically triggers upon sustaining damage from his intended victim.",
+    cooldown: 3,
+    damages: 20,
+    blockable: false,
+    dodgeable: true,
+    stamina: 20
+}

@@ -92,7 +92,7 @@ export const Mysterious_Arrow: Item = {
   },
   shop: "Black Market",
   use: async (ctx: CommandInteractionContext, userData: UserData) => {
-    const StandsArray: Stand[] = Object.keys(Stands).filter(r => Stands[r as keyof typeof Stands].available).map(r => Stands[r as keyof typeof Stands]);
+    const StandsArray: Stand[] = Object.keys(Stands).map(r => Stands[r as keyof typeof Stands]).filter(s => s.available);
     const percent: number = Util.getRandomInt(0, 100);
     if (userData.stand) {
       await ctx.sendT("items:MYSTERIOUS_ARROW.ALREADY_STAND", {
@@ -426,4 +426,3 @@ export const Chocolate_Bar: Item = {
   },
   shop: 'Grocery Store'
 }
-
