@@ -43,6 +43,14 @@ interface SlashCommand {
    */
   cooldown: number = 3;
   /**
+   * The cooldown of the command (RPG).
+   */
+  rpgCooldown?: {
+    base: number,
+    premium: number,
+    i18n?: string
+  }
+  /**
    * The category of the command.
    */
   category: "adventure" | "utils" | "others";
@@ -133,7 +141,7 @@ interface UserData {
   /**
    * The user's inventory.
    */
-  items: string[];
+  items: Item["id"][];
   /**
    * The user's levle.
    */
@@ -169,11 +177,11 @@ interface UserData {
   /**
    * The user's prefered language.
    */
-  language: string;
+  language: supportedLanguages;
   /**
    * The user's stand.
    */
-  stand?: string;
+  stand?: Stand["name"];
   /**
    * The user's skill points.
    */
@@ -199,12 +207,16 @@ interface UserData {
    */
   dodge_chances?: number;
   /**
+   * The user's mails
+   */
+  mails: Mail[];
+  /**
    * Daily infos.
    */
   daily: {
     claimedAt: number,
     streak: number,
-    quests: Array<Quest | QuestNPC>
+    quests: Quest[]
   },
   /**
    * The user's stats (battle won, lost etc).
@@ -222,7 +234,7 @@ interface UserData {
  */
 interface Quest {
   /**
-   * The QuestNPC's ID.
+   * The Quest's ID.
    * @readonly
    */
   readonly id: string;
@@ -250,62 +262,10 @@ interface Quest {
   health?: number;
   i18n?: string;
   npc?: NPC;
+  email_timeout?: string;
+  mails_push_timeout?: Mail[];
+  mustRead?: boolean;
   action?: (...args: any) => void;
-}
-
-/**
- * NPCs Interface.
- */
-interface QuestNPC extends Quest {
-  readonly name?: string;
-  /**
-   * The QuestNPC's level.
-   * @readonly
-   * @type {number}
-   * @memberof QuestNPC
-   */
-  readonly level?: number;
-  /**
-   * The QuestNPC's health.
-   * @type {number}
-   * @memberof QuestNPC
-   */
-  health?: number;
-  /**
-   * The QuestNPC's max health.
-   * @type {number}
-   * @memberof QuestNPC
-   */
-  max_health?: number;
-  /**
-   * The QuestNPC's stamina.
-   * @type {number}
-   * @memberof QuestNPC
-   */
-  stamina?: number; // NPCs doesn't have max_stamina
-  /**
-   * The QuestNPC's skill-points.
-   * @memberof QuestNPC
-   * @readonly
-   */
-  readonly skill_points?: JSON<{
-    strength: number;
-    defense: number;
-    perceptibility: number; // (perception)
-    stamina: number;
-  }>;
-  /**
-   * The QuestNPC's stand.
-   * @type {string}
-   * @memberof QuestNPC
-   * @readonly
-   */
-  readonly stand?: string;
-  /**
-   * If the QuestNPC has been defeated.
-   * @type {boolean}
-   * @memberof QuestNPC
-   */
 }
 
 /**
@@ -313,44 +273,37 @@ interface QuestNPC extends Quest {
  */
 interface Chapter {
   /**
+   * The chapter's ID
+   */
+  id: number;
+  /**
    * The chapter's description
    */
-  description?: JSON<{
-    "en-US": string;
-    "fr-FR": string;
-    "es-ES": string;
-    "de-DE": string;
-  }>;
+  description?: Languages;
   /**
    * The chapter's title
    */
-  title?: JSON<{
-    "en-US": string;
-    "fr-FR": string;
-    "es-ES": string;
-    "de-DE": string;
-  }>;
+  title?: Languages;
   /**
    * Tips for the chapter
    */
-  tips?: JSON<{
-    "en-US": string;
-    "fr-FR": string;
-    "es-ES": string;
-    "de-DE": string;
-  }>;
+  tips?: Languages;
   /**
    * Mails given by the chapter
    */
-  mails?: Array;
+  mails?: Mail[];
   /**
    * Items given by the chapter
    */
-  items?: Array;
+  items?: Item[];
   /**
    * Chapter quests
    */
-  quests?: Array;
+  quests: Quest[];
+  /**
+   *  Chapter dialogues
+   */
+  dialogues?: Languages;
 }
 
 /**
@@ -568,7 +521,7 @@ interface Mail {
   /**
    * The mail's prize(s)
    */
-  readonly prize?: Prize;
+  prize?: Prize;
   /**
    * The mail emoji (if set)
    */
@@ -576,7 +529,7 @@ interface Mail {
   /**
    * The mail's quests
    */
-  readonly chapter_quests?: Quest[] | QuestNPC[];
+  chapter_quests?: Quest[];
   /**
    * If the mail has been archived
    */
@@ -607,31 +560,31 @@ interface NPC {
    * The NPC's level.
    * @readonly
    * @type {number}
-   * @memberof QuestNPC
+   * @memberof Quest
    */
   readonly level?: number;
   /**
    * The NPC's max health.
    * @type {number}
-   * @memberof QuestNPC
+   * @memberof Quest
    */
   max_health?: number;
   /**
-   * The QuestNPC's stamina.
+   * The Quest's stamina.
    * @type {number}
-   * @memberof QuestNPC
+   * @memberof Quest
    */
   max_stamina?: number; // NPCs doesn't have max_stamina
   /**
-   * The QuestNPC's skill-points.
-   * @memberof QuestNPC
+   * The Quest's skill-points.
+   * @memberof Quest
    * @readonly
    */
   readonly skill_points?: SkillPoints;
   /**
-   * The QuestNPC's stand.
+   * The Quest's stand.
    * @type {string}
-   * @memberof QuestNPC
+   * @memberof Quest
    * @readonly
    */
   readonly stand?: string;
@@ -661,3 +614,12 @@ interface Turn {
   logs: Array<string>,
   lastDamage: number
 }
+
+interface Languages {
+    "en-US": string | string[];
+    "fr-FR": string | string[];
+    "es-ES": string | string[];
+    "de-DE": string | string[];
+}
+
+type supportedLanguages = "en-US" | "fr-FR" | "es-ES" | "de-DE";
