@@ -1,6 +1,24 @@
 {
     "NO_ACTIONS": "You can't do anything for the moment.",
-    "REMOVE_THING_KAKYOIN": "You tried to remove the thing...",
-    "REMOVE_THING_KAKYOIN_FAILED": "And you failed. Your only choice now is to bring kakyoin to the hospital.",
-    "REMOVE_THING_KAKYOIN_SUCCESS": "And you succeeded."
+    "REMOVE_THING_KAKYOIN": {
+        "BASE":  "You tried to remove the thing...",
+        "FAILED": "And you failed. Your only choice now is to bring kakyoin to the hospital.",
+        "SUCCESS": "And you succeeded."
+    },
+    "BRING_KAKYOIN_HOSPITAL": {
+        "SUCCESS": "👨‍⚕️ **Male Nurse:** Kakyoin was taken back to the hospital and his costs were paid. He'll get back to you when he's better.",
+        "MONEY": "👨‍⚕️ **Male Nurse:** It is the hospital that does not care about charity... WHERE'S YOUR MONEY ???"
+    },
+    "ANALYSE_HAIR": {
+        "SUCCESS": "📧 These hairs have been sent to the SPEEDWAGON FOUNDATION."
+    },
+    "GO_TO_AIRPORT": {
+        "BASE": "{{npc.taxi_driver}} Hello sir, it'll cost you **{{slowPrice}}** {{emojis.jocoins}}. The journey will take 2 hours. If you want, I can go four times faster for triple the price (please don't tell to my boss). What is your choice?",
+        "MONEY": "{{npc.taxi_driver}} You fool, you don't have enough money. You can't go anywhere.",
+        "SLOW": "{{npc.taxi_driver}} You're going to the airport. You'll be there in 2 hours. You can come back anytime you want. Thank you for your business.",
+        "FAST": "{{npc.taxi_driver}} Alright, I'll get you to the Morioh Airport in only **30 minutes**. GET READY!"
+    },
+    "TYGAD": {
+        "SUCCESS": "📧 You've successfully sent an e-mail about the current situation to your Grandfather."
+    }
 }

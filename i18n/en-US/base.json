@@ -38,5 +38,6 @@
         "Oct",
         "Nov",
         "Dec"
-    ]
+    ],
+    "NEW_MAILS": "<@{{user.id}}>, You have **{{count}}** new mail(s)."
 }
