@@ -1,5 +1,6 @@
 import type { UserData, Quest, NPC, Stand, Item, Ability } from '../@types';
 import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageActionRow, ColorResolvable } from 'discord.js';
+import moment from 'moment-timezone';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
 import Canvas from 'canvas';
@@ -166,8 +167,13 @@ export const calcDodgeChances = (data: UserData | NPC): number => {
 };
 
 export const isNPC = function isNPC(crusader: NPC | UserData): crusader is NPC {
-    return (crusader as NPC).email !== undefined;
+    return (crusader as NPC).emoji !== undefined;
 }
+
+export const isItem = function isItem(item: Item): item is Item {
+    return (item as NPC).id !== undefined;
+}
+
 //     return Math.round(5 + Math.round((userData.spb.strength * 0.675) + ((Number(userData.level) * 1.50) + ((5 / 100) * 15)) / 2));
 
 export const calcATKDMG = (data: UserData | NPC): number => {
@@ -217,3 +223,35 @@ export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));
 }
+
+export const randomFood = function getRandomFood(): Item {
+    return randomArray(Object.keys(Items).map(i => Items[i as keyof typeof Items]).filter(i => i.type === "consumable" && i.usable && i.tradable));
+}
+
+export const incrQuestTotal = function incrQuestTotal(userData: UserData, questId: string, locale: "chapter" | "daily"): void {
+    const quests = {
+        chapter: userData.chapter_quests,
+        daily: userData.daily.quests
+    }[locale];
+    if (!quests.find(q => q.id === questId)) return;
+    quests.find(q => q.id === questId).total++;
+}
+
+export const formatDate = (date: number): string => {
+    const d = new Date(date);
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    const year = d.getFullYear();
+    const time = moment.tz(d.getTime(), "Europe/Paris").format("HH:mm:ss")
+    return `${day}/${month}/${year} ${time} (UTC${getUTCOffsetInHours()})`;
+}
+
+function getUTCOffsetInHours(): string {
+    const total = moment().utcOffset() / 60;
+    return total > 0 ? `+${total}` : `${total}`;
+}
+
+export const makeNPCString = function makeNPCString(npc: NPC, emoji?: string): string {
+    return `${emoji ?? npc.emoji} **${npc.name}**:`;
+  }
+  
