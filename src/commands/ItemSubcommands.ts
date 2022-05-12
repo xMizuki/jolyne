@@ -24,7 +24,7 @@ export const data: SlashCommand["data"] = {
             autocomplete: true
         }, {
             type: 4,
-            name: 'uses',
+            name: 'quantity',
             description: 'How much times would you like to use the item?',
             required: false
         }]
@@ -110,11 +110,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (userItems.length === 0) return ctx.sendT("base:NO_ITEMS");
         const item = Util.getItem(ctx.interaction.options.getString("item").split("(")[0].trim());
         if (!item) return ctx.makeMessage({ content: "NO WAT!!!"})
-        const uses = ctx.interaction.options.getInteger("uses") ?? 1;
-        if (uses > userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length) return ctx.makeMessage({ content: `You don't have ${uses} ${item.emoji} ${item.name}, but ${userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length}` });
+        const quantity = ctx.interaction.options.getInteger("quantity") ?? 1;
+        if (quantity > userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length) return ctx.makeMessage({ content: `You don't have ${quantity} ${item.emoji} ${item.name}, but ${userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length}` });
         if (item.type === "consumable") {
             const changed: any = {};
-            for (let i = 0; i < uses; i ++) {
+            for (let i = 0; i < quantity; i ++) {
                 Util.removeItem(userData.items, item.id as string);
                 Object.keys(item.benefits).forEach((v) => {
                     const oldValue = userData[v as keyof typeof userData];
@@ -130,16 +130,16 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 });
             }
             ctx.makeMessage({
-                content: `You used x${uses} **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `+${changed[v]} ${v}`).join(", ")}`,
+                content: `You used x${quantity} **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `+${changed[v]} ${v}`).join(", ")}`,
             })
 
         } else if (item.type === "arrow") {
             const response = await item.use(ctx, userData);
             if (response) Util.removeItem(userData.items, item.id as string);    
         } else {
-            for (let i = 0; i < uses; i ++) {
-                console.log(uses > 2 ? true : false, uses-i);
-                const response = await item.use(ctx, userData, (uses > 2 ? true : false), uses-i);
+            for (let i = 0; i < quantity; i ++) {
+                console.log(quantity > 2 ? true : false, quantity-i);
+                const response = await item.use(ctx, userData, (quantity > 2 ? true : false), quantity-i);
                 if (response) Util.removeItem(userData.items, item.id as string);    
                 else break; // an error occured, so we stop
                 await Util.wait(2000);

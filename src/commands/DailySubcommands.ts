@@ -89,6 +89,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             embed.addField("Streak Bonus", `\`x${arrows} ${arrow.name}\` ${arrow.emoji}`);
         }
+        Util.incrQuestTotal(userData, "cdaily", "chapter");
+        Util.incrQuestTotal(userData, "cdaily", "daily");
         await ctx.client.database.saveUserData(userData);
         ctx.interaction.reply({ embeds: [embed] });
     

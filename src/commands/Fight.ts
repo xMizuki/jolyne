@@ -49,8 +49,8 @@ export const data: SlashCommand["data"] = {
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData, customNPC?: NPC) => {
     let ennemy: NPC;
-    const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0)[0];
-    const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
+    const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).sort((a, b) => a.npc.max_health - b.npc.max_health)[0];
+    const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).sort((a, b) => a.npc.max_health - b.npc.max_health)[0];
 
     const selectMenuID = Util.generateID();
 
@@ -186,12 +186,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             max: number
         }> = [{
             id: userData.id,
-            left: Math.round(userData.max_health / 3),
-            max: Math.round(userData.max_health / 3)
+            left: Math.round(userData.max_health / 10),
+            max: Math.round(userData.max_health / 10)
         }, {
             id: opponent.id,
-            left: Math.round(opponent.max_health / 3),
-            max: Math.round(opponent.max_health / 3)
+            left: Math.round(opponent.max_health / 10),
+            max: Math.round(opponent.max_health / 10)
         }];
         const UserStand: Stand | null = userData.stand ? Util.getStand(userData.stand) : null;
         const OpponentStand: Stand | null = opponent.stand ? Util.getStand(opponent.stand) : null;
@@ -261,11 +261,14 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             lastDamage: 0
         })
         loadBaseEmbed();
-
         collector.on("collect", async (i: MessageComponentInteraction) => {
+            console.log(i.customId, nextID, i.customId === nextID)
             if (i.customId === nextID) {
                 // ANTI-CHEAT, ANTI-DUPES, ANTI-BUG, ANTI-GLITCH
-                userData = await ctx.client.database.getUserData(i.user.id);
+                const AntiCheatResult = await ctx.componentAntiCheat(i, userData);
+                if (AntiCheatResult === true) {
+                    return collector.stop();
+                }
                 ctx.client.commands.get("fight").execute(ctx, userData);
                 /*
                 const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0)[0];
@@ -292,7 +295,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
             switch (i.customId) {
                 case attackID:
-                    const input = attack({ damages: Util.getATKDMG(povData), username: i.user.username }, dodged, currentTurn);
+                    const input = attack({ damages: Util.getATKDMG(povData), username: i.user?.username }, dodged, currentTurn);
                     output = input;
                     break;
                 case defendID:
@@ -358,22 +361,22 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         function attack(input: { damages: number, username: string }, dodged: boolean, turn: Turn) {
             if (dodged) {
                 turn.lastMove = "attack";
-                return `🌬️ **${input.username}** attacked but ${beforeTurnUsername()} dodged.`;
+                return `🌬️ **${input?.username}** attacked but ${beforeTurnUsername()} dodged.`;
             } else if (turn.lastMove === "defend") {
                 turn.lastMove = "attack";
                 const then = attackShield(beforeTurn().id, input.damages);
                 if (then.left === 0) {
                     regenerateShieldToUser(beforeTurn().id);
                     removeHealthToLastGuy(input.damages * 1.75);
-                    return `**${input.username}** attacked and broke ${beforeTurnUsername()}'s guard for ${input.damages * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
+                    return `**${input?.username}** attacked and broke ${beforeTurnUsername()}'s guard for ${input.damages * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
                 } else {
                     turn.lastMove = "attack";
-                    return `**${input.username}** attacked but ${beforeTurnUsername()} blocked. (:shield: ${then.left}/${then.max} left).`;
+                    return `**${input?.username}** attacked but ${beforeTurnUsername()} blocked. (:shield: ${then.left}/${then.max} left).`;
                 }
             } else {
                 turn.lastMove = "attack";
                 removeHealthToLastGuy(input.damages);
-                return `**${input.username}** attacked and did ${input.damages} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health} left).`;
+                return `**${input?.username}** attacked and did ${input.damages} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health} left).`;
             }
         }
 
@@ -451,6 +454,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     // they broke their guard
                     turn.lastMove = "attack";
                     removeHealthToLastGuy(damage * 1.75);
+                    regenerateShieldToUser(beforeTurn().id);
                     return `**${whosTurnUsername()}** used **${userStand.name} : ${ability.name}** and broke ${beforeTurnUsername()}'s guard for ${damage * 1.75} damages (:heart: ${beforeTurn().health}/${beforeTurn().max_health}) left).`;
                 }
             } else {
@@ -468,28 +472,31 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             return (ability as Ability).cooldown !== undefined;
         }
 
-        async function loadBaseEmbed() {
+        async function loadBaseEmbed(): Promise<boolean> {
             const povData = whosTurn();
-            const components: Array<MessageButton> = [];
+            const components: MessageButton[] = [];
             const footer: { text: string } = Util.isNPC(povData) ? { text: "" } : { text: `⚡ You have ${povData.stamina} stamina left.` };
-            const winner = beforeTurn();
+            const winner = opponent.health === 0 ? userData : opponent;
             const winnerUsername = Util.isNPC(winner) ? winner.name : ctx.client.users.cache.get(winner.id)?.username ?? "?";
 
-            const content: string = !ended ? (Util.isNPC(povData) ? "[Waiting for your turn...]" : `It's ${ctx.client.users.cache.get(povData.id).username ?? "?"}'s turn.`) : `${winnerUsername} won!`;
+            const content: string = !ended ? (Util.isNPC(povData) ? "[Waiting for your turn...]" : `It's ${ctx.client.users.cache.get(povData.id)?.username ?? "?"}'s turn.`) : `${winnerUsername} won!`;
 
             // BTNS
-            if (Util.isNPC(povData)) {
-                if (!ended) components.push(NPCBTN);
-                else {
-                    if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
-                        components.push(nxtbtn);
-                    } else collector.stop();
-                }
-            }
-            else {
+            if (Util.isNPC(povData) && !ended) {
+                components.push(NPCBTN);
+            } else if (!ended) {
                 components.push(attackBTN, defendBTN(povData));
                 if (povData.stand) components.push(standBTN(povData));
                 components.push(forfeitBTN);
+            }
+            if (ended && Util.isNPC(opponent)) {
+                if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
+                    console.log("pushed nxtbtn")
+                    components.push(nxtbtn);
+                } else {
+                    collector.stop();
+                    console.log("vers loadbaseembed")
+                }
             }
             const fields = [];
             for (let i = 0; i < turns.filter(r => r.logs.length !== 0).length; i++) {
@@ -505,9 +512,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 components: components.length === 0 ? [] : [Util.actionRow(components)],
                 embeds: [{
                     title: ended ? "Battle Ended ⚔️" : "Battle in progress ⚔️",
-                    description: `\`>>>\` ${ctx.interaction.user.username} (${userData.stand ? UserStand.name : "Stand-less"}) ${Emojis.vs} ${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"} (${opponent.stand ? OpponentStand.name : "Stand-less"})\n\n`
-                    + `:heart: \`${ctx.interaction.user.username}\` ${userData.health}/${userData.max_health}\n:heart: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${opponent.health}/${opponent.max_health}\n----------------------------------\n`
-                    + `:shield: \`${ctx.interaction.user.username}\` ${getShieldStats(userData.id).left}/${getShieldStats(userData.id).left}\n:shield: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${getShieldStats(opponent.id).left}/${getShieldStats(opponent.id).max}\n\n`,
+                    description: `\`>>>\` ${ctx.interaction.user?.username} (${userData.stand ? UserStand.name : "Stand-less"}) ${Emojis.vs} ${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"} (${opponent.stand ? OpponentStand.name : "Stand-less"})\n\n`
+                    + `:heart: \`${ctx.interaction.user?.username}\` ${userData.health}/${userData.max_health}\n:heart: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${opponent.health}/${opponent.max_health}\n----------------------------------\n`
+                    + `:shield: \`${ctx.interaction.user?.username}\` ${getShieldStats(userData.id).left}/${getShieldStats(userData.id).left}\n:shield: \`${Util.isNPC(opponent) ? opponent.name : ctx.client.users.cache.get(opponent.id)?.username ?? "?"}\` ${getShieldStats(opponent.id).left}/${getShieldStats(opponent.id).max}\n\n`,
                     footer: footer,
                     color: ended ? "RED" : "YELLOW",
                     thumbnail: {
@@ -516,7 +523,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     fields: fields
                 }]
             });
-            if (opponent.id === povData.id && Util.isNPC(opponent)) await NPCAttack(); 
+            if (opponent.id === povData.id && Util.isNPC(opponent) && !ended) await NPCAttack(); 
+            if (components[0]?.customId === nextID) return false;
+            else return true;
 
             
         }
@@ -575,11 +584,16 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
         async function end() {
             ended = true;
-            loadBaseEmbed();
+            const end = await loadBaseEmbed();
+            if (end || user) {
+                collector.stop("Battle ended.");
+                console.log("vers end de basembed")
+            }
+            const components: MessageButton[] = [];
 
             // check who's the winner & the loser and adapt them if npc or not
-            let winner =  whosTurn();
-            let loser = beforeTurn();
+            let winner =  opponent.health !== 0 ? opponent : userData;
+            let loser = opponent.health === 0 ? opponent : userData;
             const winnerUsername = Util.isNPC(winner) ? winner.name : ctx.client.users.cache.get(winner.id)?.username ?? "?";
             const loserUsername = Util.isNPC(loser) ? loser.name : ctx.client.users.cache.get(loser.id)?.username ?? "?";
 
@@ -621,7 +635,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     if (typeof reward === "number") {
                         const emoji = r === "xp" ? Emojis.xp : Emojis.jocoins;
                         // @ts-expect-error 
-                        userData[r as keyof typeof userData[xp]] += reward;
+                        userData[r as keyof typeof userData] += reward;
                         rewardsArr.push(`${emoji} +${Util.localeNumber(reward)} ${r.replace("money", "coins")}`);
                     } else {
                         for (const rewardItem of reward) {
@@ -641,7 +655,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             } else if (!Util.isNPC(loser) && Util.isNPC(opponent)) {
                 ctx.followUp({
                     content: `:skull: **${winnerUsername}** has defeated **${loserUsername}**...`,
-                });           
+                });
+                opponent.health = opponent.max_health;           
                 ctx.client.database.saveUserData(userData);                        
             } else if (!Util.isNPC(loser) && !Util.isNPC(winner)) {
                 if (type === "friendly") {
