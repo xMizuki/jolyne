@@ -1,10 +1,11 @@
+import type { UserData, SkillPoints, Quest, Stand }  from '../@types';
 import postgres from './postgres';
 import redis from './redis';
 import { Collection, User } from 'discord.js';
 import Jolyne from '../structures/Client';
 import * as Chapters from './rpg/Chapters' ;
 import * as Quests from './rpg/Quests' ;
-import type { UserData, SkillPoints, Quest }  from '../@types';
+import * as Util from '../utils/functions';
 
 export default class DatabaseHandler {
     postgres: postgres;
@@ -37,7 +38,12 @@ export default class DatabaseHandler {
                         if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) pushChanges();
                     }
                 }
-                function pushChanges() {
+                function pushChanges(this: any) {
+                    if (key === "mails") {
+                        if (oldValue.length > newValue.length) {
+                            this.redis.client.set(`jjba:newUnreadMails:${userData.id}`, oldValue.length - newValue.length);
+                        }
+                    }
                     changes.push({
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
@@ -111,9 +117,10 @@ export default class DatabaseHandler {
                     perception: 0,
                     stamina: 0
                 },
-                items: ["pizza", "pizza", "pizza"],
+                items: ["pizza", "pizza", "pizza", "mysterious_arrow"],
                 chapter_quests: Chapters.C1.quests,
                 side_quests: [],
+                mails: [],
                 adventureat: Date.now(),
                 daily: {
                     claimedAt: 0,
@@ -122,6 +129,8 @@ export default class DatabaseHandler {
                 },
                 stats: {}
             };
+            await this.postgres.client.query(`INSERT INTO users (${Object.keys(newUserData).join(", ")}) VALUES (${Object.keys(newUserData).map((r: string) => `$${Object.keys(newUserData).indexOf(r) + 1}`).join(', ')})`, [...Object.values(newUserData)]);
+            /*
             await this.postgres.client.query(`INSERT INTO users (id, tag, xp, level, health, max_health, stamina, max_stamina, chapter, money, language, skill_points, items, chapter_quests, side_quests, adventureat, spb, daily, stats) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)`, [
                 newUserData.id,
                 newUserData.tag,
@@ -142,7 +151,7 @@ export default class DatabaseHandler {
                 newUserData.spb,
                 newUserData.daily,
                 newUserData.stats
-            ]);
+            ]);*/
             this.fixStats(newUserData);
             await this.redis.client.set(`cachedUser:${userId}`, JSON.stringify(newUserData));
             this.languages.set(newUserData.id, newUserData.language);
@@ -181,6 +190,7 @@ export default class DatabaseHandler {
                     chapter_quests: cachedUser.chapter_quests,
                     side_quests: cachedUser.side_quests,
                     adventureat: Number(cachedUser.adventureat),
+                    mails: cachedUser.mails,
                     spb: cachedUser.spb,
                     stand: cachedUser.stand,
                     daily: cachedUser.daily,
@@ -204,10 +214,10 @@ export default class DatabaseHandler {
         });
     }
     fixStats(userData: UserData) {
-        const stand = require("./rpg/_stands")[userData.stand]?.bonus ?? { strength: 0, stamina: 0, perception: 0, defense: 0 };
+        const stand: Stand["skill_points"] = userData.stand ? Util.getStand(userData.stand)?.skill_points : null;
         if (!userData.spb) userData.spb = { strength: 0, stamina: 0, perception: 0, defense: 0 };
-        Object.keys(stand).filter(r => r!== "total").forEach(async (e: any) => {
-            userData.spb[e as keyof SkillPoints] = userData.skill_points[e as keyof SkillPoints] + stand[e];
+        if (stand) Object.keys(stand).filter(r => r!== "total").forEach(async (e: any) => {
+            userData.spb[e as keyof SkillPoints] = userData.skill_points[e as keyof SkillPoints] + stand[e as keyof SkillPoints];
         });
 
         if (!userData.stamina && userData.stamina !== 0) userData.stamina = 60;
