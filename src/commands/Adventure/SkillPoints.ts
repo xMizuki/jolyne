@@ -1,9 +1,9 @@
-import type { SlashCommand, UserData } from '../@types';
+import type { SlashCommand, UserData } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import * as Stands from '../database/rpg/Stands';
-import * as Util from '../utils/functions';
-import * as Emojis from '../emojis.json';
+import InteractionCommandContext from '../../structures/Interaction';
+import * as Stands from '../../database/rpg/Stands';
+import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
 
 export const name: SlashCommand["name"] = "skill-points";
 export const category: SlashCommand["category"] = "adventure";

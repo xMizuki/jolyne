@@ -23,25 +23,20 @@ export default class DatabaseHandler {
         return new Promise(async (resolve) => {
             const oldData: UserData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userData.id]).then(r => r.rows[0] || null);
             if (!oldData) return resolve(null);
-            const changes: Array<object> = [];
+            if (this._client.users.cache.get(userData.id)) userData.tag = this._client.users.cache.get(userData.id).tag;
+            else userData.tag = await this._client.users.fetch(userData.id).then((r: User) => r.tag || "Unknown#0000").catch(() => "Unknown#0000");
+
+            const changes: { query: string, value: any }[] = [];
+            
             Object.keys(oldData).filter(r => oldData[r as keyof UserData] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: string | object | boolean | Array<any>) => {
-                const oldValue: any = oldData[key as keyof UserData];
-                const newValue: any = userData[key as keyof UserData];
-                if (typeof oldValue === 'boolean') {
-                    if (newValue !== oldValue) pushChanges()
-                } else if (typeof oldValue !== 'object') {
-                    if (String(newValue) !== String(oldValue)) pushChanges();
-                } else {
-                    if (oldValue instanceof Array) {
-                        if(!arrayEqual(newValue, oldValue)) pushChanges();
-                    } else {
-                        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) pushChanges();
-                    }
-                }
-                function pushChanges(this: any) {
-                    if (key === "mails") {
-                        if (oldValue.length > newValue.length) {
-                            this.redis.client.set(`jjba:newUnreadMails:${userData.id}`, oldValue.length - newValue.length);
+                const oldValue = oldData[key as keyof UserData];
+                const newValue = userData[key as keyof UserData];
+
+                const pushChanges = async () => {
+                    if (key === "mails" && Util.isMailArray(oldValue) && Util.isMailArray(newValue)) {
+                        if (oldValue.length < newValue.length) {
+                            const count: number = parseInt(await this.redis.client.get(`jjba:newUnreadMails:${userData.id}`)) || 0;
+                            this.redis.client.set(`jjba:newUnreadMails:${userData.id}`, count + newValue.length - oldValue.length);
                         }
                     }
                     changes.push({
@@ -49,41 +44,48 @@ export default class DatabaseHandler {
                         value: newValue
                     });
                 };
+
+                if (typeof oldValue === 'boolean') {
+                    if (newValue !== oldValue) pushChanges()
+                } else if (typeof oldValue !== 'object') {
+                    if (String(newValue) !== String(oldValue)) pushChanges();
+                } else {
+                    if (oldValue instanceof Array && newValue instanceof Array) {
+                        if(!arrayEqual(newValue, oldValue)) pushChanges();
+                    } else {
+                        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) pushChanges();
+                    }
+                }
             });
+            if (userData.health < 0) userData.health = 0;
+            if (userData.stamina < 0) userData.stamina = 0;
+
             if (changes.length > 0) {
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
-                    userData.chapter_quests = userData.chapter_quests.map((c: Quest) => {
-                        if (c.id.startsWith("cc")) {
-                            let goal = Number(c.id.split(":")[1]);
-                            if (c.completed) return c;
-                            if (!c.total) c.total = 0;
-                            c.total = c.total + Number(userData.money - oldData.money);
-                            if (c.total < 0) c.total = 0;
-                            if (c.total >= goal) {
-                                c.completed = true;
-                                c.total = goal;
-                            };            
+                    for (const key in userData) {
+                        if (userData.hasOwnProperty(key)) {
+                            const element = userData[key as keyof typeof userData];
+                            if (Util.isQuestArray(element)) {
+                                for (const quest of element.filter(q => q.id.startsWith("cc") && !q.completed)) {
+                                    let goal = Number(quest.id.split(":")[1]);
+                                    if (quest.total) quest.total = quest.total + userData.money - oldData.money;
+                                    else quest.total = userData.money - oldData.money;
+                                    if (quest.total < 0) quest.total = 0;
+                                    if (quest.total >= goal) {
+                                        quest.completed = true;
+                                        quest.total = goal;
+                                    };
+                                }
+                                // @ts-ignore
+                                userData[key as keyof typeof userData] = element;
+                            }
                         }
-                        return c;
-                    });
-                    userData.daily.quests = userData.daily.quests.map((c: Quest) => {
-                        if (c.id.startsWith("cc")) {
-                            let goal = Number(c.id.split(":")[1]);
-                            if (c.completed) return c;
-                            if (!c.total) c.total = 0;
-                            c.total = c.total + Number(userData.money - oldData.money);
-                            if (c.total < 0) c.total = 0;
-                            if (c.total >= goal) {
-                                c.completed = true;
-                                c.total = goal;
-                            };            
-                        }
-                        return c;
-                    });
+                    }
+        
                 }
                 this.fixStats(userData);
-                await this.postgres.client.query(`UPDATE users SET ${changes.map((r: any) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r: any) => r.value), userData.id]);
+                await this.postgres.client.query(`UPDATE users SET ${changes.map((r) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r) => r.value), userData.id]);
                 await this.redis.client.set(`cachedUser:${userData.id}`, JSON.stringify(userData));
                 return resolve(await this.redis.client.get(`cachedUser:${userData.id}`).then(r => JSON.parse(r) || null));
             } else resolve(null);
@@ -214,12 +216,12 @@ export default class DatabaseHandler {
         });
     }
     fixStats(userData: UserData) {
+        console.log("SPB SPB")
         const stand: Stand["skill_points"] = userData.stand ? Util.getStand(userData.stand)?.skill_points : null;
-        if (!userData.spb) userData.spb = { strength: 0, stamina: 0, perception: 0, defense: 0 };
+        userData.spb = { strength: userData.skill_points.strength, stamina: userData.skill_points.stamina, perception: userData.skill_points.perception, defense: userData.skill_points.defense };
         if (stand) Object.keys(stand).filter(r => r!== "total").forEach(async (e: any) => {
             userData.spb[e as keyof SkillPoints] = userData.skill_points[e as keyof SkillPoints] + stand[e as keyof SkillPoints];
         });
-
         if (!userData.stamina && userData.stamina !== 0) userData.stamina = 60;
         if (!userData.health && userData.health !== 0) userData.health = 100;
         if (!userData.stats) userData.stats = {}
@@ -267,7 +269,7 @@ export default class DatabaseHandler {
         return await this.redis.client.get(`tempCache_${base}:${target}`).then(r => r || null);
     }    
 
-    async setCooldownCache(base: string, target: string, value: string | number = 1): Promise<string> {
+    async setCooldownCache(base: string, target: string, value: string | number = Infinity): Promise<string> {
         return await this.redis.client.set(`tempCache_${base}:${target}`, value);
     }
     async delCooldownCache(base: string, target?: string): Promise<string | number> {
@@ -276,7 +278,7 @@ export default class DatabaseHandler {
     }
 }
 
-function arrayEqual(array1: any, array2: any) {
+function arrayEqual(array1: any[], array2: any[]) {
     let changed = false;
     if (array1.length !== array2.length) return false;
     for (let i = 0; i < array1.length; i++) {

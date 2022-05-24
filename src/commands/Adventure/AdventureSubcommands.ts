@@ -1,6 +1,6 @@
-import type { SlashCommand, UserData } from '../@types';
+import type { SlashCommand, UserData } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
+import InteractionCommandContext from '../../structures/Interaction';
 
 export const name: SlashCommand["name"] = "adventure";
 export const category: SlashCommand["category"] = "adventure";

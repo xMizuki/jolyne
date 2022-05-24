@@ -122,7 +122,6 @@ export const Assault = (amount: number) => {
 };
 
 export const getStatus = function getQuestStatus(quest: Quest, userData: UserData): number {
-    if (quest.id.startsWith("loot") || quest.id.startsWith("lloot") || quest.id.startsWith("cc") || quest.id.startsWith("cdaily")) return 100;
     if (quest.id.startsWith("defeat") || quest.id.startsWith("action")) {
         if (quest.completed) return 100;
         else if (quest.health && quest.health === 0) return 100;
@@ -163,7 +162,9 @@ export const adapt = function adaptQuest(userData: UserData, UserChapter: Chapte
         2: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
         3: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(1)}\`**: ${UserChapter.title[userData.language]}`,
         4: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(2)}\`**: ${UserChapter.title[userData.language]}`,
-        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,    
+        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,
+        6: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(4)}\`**: ${UserChapter.title[userData.language]}`,    
+        7: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(5)}\`**: ${UserChapter.title[userData.language]}`,    
     }
 
 }
@@ -192,5 +193,12 @@ export const KAKYOIN_BACK: Quest = {
 export const Get_At_The_Morioh_Airport: Quest = {
     id: "wait:taxiupgo",
     i18n: "TAXIUPGO",
+    completed: false
+}
+
+export const Remove_Fleshbud_Polnareff: Quest = {
+    id: "action:remove_fleshbud_polnareff",
+    i18n: "REMOVE_FLESHBUD_POLNAREFF",
+    emoji: "🐛",
     completed: false
 }

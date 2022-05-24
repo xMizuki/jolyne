@@ -24,6 +24,8 @@ export const Star_Platinum: Stand = {
     text: {
         awakening_text: "OrRrr.. OrrRrRRrRrR... RrrRQRrR....",
         awaken_text: "ORAAAAAAAAAAAAAAAA !!!!",
+        timestop_text: "Toki wo TOMARE!",
+        timestop_end_text: "Toki wo Ugokidase.",
     },
     emoji: Emojis.sp,
     available: true
@@ -50,7 +52,7 @@ export const The_World: Stand = {
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
         awaken_text: "WRRRRYYYYYYYY !!!!",
-        timestop_text: "Toki wo TAMARE!",
+        timestop_text: "Toki wo TOMARE!",
         timestop_end_text: "Zero...",
     },
     emoji: Emojis.the_world,

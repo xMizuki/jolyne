@@ -85,7 +85,7 @@ export const C3_P1: Chapter = {
     ],
     quests: [
         Quests.Tell_Your_Grandfather_About_DIO
-    ]
+    ],
 }
 
 export const C3_P2: Chapter = {
@@ -133,7 +133,7 @@ export const C3_P2: Chapter = {
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephChad) + " ok so-",
             Util.makeNPCString(NPCs.Lisa) + " IT'S HIM! HE'S THE ONE WHO TOUCHED MY ASS! STOP THIS PERVERT !!!1!1!11!",
             Util.makeNPCString(NPCs.Security_Guard) + " OK, GOT IT. Wait, it's you ? What the fuck are you doing here?",
-            Util.makeNPCString(NPCs.Mohammed_Avdol) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
+            Util.makeNPCString(NPCs.Harry_Lester) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
         ],
         'fr-FR': [
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephHMM) + " Yo my gran- YO what the hell is it really you?????? Anyway, this is my friend, Mohammed Avdol. He's a stand handler, like us.",
@@ -145,7 +145,7 @@ export const C3_P2: Chapter = {
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephChad) + " ok so-",
             Util.makeNPCString(NPCs.Lisa) + " IT'S HIM! HE'S THE ONE WHO TOUCHED MY ASS! STOP THIS PERVERT !!!1!1!11!",
             Util.makeNPCString(NPCs.Security_Guard) + " OK, GOT IT. Wait, it's you ? What the fuck are you doing here?",
-            Util.makeNPCString(NPCs.Mohammed_Avdol) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
+            Util.makeNPCString(NPCs.Harry_Lester) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
         ],  
         'es-ES': [
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephHMM) + " Yo my gran- YO what the hell is it really you?????? Anyway, this is my friend, Mohammed Avdol. He's a stand handler, like us.",
@@ -157,7 +157,7 @@ export const C3_P2: Chapter = {
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephChad) + " ok so-",
             Util.makeNPCString(NPCs.Lisa) + " IT'S HIM! HE'S THE ONE WHO TOUCHED MY ASS! STOP THIS PERVERT !!!1!1!11!",
             Util.makeNPCString(NPCs.Security_Guard) + " OK, GOT IT. Wait, it's you ? What the fuck are you doing here?",
-            Util.makeNPCString(NPCs.Mohammed_Avdol) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
+            Util.makeNPCString(NPCs.Harry_Lester) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
         ],  
         'de-DE': [
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephHMM) + " Yo my gran- YO what the hell is it really you?????? Anyway, this is my friend, Mohammed Avdol. He's a stand handler, like us.",
@@ -169,26 +169,29 @@ export const C3_P2: Chapter = {
             Util.makeNPCString(NPCs.Harry_Lester, Emojis.josephChad) + " ok so-",
             Util.makeNPCString(NPCs.Lisa) + " IT'S HIM! HE'S THE ONE WHO TOUCHED MY ASS! STOP THIS PERVERT !!!1!1!11!",
             Util.makeNPCString(NPCs.Security_Guard) + " OK, GOT IT. Wait, it's you ? What the fuck are you doing here?",
-            Util.makeNPCString(NPCs.Mohammed_Avdol) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
+            Util.makeNPCString(NPCs.Harry_Lester) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
         ],    
-    }
+    },
+    parent: C3_P1
+
 }
 
 export const C3_P3: Chapter = {
     id: 5,
     description: {
-        'en-US': "As you and your recently acquired friends continue there journey, you are attacked by yet another stand user. The swordsman challenges you, after he managed to beat your friends. He says that if you win, he won't kill them.",
+        'en-US': "As you and your recently acquired friends continue their journey, you are attacked by yet another stand user. The swordsman challenges you, after he managed to beat your friends. He says that if you win, he won't kill them.",
         'fr-FR': "Comme vous et vos amis continuez votre voyage, vous êtes attaqué par un autre utilisateur de stand. Le combattant vous défie, après qu'il ait réussi à battre vos amis. Il dit que si vous gagnez, il ne les tuera pas.",
         'es-ES': "Como vos y vuestos amigos continuan su viaje, vos atacan por un usuario de stand. El espadachín te reta, tras que haya podido derrotar a tus amigos. Dice que si ganas, no los matará.",
         'de-DE': "Als Sie und Ihre kürzlich erwerbten Freunde Ihre Reise fortsetzen, werden Sie von einem anderen Stand-Benutzer angegriffen. Der Schwerhiebige wirft Sie auf, nachdem er sie Ihren Freunden besiegt hat. Er sagt, wenn Sie gewinnen, wird er sie nicht töten.",
     },
     title: C3_P1.title,
     quests: [
-        Quests.Defeat(NPCs.Kakyoin),
+        Quests.Defeat(NPCs.Polnareff),
         Quests.Assault(10),
         Quests.UseLoot(5),
         Quests.ClaimCoins(30000)
-    ]
+    ],
+    parent: C3_P1
 }
 
 export const C3_P4: Chapter = {
@@ -201,11 +204,12 @@ export const C3_P4: Chapter = {
     },
     title: C3_P1.title,
     quests: [
+        Quests.Remove_Fleshbud_Polnareff,
         Quests.Defeat(NPCs.Devo),
-        // TODO: Quests.Remove_Fleshbud_Kakyoin
         Quests.UseLoot(10),
         Quests.Assault(5)
-    ]
+    ],
+    parent: C3_P1
 }
 
 

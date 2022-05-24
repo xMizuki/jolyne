@@ -1,7 +1,7 @@
 // Outdated code, need to optimize it. IK it's really ugly.
-import type { SlashCommand, command } from '../@types';
+import type { SlashCommand, command } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, SelectMenuInteraction } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
+import InteractionCommandContext from '../../structures/Interaction';
 
 export const name: SlashCommand["name"] = "help";
 export const category: SlashCommand["category"] = "utils";

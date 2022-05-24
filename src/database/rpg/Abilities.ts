@@ -249,11 +249,11 @@ export const Bakugo: Ability = {
 export const OhMyGod: Ability = {
     name: 'Oh my God',
     description: "Boosts your damage for 5 turns (+10 strength).",
-    cooldown: 8,
+    cooldown: 4,
     damages: 0,
     blockable: false,
     dodgeable: false,
-    stamina: 50,
+    stamina: 20,
     trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
         const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
         const tsID = Util.generateID();
@@ -264,9 +264,9 @@ export const OhMyGod: Ability = {
         }
         addSkillPointsToCaller(10);
         gameOptions[tsID] = {
-            cd: 5,
+            cd: 10,
         };
-        turns[turns.length - 1].logs.push(`OH MY GOD! ${callerUsername} boosted their strength by 10 for 5 turns`);
+        turns[turns.length - 1].logs.push(`OH MY GOD! ${callerUsername} boosted their strength by 10 for some turns`);
 
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;

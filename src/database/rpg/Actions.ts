@@ -1,6 +1,7 @@
 import type { UserData, Quest } from '../../@types';
 import { MessageButton, MessageComponentInteraction } from 'discord.js';
 import * as Quests from './Quests';
+import * as Items from './Items';
 import * as Util from '../../utils/functions';
 import * as Emojis from '../../emojis.json'
 import InteractionCommandContext from '../../structures/Interaction';
@@ -161,5 +162,96 @@ export const gotoairport = async(ctx: InteractionCommandContext, userData: UserD
         ctx.client.database.saveUserData(userData);
 
     });
+    
+}
+
+export const remove_fleshbud_polnareff = async(ctx: InteractionCommandContext, userData: UserData) => {
+    await ctx.client.database.setCooldownCache("cooldown", userData.id);
+    try {
+        const acceptID = Util.generateID();
+        const refuseID = Util.generateID();
+        const acceptBTN = new MessageButton()
+            .setCustomId(acceptID)
+            .setLabel(ctx.translate("base:ACCEPT"))
+            .setStyle("SUCCESS");
+        const refuseBTN = new MessageButton()
+            .setCustomId(refuseID)
+            .setLabel(ctx.translate("base:REFUSE"))
+            .setStyle("DANGER");
+        const dialogues = ctx.translate("action:REMOVE_FLESHBUD_POLNAREFF.DIALOGUES_1", {
+            returnObjects: true
+        });
+        let dial = "";
+        for (let i = 0; i < dialogues.length; i++) {
+            dial += `${dialogues[i]}\n`;
+            ctx.makeMessage({
+                content: dial,
+                components: []
+            });
+            await Util.wait(Util.getRandomInt(3, 5) * 1000)
+        }
+        await ctx.makeMessage({
+            components: [Util.actionRow([acceptBTN, refuseBTN])],
+        });
+        const filter = async (i: MessageComponentInteraction) => {
+            i.deferUpdate().catch(() => {});
+            return (i.customId === acceptID || i.customId === refuseID) && i.user.id === userData.id;
+        }
+        const collector = ctx.interaction.channel.createMessageComponentCollector({ filter, time: 150000 });
+        let replied: boolean = false;
+        collector.on("collect", async (i: MessageComponentInteraction) => {
+            replied = true;
+            for (let i = 0; i < userData.chapter_quests.length; i++) {
+                if (userData.chapter_quests[i].id === "action:remove_fleshbud_polnareff") {
+                    userData.chapter_quests[i].completed = true;
+                    break;
+                }
+            }
+    
+            if (i.customId === acceptID) {
+                const dialogues2 = ctx.translate("action:REMOVE_FLESHBUD_POLNAREFF.DIALOGUES_JOTARO", {
+                    returnObjects: true
+                });
+                let dial2 = "";
+                for (let i = 0; i < dialogues2.length; i++) {
+                    dial2 += `${dialogues2[i]}\n`;
+                    ctx.makeMessage({
+                        content: dial2,
+                        components: []
+                    });
+                    await Util.wait(Util.getRandomInt(3, 5) * 1000)
+                }
+             } else {
+                    const dialogues2 = ctx.translate("action:REMOVE_FLESHBUD_POLNAREFF.DIALOGUES_2", {
+                        returnObjects: true
+                    });
+                    let dial2 = "";
+                    for (let i = 0; i < dialogues2.length; i++) {
+                        dial2 += `${dialogues2[i]}\n`;
+                        await ctx.makeMessage({
+                            content: dial2,
+                            components: []
+                        });
+                        await Util.wait(Util.getRandomInt(3, 5) * 1000)
+                    }
+                }
+                collector.stop("done");
+            });
+            collector.on("end", () => {
+                ctx.client.database.delCooldownCache("cooldown", userData.id);
+                if (replied) {
+                    userData.items.push(Items.Mysterious_Arrow["id"]);
+                    ctx.followUp({
+                        content: `${Emojis.mysterious_arrow}`
+                    })
+                }   ctx.client.database.saveUserData(userData); // save user data
+            });
+    
+    } catch(e) {
+        ctx.client.database.delCooldownCache("cooldown", userData.id);
+        throw e;
+    }
+
+            
     
 }

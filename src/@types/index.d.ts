@@ -61,12 +61,30 @@ interface SlashCommand {
   /**
    * The data as SlashCommandBuilder.
    */
-  data: JSON<any>;
+  data: DiscordSlashCommandsData;
   /**
    * This is the function that will be called when the command is executed.
    * @param Interaction The CommandInteraction object from the interactionCreate event.
    */
   execute: (...args: any) => void;
+}
+
+/**
+ * Disord Slash Command Data.
+ */
+interface DiscordSlashCommandsData {
+  name: string,
+  description: string,
+  autocomplete?: boolean,
+  required?: boolean,
+  type?:
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  options?: DiscordSlashCommandsData[]
 }
 
 /**
@@ -225,7 +243,8 @@ interface UserData {
     rankedBattle?: {
       wins: number,
       losses: number
-    }
+    },
+    [key: string]: string;
   }
 }
 
@@ -304,6 +323,10 @@ interface Chapter {
    *  Chapter dialogues
    */
   dialogues?: Languages;
+  /**
+   * The chapter's parent (if it is not a chapter but a part)
+   */
+  parent?: Chapter;
 }
 
 /**
@@ -463,10 +486,6 @@ interface Item {
    */
   readonly benefits?: ItemBenefits;
   /**
-   * The item's shop.
-   */
-  readonly shop?: "Tonio Trussardi's Restaurant" | "Grocery Store" | 'Black Market' | null;
-  /**
    * Bonuses if it's a cloth.
    */ 
   readonly cloth_bonuses?: ClothBonuses;
@@ -474,6 +493,45 @@ interface Item {
    * Function to use the item (if not consumable)
    */
   readonly use?: (ctx: CommandInteractionContext, userData: UserData, skip?: boolean, left?: number) => Promise<any>;
+}
+
+/**
+ * Shop interface
+ */
+interface Shop {
+  /**
+   * The shop's name.
+   * @readonly
+   */
+  readonly name: string;
+  /**
+   * The shop's items.
+   * @readonly
+   * @type {Item[]}
+   */
+  readonly items: Item[];
+  /**
+   * The shop's emoji.
+   * @readonly
+   * @type {string}
+   */
+  readonly emoji: string;
+  /**
+   * The shop's hex-color code.
+   * @readonly
+   * @type {ColorResolvable}
+   * @default "#ffffff"
+   * @example
+   * "#ffffff"
+   * "#000000"
+   * "#ff0000"
+   * "#00ff00"
+   */
+  readonly color?: ColorResolvable;
+  /**
+   * The date when the shop is open.
+   */
+  readonly open_date?: `${number}-${number}` | number;
 }
 
 interface ItemBenefits {
@@ -592,6 +650,16 @@ interface NPC {
    * The NPC's rewards when he's defeated.
    */
   fight_rewards?: Prize;
+  /**
+   * The NPC's dialogues.
+   */
+  dialogues?: {
+    [key: string]: string;
+  }
+  /**
+   * The NPC's avatar URL.
+   */
+  avatarURL?: string;
 
   /**
    * BATTLE VALUES

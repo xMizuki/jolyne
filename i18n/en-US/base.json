@@ -19,10 +19,13 @@
     "GOT": "got",
     "FOUND": "found",
     "A": "a",
-    "LEVEL_UP_MESSAGE": ":stars: <@{{user.id}}>, You are now level **{{level}}**\n\n:information_source: You gained **4** skill-oints. Use `/skill-points` to use them.",
+    "LEVEL_UP_MESSAGE": ":stars: <@{{user.id}}>, You are now level **{{level}}**\n\n:information_source: You gained **4** skill-points. Use `/skill-points` to use them.",
     "BASE_COOLDOWN": "You have to wait **{{timer}}** second(s) before using the `/{{command}}` again.",
     "CONFIRM": "Confirm",
     "CANCEL": "Cancel",
+    "ACCEPT": "Accept",
+    "DECLINE": "Decline",
+    "REFUSE": "Refuse",
     "NO_ITEMS": "{{emojis.pucciSerious}} You don't have any items.",
     "SELECT_ITEM": "Select an item",
     "SMALL_MONTHS": [
@@ -39,5 +42,7 @@
         "Nov",
         "Dec"
     ],
-    "NEW_MAILS": "<@{{user.id}}>, You have **{{count}}** new mail(s)."
+    "NEW_MAILS": "📧 | <@{{user.id}}>, You have **{{count}}** new mail(s).",
+    "RPG_COOLDOWN": "You can use this command {{time}}",
+    "DEAD": "You are dead. Regenerate yourself first."
 }

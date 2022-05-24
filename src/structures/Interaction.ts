@@ -1,6 +1,6 @@
 import type { UserData, NPC } from '../@types';
 import JolyneClient from './Client';
-import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector, Collection, MessageButton, MessageSelectMenu, MessageActionRowComponentResolvable, MessageComponentInteraction } from 'discord.js';
+import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector, Collection, MessageButton, MessageSelectMenu, MessageActionRowComponentResolvable, MessageComponentInteraction, User } from 'discord.js';
 import { APIMessage } from 'discord-api-types';
 import * as Util from '../utils/functions';
 import * as NPCs from '../database/rpg/NPCs';
@@ -19,6 +19,10 @@ export default class InteractionCommandContext {
 
   get client(): JolyneClient {
     return this.interaction.client;
+  }
+
+  get author(): User {
+    return this.interaction.user;
   }
 
 
@@ -94,7 +98,6 @@ export default class InteractionCommandContext {
     const disabledComponents = interaction.components.map(c => {
       c.components.map(v => {
         v.disabled = true;
-        if (v.type) v.type = 2; // If it's a button: set color to grey
         return v;
       })
       return c;

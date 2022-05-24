@@ -1,5 +1,6 @@
-// Import Structures
+import type { UserData } from './@types';
 import JolyneClient from './structures/Client';
+import CommandInteractionContext from './structures/Interaction';
 import { Intents } from 'discord.js';
 import DJSLIGHT from 'discord.js-light';
 import Cluster from 'discord-hybrid-sharding';
@@ -9,6 +10,8 @@ import i18n from './structures/i18n';
 import * as Stands from './database/rpg/Stands';
 import * as Items from './database/rpg/Items';
 import * as Emojis from './emojis.json';
+import * as Util from './utils/functions';
+
 
 // Import types
 import type { SlashCommand, Event } from './@types';
@@ -51,7 +54,7 @@ async function init() {
     client.translations = await i18n();
     Object.keys(Stands).forEach((v) => {
         const stand = Stands[v as keyof typeof Stands];
-        // @ts-expect-error
+        // @ts-ignore
         Items[`${stand.name.replace(/ /gi, "_")}_Disc` as keyof typeof Items] = {
             id: `${stand.name}:disk`,
             name: `${stand.name} Disc`,
@@ -69,13 +72,44 @@ async function init() {
             storable: true,
             usable: true,
             emoji: Emojis.disk,
-            shop: 'Black Market'
+            shop: 'Black Market',
+            use: async (ctx: CommandInteractionContext, userData: UserData) => {
+                if (userData.stand) {
+                    ctx.makeMessage({
+                        content: `You already have a stand!`,
+                    });
+                    return false;
+                } 
+                await ctx.makeMessage({
+                    content: `${Emojis.disk}${stand.emoji} **${stand.name}**: ${stand.text.awakening_text}`,
+                    components: []
+                });
+                await Util.wait(3000);
+                userData.stand = stand.name;
+                ctx.client.database.saveUserData(userData);
+                await ctx.makeMessage({
+                    content: `${Emojis.disk}${stand.emoji} **${stand.name}**: ${stand.text.awaken_text}`
+                });
+                return true;
+            }
+    
         }    
     });
 
 
     const eventsFile = fs.readdirSync(path.resolve(__dirname, 'events')).filter(file => file.endsWith('.js'));
-    const commandsFile = fs.readdirSync(path.resolve(__dirname, 'commands')).filter(file => file.endsWith('.js'));
+    const categories = fs.readdirSync(path.resolve(__dirname, 'commands')).filter(file => !file.includes("."));
+
+    for (const category of categories) {
+        client.log(`Loading commands in category ${category}`, 'cmd');
+        const commandsFile = fs.readdirSync(path.resolve(__dirname, 'commands', category)).filter(file => file.endsWith('.js'));
+        for (const commandFile of commandsFile) {
+            const command: SlashCommand = await import(path.resolve(__dirname, 'commands', category, commandFile));
+            client.commands.set(command.name.toLowerCase(), command);
+            client.log(`Loaded command ${command.name}`, 'cmd');
+        }    
+    }
+
 
     for (const eventFile of eventsFile) {
         const event: Event = await import(path.resolve(__dirname, 'events', eventFile));
@@ -87,11 +121,6 @@ async function init() {
         client.log(`Loaded event ${event.name}`, 'event');
     }
 
-    for (const commandFile of commandsFile) {
-        const command: SlashCommand = await import(path.resolve(__dirname, 'commands', commandFile));
-        client.commands.set(command.name.toLowerCase(), command);
-        client.log(`Loaded command ${command.name}`, 'cmd');
-    }
 }
 
 init();

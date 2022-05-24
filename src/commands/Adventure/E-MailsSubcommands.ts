@@ -1,10 +1,10 @@
-import type { SlashCommand, UserData, Item, Mail } from '../@types';
+import type { SlashCommand, UserData, Item, Mail } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import * as Stands from '../database/rpg/Stands';
-import * as Util from '../utils/functions';
-import * as Emojis from '../emojis.json';
-import * as Items from '../database/rpg/Items';
+import InteractionCommandContext from '../../structures/Interaction';
+import * as Stands from '../../database/rpg/Stands';
+import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
+import * as Items from '../../database/rpg/Items';
 
 export const name: SlashCommand["name"] = "e-mails";
 export const category: SlashCommand["category"] = "adventure";
@@ -82,7 +82,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     }
                 }
                 ctx.interaction.followUp({
-                    content: `${!mail.archived ? "📤" : "📥"} | The email from **${mail.author.name}** (${mail.author.email}) has been ${mail.archived ? "unarchived" : "archived"}.`,
+                    content: `${!mail.archived ? "📤" : "📥"} | The email from **${mail.author.name}** (${mail.author.email}) has been ${mail.archived ? "archived" : "unarchived"}.`,
                 });
             }
             ctx.client.database.saveUserData(userData);
@@ -94,7 +94,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (userData.mails.filter(m => m.archived === showOnlyArchived).length === 0) {
             collector.stop();
             return ctx.makeMessage({
-                content: `📤 | You don't have any ${showOnlyArchived ? "archived" : "unarchived"} e-mails.`,
+                content: `📤 | You don't have any ${showOnlyArchived ? "unarchived" : "archived"} e-mails.`,
                 components: [],
                 embeds: []
             });
@@ -121,7 +121,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 author: { iconURL: ctx.interaction.user.displayAvatarURL({ dynamic: true }), name: `Inbox` },
                 color: "#70926c",
                 fields: fields,
-                description: `${emoji} You have ${mails.length} ${showOnlyArchived ? "archived" : "unarchived"} e-mails.`
+                description: `${emoji} You have ${mails.length} ${showOnlyArchived ? "unarchived" : "archived"} e-mails.`
             }],
             components: [Util.actionRow([ mailsSelection ])]
         });
@@ -188,7 +188,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             for (const quest of mail.chapter_quests) {
                 userData.chapter_quests.push(quest)
             }
-            mail.chapter_quests = undefined;
+            mail.chapter_quests = null;
         }
         if (saveData) {
             for (let i = 0; i < userData.mails.length; i++) {

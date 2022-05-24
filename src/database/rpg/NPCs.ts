@@ -1,5 +1,6 @@
 import type { NPC } from '../../@types';
 import * as Emojis from '../../emojis.json';
+import * as Items from './Items';
 import * as Stands from './Stands';
 
 export const Harry_Lester: NPC = {
@@ -42,7 +43,8 @@ export const Kakyoin: NPC = {
         xp: 1000,
         money: 500
     },
-    stand: Stands.Hierophant_Green["name"]
+    stand: Stands.Hierophant_Green["name"],
+    avatarURL: 'https://steamuserimages-a.akamaihd.net/ugc/921427477593480623/EA78387AF7B63E522A76CA04E2557C886C66300A/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'
 
 }
 
@@ -51,8 +53,8 @@ export const Security_Guard: NPC = {
     name: 'Security Guard',
     emoji: '💂',
     level: 1,
-    health: 150,
-    max_health: 150,
+    health: 50,
+    max_health: 50,
     stamina: 0,
     skill_points: {
         strength: 10,
@@ -206,8 +208,8 @@ export const Polnareff: NPC = {
     name: 'Jean-Pierre Polnareff',
     emoji: Emojis.Polnareff,
     level: 20,
-    health: 500,
-    max_health: 500,
+    health: 400,
+    max_health: 400,
     stamina: 300,
     skill_points: {
         strength: 20,
@@ -219,26 +221,169 @@ export const Polnareff: NPC = {
         xp: 10000,
         money: 10000
     },
-    stand: Stands.Silver_Chariot["name"]
+    stand: Stands.Silver_Chariot["name"],
+    avatarURL: 'https://pbs.twimg.com/media/EZq-yvPXkAQc6Bv.jpg'
 }
 
 export const Devo: NPC = {
     id: 'devo',
     name: 'Devo',
     emoji: Stands.Ebony_Devil["emoji"],
-    level: 10,
+    level: 2,
     health: 120,
     max_health: 120,
     stamina: 120,
     skill_points: {
-        strength: 5,
-        defense: 5,
-        perception: 5,
-        stamina: 5
+        strength: 2,
+        defense: 2,
+        perception: 2,
+        stamina: 2
     },
     fight_rewards: {
         xp: 1000,
-        money: 500
+        money: 500,
+        items: [
+            Items.Mysterious_Arrow
+        ]
     },
     stand: Stands.Ebony_Devil["name"],
+    avatarURL: 'https://static.wikia.nocookie.net/jojo/images/4/43/Devo_full_color.png/revision/latest?cb=20170315225526&path-prefix=es',
+    dialogues: {
+        lose: 'NOOOOOO PLEASE SPARE ME fsdmlgsdkgl!sdf42144242241! ! ! ! ! ! ! !',
+        win: 'LOL NOT EVEN HARD GET REKT BOZO L L L L L L'
+    }
 }
+
+export const Jotaro: NPC = {
+    id: 'jotaro',
+    name: 'Jotaro',
+    emoji: Emojis.jotaro,
+    level: 200,
+    health: 1500,
+    max_health: 1500,
+    stamina: 1500,
+    skill_points: {
+        strength: 200,
+        defense: 200,
+        perception: 200,
+        stamina: 200
+    },
+    fight_rewards: {
+        xp: 100000,
+        money: 100000
+    },
+    stand: Stands.Star_Platinum["name"],
+    dialogues: {
+        assault: "Yare Yare, I'll end this quickly.",
+        lose: "I'll be back!",
+        win: "... Too easy."
+    },
+    avatarURL: 'https://media.discordapp.net/attachments/971380591478059018/977503787629543474/unknown.png'
+}
+
+export const Dio: NPC = {
+    id: 'dio',
+    name: 'Dio',
+    emoji: Emojis.dio,
+    level: 200,
+    health: 1500,
+    max_health: 1500,
+    stamina: 1500,
+    skill_points: {
+        strength: 200,
+        defense: 200,
+        perception: 200,
+        stamina: 200
+    },
+    fight_rewards: {
+        xp: 100000,
+        money: 100000
+    },
+    stand: Stands.The_World["name"],
+    dialogues: {
+        assault: "WRYYYYYY!",
+        lose: "Wryy... I'LL BE BACK!",
+        win: "Not even hard..."
+    },
+    avatarURL: 'https://vignette.wikia.nocookie.net/jojo/images/d/d4/Dio_full_color.png/revision/latest?cb=20170315231205&path-prefix=es'
+}
+
+export const Normal_Citizen: NPC = {
+    id: 'normal_citizen',
+    name: 'Normal Citizen',
+    emoji: '👨‍🌾',
+    level: 1,
+    health: 50,
+    max_health: 50,
+    stamina: 50,
+    skill_points: {
+        strength: 1,
+        defense: 1,
+        perception: 1,
+        stamina: 1
+    },
+    fight_rewards: {
+        xp: 100,
+        money: 100
+    },
+    dialogues: {
+        assault: "Hey, you there!",
+        lose: "Why'd you do that?",
+        win: "Beware!"
+    }
+}
+
+export const Police_Officer: NPC = {
+    id: 'police_officer',
+    name: 'Police Officer',
+    emoji: '👮‍♂️',
+    level: 1,
+    health: 50,
+    max_health: 50,
+    stamina: 50,
+    skill_points: {
+        strength: 1,
+        defense: 1,
+        perception: 1,
+        stamina: 1
+    },
+    fight_rewards: {
+        xp: 100,
+        money: 100
+    },
+    dialogues: {
+        assault: "Hey, you there!",
+        lose: "Justice won't lose!",
+        win: "Justice won."
+    }
+}
+
+export const Mysterious_Stand_User: NPC = {
+    id: 'mysterious_stand_user',
+    name: 'Mysterious Stand User',
+    emoji: '🧙‍♂️',
+    level: 10,
+    health: 100,
+    max_health: 100,
+    stamina: 100,
+    skill_points: {
+        strength: 10,
+        defense: 10,
+        perception: 10,
+        stamina: 10
+    },
+    fight_rewards: {
+        xp: 1200,
+        money: 3000
+    },
+    dialogues: {
+        assault: "...",
+        lose: "...",
+        win: "..."
+    },
+    stand: (() => {
+        const stands = Object.values(Stands)
+        return stands[Math.floor(Math.random() * stands.length)].name
+    })()
+}
+

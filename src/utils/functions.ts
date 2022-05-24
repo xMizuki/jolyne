@@ -1,4 +1,4 @@
-import type { UserData, Quest, NPC, Stand, Item, Ability } from '../@types';
+import type { UserData, Quest, NPC, Stand, Item, Ability, Mail } from '../@types';
 import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageActionRow, ColorResolvable } from 'discord.js';
 import moment from 'moment-timezone';
 import * as Items from '../database/rpg/Items';
@@ -170,7 +170,7 @@ export const isNPC = function isNPC(crusader: NPC | UserData): crusader is NPC {
     return (crusader as NPC).emoji !== undefined;
 }
 
-export const isItem = function isItem(item: Item): item is Item {
+export const isItem = function isItem(item: any): item is Item {
     return (item as NPC).id !== undefined;
 }
 
@@ -218,10 +218,12 @@ ${Object.keys(stand.skill_points).map(r =>  `  • +${stand.skill_points[r as ke
 
 export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData: UserData | NPC): number {
     const userATKDMG = calcATKDMG(userData);
+    /*
     if (ability.damages === 0) return 0;
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
-    return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));
+    return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
+    return  (userATKDMG / 45 * ability.damages) + ability.damages
 }
 
 export const randomFood = function getRandomFood(): Item {
@@ -255,3 +257,45 @@ export const makeNPCString = function makeNPCString(npc: NPC, emoji?: string): s
     return `${emoji ?? npc.emoji} **${npc.name}**:`;
   }
   
+  export const shuffle = function shuffle(array: any[]) {
+    let currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+
+export const isQuest = function isQuest(item: any): item is Quest {
+    return (item as Quest).id !== undefined && ((item as Quest).completed !== undefined || (item as Quest).i18n !== undefined || (item as Quest).total !== undefined || (item as Quest).npc !== undefined);
+}
+
+export const isQuestArray = function isQuestArray(item: any): item is Quest[] {
+    return item instanceof Array && (item as Quest[]).every(i => isQuest(i));
+}
+
+export const isMail = function isMail(item: any): item is Mail {
+    return (item as Mail).id !== undefined && (item as Mail).author !== undefined;
+}
+
+export const isMailArray = function isMailArray(item: any): item is Mail[] {
+    return item instanceof Array && (item as Mail[]).every(i => isMail(i));
+}
+
+export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'REMAINS' | 'DATE' | 'FULL_DATE'): string {
+    const fixedDate = typeof date === "number" ? new Date(date) : date;
+    return `<t:${(fixedDate.getTime() / 1000).toFixed(0)}:${type
+        .replace('REMAINS', 'R')
+        .replace('DATE', 'D')
+        .replace('FULL_D', 'F')}>`;
+}

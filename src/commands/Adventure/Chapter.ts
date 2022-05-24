@@ -1,11 +1,11 @@
-import type { SlashCommand, UserData, Item } from '../@types';
+import type { SlashCommand, UserData, Item } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import type { Quest, Chapter } from '../@types';
-import * as Util from '../utils/functions';
-import * as Chapters from '../database/rpg/Chapters';
-import * as Emojis from '../emojis.json';
-import * as Quests from '../database/rpg/Quests';
+import InteractionCommandContext from '../../structures/Interaction';
+import type { Quest, Chapter } from '../../@types';
+import * as Util from '../../utils/functions';
+import * as Chapters from '../../database/rpg/Chapters';
+import * as Emojis from '../../emojis.json';
+import * as Quests from '../../database/rpg/Quests';
 
 export const name: SlashCommand["name"] = "chapter";
 export const category: SlashCommand["category"] = "adventure";
@@ -129,7 +129,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
                 userData.chapter++;
                 const currentChapter = getUserChapter();
-                if (!currentChapter) { // This chapter was the last developed chapter
+                if (!currentChapter || !Quests.adapt(userData, currentChapter)[userData.chapter as keyof typeof Quests.adapt]) { // This chapter was the last developed chapter
                     ctx.followUp({
                         content: "This chapter is currently the last, the developers are working hard to add more chapters.",
                         ephemeral: true
@@ -160,7 +160,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         userData.mails.push(mail);
                     }
                 }
-                if (currentChapter.items?.length !== 0) {
+                if (currentChapter.items && currentChapter.items.length !== 0) {
                     for (const item of currentChapter.items) {
                         items.push(item);
                         userData.items.push(item.id);
@@ -190,6 +190,30 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     }
     function getUserChapter(): Chapter {
         return Object.keys(Chapters).map(c => Chapters[c as keyof typeof Chapters]).find(c => c.id === userData.chapter);
+    }
+    function makeChapterTitle(chapter: Chapter): string {
+        const part = getChapterPart(chapter);
+        if (chapter.parent) return `**:trident: Chapter \`${Util.romanize(chapter.parent.id)} - Part ${Util.romanize(part)}\`**: ${chapter.title[userData.language]}`;
+        else if (Object.keys(Chapters).map(c => Chapters[c as keyof typeof Chapters]).filter(c => c.parent === chapter).length !== 0) return `**:trident: Chapter \`${Util.romanize(part)} - Part I\`**: ${chapter.title[userData.language]}`;
+        else return `**:trident: Chapter \`${Util.romanize(part)}\`**: ${chapter.title[userData.language]}`;
+    }
+    function getChapterPart(chapter: Chapter): number {
+        let ld: number = Object.keys(Chapters).map(c => Chapters[c as keyof typeof Chapters]).filter(c => c.parent && c.parent === chapter).length;
+        let result: number = 0;
+        if (ld !== 0) result = chapter.id - Object.keys(Chapters).map(c => Chapters[c as keyof typeof Chapters]).filter(c => c.id <= chapter.id && c.parent).length - ld;
+        else if (chapter.parent) {
+            const parentPart = getChapterPart(chapter.parent);
+            result = parentPart + (parentPart - chapter.id)
+
+        }
+        return result;
+    }
+    function nextChapterId(): number {
+        const chapterIdArray = Object.keys(Chapters).map(c => Chapters[c as keyof typeof Chapters]).map(c => c.id);
+        const chapterIdArraySorted = chapterIdArray.sort((a, b) => a - b);
+        const chapterIdArraySortedFiltered = chapterIdArraySorted.filter(c => c > userData.chapter);
+        if (chapterIdArraySortedFiltered.length === 0) return undefined;
+        return chapterIdArraySortedFiltered[0];
     }
 
 };
