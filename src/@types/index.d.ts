@@ -85,6 +85,10 @@ interface DiscordSlashCommandsData {
   | 5
   | 6
   options?: DiscordSlashCommandsData[]
+  choices?: {
+    name: string,
+    value: string
+  }[]
 }
 
 /**

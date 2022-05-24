@@ -56,7 +56,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             dUnix: Util.generateDiscordTimestamp(userData.adventureat, 'DATE') //`<t:${(userData.adventureat/1000).toFixed(0)}:D>`,
         }))
         .addField("Player Infos", `:heart: HP: ${Util.localeNumber(userData.health)}/${Util.localeNumber(userData.max_health)}\n:zap: Stamina: ${Util.localeNumber(userData.stamina)}/${Util.localeNumber(userData.max_stamina)}`, true)
-        .addField("Rank", `:globe_with_meridians: \`${userGlobalPosition}\`/\`${rows.length}\`\n⚔️: \`${userRankedPosition}\`/\`${rows.length}\`\n${Emojis.jocoins}: \`${userMoneyPosition}\`/\`${rows.length}\``, true)
+        .addField("Rank", `:globe_with_meridians: \`${userGlobalPosition}\`/\`${rows.length}\`\n⚔️ \`${userRankedPosition}\`/\`${rows.length}\`\n${Emojis.jocoins} \`${userMoneyPosition}\`/\`${rows.length}\``, true)
         .setColor(color)
         .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${Util.localeNumber(userData.money)}`, true)
         .addField("Combat Infos", `:crossed_swords: ATK Damages: ${Util.getATKDMG(userData)}\n🍃 Dodge Chances: ~${userData.dodge_chances}%`, true)

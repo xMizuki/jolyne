@@ -110,9 +110,9 @@ export default class InteractionCommandContext {
     clearTimeout(this._timeoutCollector);
     if (!collectorsCache.has(collector.messageId)) {
       collectorsCache.set(collector.messageId, collector.messageId);
-      collector.on('end', async () => {
+      collector.on('end', async (reason: string) => {
         collectorsCache.delete(collector.messageId);
-        if (!disableComponents) this.disableInteractionComponents()
+        if (!disableComponents || (reason && !reason.includes('DONT_DISABLE_COMPONENTS'))) this.disableInteractionComponents()
       });
     }
     return this._timeoutCollector = setTimeout(async () => {
@@ -135,6 +135,10 @@ export default class InteractionCommandContext {
     translateVars.npc = NPCStrings;
     if (this.interaction.options.getUser("user")) translateVars.user_option = this.interaction.options.getUser("user");
     return this.client.translations.get(this.client.database.languages.get(`${this.interaction.guild?.id}`) || 'en-US')(text, translateVars) || text;
+  }
+  translateObject(text: string, translateVars: any = {}): any[] {
+    translateVars.returnObjects = true;
+    return (this.translate(text, translateVars) as any);
   }
   convertMs(milliseconds: number): string {
     const and = this.translate("base:AND");
