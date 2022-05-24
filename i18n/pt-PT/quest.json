@@ -54,5 +54,9 @@
     "GO_TO_AIRPORT": {
         "TITLE": "Get to the airport",
         "DESCRIPTION": "Find a taxi that goes to the Morioh's International Airport"
+    },
+    "REMOVE_FLESHBUD_POLNAREFF": {
+        "TITLE": "Remove the fleshbud",
+        "DESCRIPTION": "Remove the fleshbud on the head of the polnareff"
     }
 }
