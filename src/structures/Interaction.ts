@@ -1,7 +1,14 @@
+import type { UserData, NPC } from '../@types';
 import JolyneClient from './Client';
-import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector, Collection, MessageButton, MessageSelectMenu, MessageActionRowComponentResolvable } from 'discord.js';
+import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, InteractionCollector, Collection, MessageButton, MessageSelectMenu, MessageActionRowComponentResolvable, MessageComponentInteraction, User } from 'discord.js';
 import { APIMessage } from 'discord-api-types';
 import * as Util from '../utils/functions';
+import * as NPCs from '../database/rpg/NPCs';
+const NPCArray = Object.keys(NPCs).map(n => NPCs[n as keyof typeof NPCs]);
+const NPCStrings: any = {};
+for (const NPC of NPCArray) {
+  NPCStrings[NPC.id] = Util.makeNPCString(NPC);
+}
 const collectorsCache: Collection<string, string> = new Collection();
 
 export default class InteractionCommandContext {
@@ -12,6 +19,10 @@ export default class InteractionCommandContext {
 
   get client(): JolyneClient {
     return this.interaction.client;
+  }
+
+  get author(): User {
+    return this.interaction.user;
   }
 
 
@@ -87,7 +98,6 @@ export default class InteractionCommandContext {
     const disabledComponents = interaction.components.map(c => {
       c.components.map(v => {
         v.disabled = true;
-        if (v.type) v.type = 2; // If it's a button: set color to grey
         return v;
       })
       return c;
@@ -111,10 +121,18 @@ export default class InteractionCommandContext {
     }, time);
 
   }
+  async componentAntiCheat(i: MessageComponentInteraction, userData: UserData): Promise<boolean> {
+    const currentData = await this.client.database.getUserData(userData.id);
+    if (!currentData) return true;
+    if (await this.client.database.getCooldownCache(currentData.id)) return true;
+    userData = currentData;
+    return false;
+  }
 
   translate(text: string, translateVars: any = {}): string {
     translateVars.emojis = this.client._emojis;
     translateVars.user = this.interaction.user;
+    translateVars.npc = NPCStrings;
     if (this.interaction.options.getUser("user")) translateVars.user_option = this.interaction.options.getUser("user");
     return this.client.translations.get(this.client.database.languages.get(`${this.interaction.guild?.id}`) || 'en-US')(text, translateVars) || text;
   }

@@ -1,10 +1,10 @@
-import type { SlashCommand, UserData, Item } from '../@types';
+import type { SlashCommand, UserData, Item } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import * as Stands from '../database/rpg/Stands';
-import * as Util from '../utils/functions';
-import * as Emojis from '../emojis.json';
-import * as Items from '../database/rpg/Items';
+import InteractionCommandContext from '../../structures/Interaction';
+import * as Stands from '../../database/rpg/Stands';
+import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
+import * as Items from '../../database/rpg/Items';
 
 export const name: SlashCommand["name"] = "items";
 export const category: SlashCommand["category"] = "adventure";
@@ -24,7 +24,7 @@ export const data: SlashCommand["data"] = {
             autocomplete: true
         }, {
             type: 4,
-            name: 'uses',
+            name: 'quantity',
             description: 'How much times would you like to use the item?',
             required: false
         }]
@@ -91,10 +91,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     value: betterTrueFalse(item.tradable),
                     inline: true
                 }, {
-                    name: "Buyable in shop?",
-                    value: item.shop ? `Yes: ${item.shop}` : ":x:",
-                    inline: true
-                }, {
                     name: "Value",
                     value: item.cost ? Util.localeNumber(item.cost) + " " + Emojis.jocoins : "None"
                 }
@@ -110,12 +106,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (userItems.length === 0) return ctx.sendT("base:NO_ITEMS");
         const item = Util.getItem(ctx.interaction.options.getString("item").split("(")[0].trim());
         if (!item) return ctx.makeMessage({ content: "NO WAT!!!"})
-        const uses = ctx.interaction.options.getInteger("uses") ?? 1;
-        if (uses > userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length) return ctx.makeMessage({ content: `You don't have ${uses} ${item.emoji} ${item.name}, but ${userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length}` });
+        const quantity = ctx.interaction.options.getInteger("quantity") ? (ctx.interaction.options.getInteger("quantity") === 0 ? 1 : ctx.interaction.options.getInteger("quantity")) : 1;
+        if (quantity > userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length) return ctx.makeMessage({ content: `You don't have ${quantity} ${item.emoji} ${item.name}, but ${userData.items.filter((r: string) => Util.getItem(r)?.name === item.name).length}` });
         if (item.type === "consumable") {
             const changed: any = {};
-            for (let i = 0; i < uses; i ++) {
-                Util.removeItem(userData.items, item.id as string);
+            for (let i = 0; i < quantity; i ++) {
+                Util.removeItem(userData.items, item.id);
                 Object.keys(item.benefits).forEach((v) => {
                     const oldValue = userData[v as keyof typeof userData];
                     // We add the value to the user data
@@ -124,26 +120,33 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     // We check if the value is over the max value
                     // @ts-expect-error Cannot assign to 'id' because it is a read-only property.ts(2540), WHILE v CAN'T BE ID SMH
                     if (userData[`max_${v}` as keyof typeof userData] && userData[`max_${v}` as keyof typeof userData] < userData[v as keyof typeof userData]) userData[v as keyof typeof userData] = userData[`max_${v}` as keyof typeof userData];
+                    // We check if the value is < 0
+                    // @ts-expect-error Cannot assign to 'id' because it is a read-only property.ts(2540), WHILE v CAN'T BE ID SMH
+                    if (userData[`max_${v}` as keyof typeof userData] && userData[`max_${v}` as keyof typeof userData] < 0) userData[v as keyof typeof userData] = 0;
+
                     if (!changed[v]) changed[v] = 0;
                     // @ts-expect-error
                     changed[v] += (userData[v as keyof typeof userData] - oldValue);
                 });
             }
             ctx.makeMessage({
-                content: `You used x${uses} **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `+${changed[v]} ${v}`).join(", ")}`,
+                content: `You used x${quantity} **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `${changed[v] < 0 ? '-' : '+'}${changed[v]} ${v}`).join(", ")}`,
             })
 
-        } else if (item.type === "arrow") {
+        } else if (item.type === "arrow" || item.type === "disc") {
             const response = await item.use(ctx, userData);
-            if (response) Util.removeItem(userData.items, item.id as string);    
+            if (response) Util.removeItem(userData.items, item.id);    
         } else {
-            for (let i = 0; i < uses; i ++) {
-                console.log(uses > 2 ? true : false, uses-i);
-                const response = await item.use(ctx, userData, (uses > 2 ? true : false), uses-i);
-                if (response) Util.removeItem(userData.items, item.id as string);    
+            ctx.client.database.setCooldownCache("cooldown", userData.id)
+            for (let i = 0; i < quantity; i ++) {
+                console.log(quantity > 2 ? true : false, quantity-i);
+                const response = await item.use(ctx, userData, (quantity > 2 ? true : false), quantity-i);
+                if (response) Util.removeItem(userData.items, item.id);    
                 else break; // an error occured, so we stop
                 await Util.wait(2000);
             }
+            ctx.client.database.delCooldownCache("cooldown", userData.id)
+
         }
         ctx.client.database.saveUserData(userData);
                 

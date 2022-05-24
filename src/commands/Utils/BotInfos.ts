@@ -1,7 +1,7 @@
-import type { SlashCommand, UserData } from '../@types';
+import type { SlashCommand, UserData } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, MessageAttachment } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import { localeNumber } from '../utils/functions';
+import InteractionCommandContext from '../../structures/Interaction';
+import { localeNumber } from '../../utils/functions';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 
 export const name: SlashCommand["name"] = "infos";
@@ -15,13 +15,13 @@ export const data: SlashCommand["data"] = {
 
 const width = 800;
 const height = 300;
-const ticksOptions: any[] = [{
+const ticksOptions = [{
     ticks: {
         fontColor: "white",
         fontStyle: "bold"
     }
 }];
-const options: any = {
+const options = {
     legend: {
         display: false
     },
@@ -103,7 +103,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (cachedUser.adventureat) user.push(cachedUser);
     }
     user = user.sort((a: UserData, b: UserData) => b.adventureat - a.adventureat);
-    let days: any[] = [];
+    let days: {
+        count: number,
+        date: `${number} ${string}`
+    }[] = [];
     const m: any = ctx.translate("base:SMALL_MONTHS", {
         returnObjects: true
     });

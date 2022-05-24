@@ -1,11 +1,22 @@
-import type { Mail, Quest, QuestNPC, Chapter } from '../../@types';
+import type { Mail, Quest, Chapter, NPC } from '../../@types';
 import * as Emojis from '../../emojis.json';
 import * as Items from './Items';
 import * as NPCs from './NPCs';
 import * as Quests from './Quests';
 
+const Defeat = (npc: NPC) : Quest => {
+    return {
+        id: 'defeat:' + npc.id,
+        npc: {
+            ...npc,
+            max_health: npc.health,
+            max_stamina: npc.stamina
+        }
+    }
+}
+
 export const P1C1_GP: Mail = {
-    id: "p1c1_gp",
+    id: "p1c2:gp",
     author: NPCs.Harry_Lester,
     object: "My granson...",
     content: "I hope you are doing well! We haven't seen each other for 2 years now. I hope that since you entered high school you have not had any problems and that you are doing well. If you have any problems, don't hesitate to see me! (especially for problems in fighting, don't forget how strong I am). Oh and, look at your balance, I made you a surprise! Good luck with your studies!\n\nTake care!",
@@ -58,15 +69,15 @@ BTW today some **bandits** attacked my sister, but I can't do anything since i'm
     date: Date.now(),
     footer: 'DONT LOSE OR ELSE ILL KILL YOU!1!111!1',
     chapter_quests: [
-        Quests.Defeat(NPCs.Weak_Bandit),
-        Quests.Defeat(NPCs.Weak_Bandit),
-        Quests.Defeat(NPCs.Weak_Bandit),
-        Quests.Defeat(NPCs.Weak_Bandit),
-        Quests.Defeat(NPCs.Weak_Bandit),
-        Quests.Defeat(NPCs.Strong_Bandit),
-        Quests.Defeat(NPCs.Strong_Bandit),
-        Quests.Defeat(NPCs.Strong_Bandit),
-        Quests.Defeat(NPCs.Bandit_Boss)
+        Defeat(NPCs.Weak_Bandit),
+        Defeat(NPCs.Weak_Bandit),
+        Defeat(NPCs.Weak_Bandit),
+        Defeat(NPCs.Weak_Bandit),
+        Defeat(NPCs.Weak_Bandit),
+        Defeat(NPCs.Strong_Bandit),
+        Defeat(NPCs.Strong_Bandit),
+        Defeat(NPCs.Strong_Bandit),
+        Defeat(NPCs.Bandit_Boss)
     ],
     prize: {
         items: [
@@ -90,3 +101,34 @@ BTW today some **bandits** attacked my sister, but I can't do anything since i'm
     archived: false
 }
 
+export const P1C2_SPEEDWAGON_DIO_HAIR: Mail = {
+    author: NPCs.SPEEDWAGON_FOUNDATION,
+    id: "p1c2:speedwagon_diohair",
+    object: "Analysis completed.",
+    content: `Hello **{{userName}}** ,\n\Thank you for bringing us this hair. This hair is from a criminal named "Dio". You can see what this Dio looks like just below the email (attachments). If you ever see this Dio again (even if it is impossible), please contact us immediately.
+(Picture of DIO)`,
+    archived: false,
+    image: "https://cdn.discordapp.com/attachments/930147452579889152/942118200043245619/Photo_de_Dio.png",
+    emoji: "📧",
+    date: Date.now(),
+    footer: "Sincerely, THE SPEEDWAGON FOUNDATION"
+}
+
+const Go_To_Airport: Quest = {
+    id: "action:gotoairport",
+    i18n: "GO_TO_AIRPORT",
+    emoji: "🚕",
+    completed: false
+}
+export const GF_MDIO: Mail = {
+    author: NPCs.Harry_Lester,
+    id: "gf:mdio",
+    object: "Dio..",
+    content: `My grandson... So Dio was not dead...
+Well, at least you're okay. We have to do something as soon as possible, humanity is in danger, we have to get rid of him. I am waiting for you at the airport of Morioh with your friend Kakyoin, don't tell me how I got him here, come quickly find us, I am accompanied by a very strong man...`,
+    archived: false,
+    emoji: "📧",
+    date: Date.now(),
+    footer: "DONT DIE!!!!",
+    chapter_quests: [Go_To_Airport]
+}

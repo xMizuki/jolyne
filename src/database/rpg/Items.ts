@@ -19,8 +19,7 @@ export const Pizza: Item = {
   emoji: Emojis.complete_pizza,
   benefits: {
     health: 75,
-  },
-  shop: "Tonio Trussardi's Restaurant"
+  }
 };
 
 export const Spaghetti_Bowl: Item = {
@@ -37,8 +36,7 @@ export const Spaghetti_Bowl: Item = {
   benefits: {
     health: 200,
     stamina: 30,
-  },
-  shop: "Tonio Trussardi's Restaurant"
+  }
 };
 
 export const Salad_Bowl: Item = {
@@ -55,8 +53,7 @@ export const Salad_Bowl: Item = {
   benefits: {
     health: 50,
     stamina: 50
-  },
-  shop: "Tonio Trussardi's Restaurant"
+  }
 };
 
 export const Slice_Of_Pizza: Item = {
@@ -72,8 +69,7 @@ export const Slice_Of_Pizza: Item = {
   emoji: "🍕",
   benefits: {
     health: 10,
-  },
-  shop: "Tonio Trussardi's Restaurant"
+  }
 };
 
 export const Mysterious_Arrow: Item = {
@@ -90,9 +86,8 @@ export const Mysterious_Arrow: Item = {
   benefits: {
     stand: 'random'
   },
-  shop: "Black Market",
   use: async (ctx: CommandInteractionContext, userData: UserData) => {
-    const StandsArray: Stand[] = Object.keys(Stands).filter(r => Stands[r as keyof typeof Stands].available).map(r => Stands[r as keyof typeof Stands]);
+    const StandsArray: Stand[] = Object.keys(Stands).map(r => Stands[r as keyof typeof Stands]).filter(s => s.available);
     const percent: number = Util.getRandomInt(0, 100);
     if (userData.stand) {
       await ctx.sendT("items:MYSTERIOUS_ARROW.ALREADY_STAND", {
@@ -165,8 +160,7 @@ export const Cola: Item = {
   emoji: Emojis.cola,
   benefits: {
     stamina: 35
-  },
-  shop: "Grocery Store"
+  }
 };
 
 export const Candy: Item = {
@@ -182,8 +176,7 @@ export const Candy: Item = {
   emoji: '🍬',
   benefits: {
     stamina: 5
-  },
-  shop: "Grocery Store"
+  }
 };
 
 export const Sandwich: Item = {
@@ -200,9 +193,8 @@ export const Sandwich: Item = {
   benefits: {
     stamina: 10,
     health: 10
-  },
-  shop: "Grocery Store"
-};
+  }
+}
 
 export const Yellow_Hair: Item = {
   id: "yellow_hair",
@@ -243,8 +235,7 @@ export const Ancient_Scroll: Item = {
   tradable: true,
   storable: true,
   usable: false,
-  emoji: '📜',
-  shop: "Black Market"
+  emoji: '📜'
 }
 
 export const Diamond: Item = {
@@ -257,8 +248,7 @@ export const Diamond: Item = {
   tradable: true,
   storable: true,
   usable: false,
-  emoji: '💎',
-  shop: "Black Market"
+  emoji: '💎'
 }
 
 export const Burger: Item = {
@@ -275,8 +265,7 @@ export const Burger: Item = {
   benefits: {
     health: 70,
     stamina: 15
-  },
-  shop: "Grocery Store"
+  }
 }
 
 export const Box: Item = {
@@ -423,7 +412,55 @@ export const Chocolate_Bar: Item = {
   emoji: '🍫',
   benefits: {
     stamina: 10
-  },
-  shop: 'Grocery Store'
+  }
 }
+
+export const Dead_Rat: Item = {
+  id: "dead_rat",
+  name: "Dead Rat",
+  description: "A dead rat",
+  type: "consumable",
+  cost: 5,
+  tradable: true,
+  storable: true,
+  usable: true,
+  emoji: '🐀',
+  benefits: {
+    health: -500,
+    stamina: -500
+  }
+}
+
+export const Jotaro_Hat: Item = {
+  id: "jotaro_hat",
+  name: "Jotaro's Hat",
+  description: "Jotaro's lost hat",
+  type: "cloth",
+  cost: 5000000,
+  tradable: true,
+  storable: true,
+  usable: false,
+  emoji: Emojis.jotaroHat,
+  cloth_bonuses: {
+    health: 500,
+    stamina: 500
+  }
+}
+
+export const Ramen_Bowl: Item = {
+  id: "ramen_bowl",
+  name: "Ramen Bowl",
+  description: "A bowl of ramen",
+  type: "consumable",
+  cost: 1500,
+  tradable: false,
+  storable: false,
+  usable: true,
+  emoji: '🍜',
+  benefits: {
+    health: 170,
+    stamina: 100
+  }
+}
+
 

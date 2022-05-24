@@ -1,11 +1,11 @@
-import type { SlashCommand, UserData, Quest } from '../@types';
+import type { SlashCommand, UserData, Quest } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import * as Stands from '../database/rpg/Stands';
-import * as Util from '../utils/functions';
-import * as Emojis from '../emojis.json';
-import * as Quests from '../database/rpg/Quests';
-import * as Actions from '../database/rpg/Actions';
+import InteractionCommandContext from '../../structures/Interaction';
+import * as Stands from '../../database/rpg/Stands';
+import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
+import * as Quests from '../../database/rpg/Quests';
+import * as Actions from '../../database/rpg/Actions';
 
 export const name: SlashCommand["name"] = "action";
 export const category: SlashCommand["category"] = "adventure";

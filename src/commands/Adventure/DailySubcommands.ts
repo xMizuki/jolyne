@@ -1,10 +1,10 @@
-import type { SlashCommand, UserData, Item } from '../@types';
+import type { SlashCommand, UserData, Item } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
-import InteractionCommandContext from '../structures/Interaction';
-import * as Stands from '../database/rpg/Stands';
-import * as Util from '../utils/functions';
-import * as Emojis from '../emojis.json';
-import * as Items from '../database/rpg/Items';
+import InteractionCommandContext from '../../structures/Interaction';
+import * as Stands from '../../database/rpg/Stands';
+import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
+import * as Items from '../../database/rpg/Items';
 
 export const name: SlashCommand["name"] = "daily";
 export const category: SlashCommand["category"] = "adventure";
@@ -28,12 +28,12 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    const dateAtMidnight = new Date(new Date().setHours(0, 0, 0, 0));
-    const nextDate = new Date(dateAtMidnight.getTime() + 86400000);
+    const dateAtMidnight = new Date().setHours(0, 0, 0, 0);
+    const nextDate = dateAtMidnight + 86400000;
     if (ctx.interaction.options.getSubcommand() === "claim") {
-        if (userData.daily.claimedAt == dateAtMidnight.getTime()) {
+        if (userData.daily.claimedAt == dateAtMidnight) {
             return ctx.sendT("daily:ALREADY_CLAIMED", {
-                time: ctx.convertMs(nextDate.getTime() - Date.now())
+                time: ctx.convertMs(nextDate - Date.now())
             });
         }
         let rewards = {
@@ -46,10 +46,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         };
         if (rewards.money > 6000) rewards.money = 6000;
         // check if the user last daily was claimed after 2 days
-        if (userData.daily.claimedAt >= (dateAtMidnight.getTime() - 86400000)) {
+        if (userData.daily.claimedAt >= (dateAtMidnight - 86400000)) {
             userData.daily.streak = 0;
         }
-        userData.daily.claimedAt = dateAtMidnight.getTime();
+        userData.daily.claimedAt = dateAtMidnight;
         userData.daily.streak++;
         let goal: number = userData.daily.streak;
         // Set the user's daily goal
@@ -78,7 +78,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setFooter({ text: ctx.translate("daily:CLAIMED_EMBED_FOOTER") + ` ${userData.daily.streak}/${goal}`})
             .addField("Want more?", "Vote for me by using the \`/vote\` command.");
         if (userData.daily.streak % 7 === 0) {
-            const arrow = Util.getItem("Mysterious_Arrow")
+            const arrow = Items.Mysterious_Arrow;
             let arrows: number = 0;
             for (let i = userData.daily.streak; i > 0; i -= 7) {
                 arrows++;
@@ -89,6 +89,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             embed.addField("Streak Bonus", `\`x${arrows} ${arrow.name}\` ${arrow.emoji}`);
         }
+        Util.incrQuestTotal(userData, "cdaily", "chapter");
+        Util.incrQuestTotal(userData, "cdaily", "daily");
         await ctx.client.database.saveUserData(userData);
         ctx.interaction.reply({ embeds: [embed] });
     

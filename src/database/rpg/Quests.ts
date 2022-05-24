@@ -1,6 +1,7 @@
-import type { Quest, UserData, QuestNPC, Chapter, NPC } from '../../@types';
+import type { Quest, UserData, Chapter, NPC, Mail } from '../../@types';
 import * as Emojis from '../../emojis.json';
 import * as Util from '../../utils/functions';
+import * as Mails from './Mails';
 
 export const Analyse_Hair: Quest = {
     id: "action:analyse_hair",
@@ -8,6 +9,35 @@ export const Analyse_Hair: Quest = {
     emoji: "📧",
     completed: false
 };
+
+export const Tell_Your_Grandfather_About_DIO: Quest = {
+    id: "action:tygad",
+    i18n: "TYGAD",
+    emoji: "📧",
+    completed: false
+};
+
+
+export const SPEEDWAGON_ANSWER: Quest = {
+    id: "wait:speedwagon_answer",
+    i18n: "SPEEDWAGON_ANSWER",
+    timeout: Date.now() + ((60000 * 30)),
+    mails_push_timeout: [
+        Mails.P1C2_SPEEDWAGON_DIO_HAIR
+    ],
+    completed: false
+}
+
+export const TYGAD_ANSWER: Quest = {
+    id: "wait:gfad",
+    i18n: "TYGAD_ANSWER",
+    timeout: Date.now() + ((60000 * 10)),
+    mails_push_timeout: [
+        Mails.GF_MDIO
+    ],
+    mustRead: true,
+    completed: false
+}
 
 export const Remove_Thing_Kakyoin: Quest = {
     id: "action:remove_thing_kakyoin",
@@ -39,9 +69,9 @@ export const Awaken_Stand: Quest = {
 };
 
 
-export const LootCoins = (cc: number) => {
+export const LootCoins = (amount: number) => {
     const LootQuest: Quest = {
-        id: "loot:" + cc,
+        id: "loot:" + amount,
         total: 0,
         i18n: "LOOT_COINS",
         emoji: Emojis.jocoins,
@@ -51,9 +81,9 @@ export const LootCoins = (cc: number) => {
     return LootQuest;
 };
 
-export const ClaimDaily = (cc: number) => {
+export const ClaimDaily = (amount: number) => {
     const ClaimDaily: Quest = {
-        id: "cdaily:" + cc,
+        id: "cdaily:" + amount,
         i18n: "CLAIM_DAILY",
         total: 0,
         completed: false
@@ -61,9 +91,9 @@ export const ClaimDaily = (cc: number) => {
     return ClaimDaily;
 };
 
-export const ClaimCoins = (cc: number) => {
+export const ClaimCoins = (amount: number) => {
     const ClaimCoins: Quest = {
-        id: "cc:" + cc,
+        id: "cc:" + amount,
         i18n: "CLAIM_COINS",
         total: 0,
         completed: false
@@ -71,9 +101,9 @@ export const ClaimCoins = (cc: number) => {
     return ClaimCoins;
 };
 
-export const UseLoot = (cc: number) => {
+export const UseLoot = (amount: number) => {
     const UseLoot: Quest = {
-        id: "lloot:" + cc,
+        id: "lloot:" + amount,
         i18n: "USE_LOOT",
         total: 0,
         completed: false
@@ -81,9 +111,9 @@ export const UseLoot = (cc: number) => {
     return UseLoot;
 };
 
-export const Assault = (cc: number) => {
+export const Assault = (amount: number) => {
     const AssaultQuest: Quest = {
-        id: "assault:" + cc,
+        id: "assault:" + amount,
         i18n: "USE_ASSAULT",
         total: 0,
         completed: false
@@ -91,7 +121,7 @@ export const Assault = (cc: number) => {
     return AssaultQuest;
 };
 
-export const getStatus = function getQuestStatus(quest: QuestNPC | Quest, userData: UserData): number {
+export const getStatus = function getQuestStatus(quest: Quest, userData: UserData): number {
     if (quest.id.startsWith("defeat") || quest.id.startsWith("action")) {
         if (quest.completed) return 100;
         else if (quest.health && quest.health === 0) return 100;
@@ -105,7 +135,13 @@ export const getStatus = function getQuestStatus(quest: QuestNPC | Quest, userDa
     if (quest.id === "getstand") {
         if (userData.stand) return 100;
         else return 0;
-    } 
+    }
+    if (quest.id.startsWith("wait")) {
+        if (quest.timeout < Date.now()) return 100;
+        else return 0;
+    }
+    else if (quest.completed) return 100;
+    else return 0;
 };
 
 export const validate = function validateQuest(quests: Quest[], id: string) {
@@ -126,12 +162,14 @@ export const adapt = function adaptQuest(userData: UserData, UserChapter: Chapte
         2: `**:trident: Chapter \`${Util.romanize(userData.chapter)}\`**: ${UserChapter.title[userData.language]}`,
         3: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(1)}\`**: ${UserChapter.title[userData.language]}`,
         4: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(2)}\`**: ${UserChapter.title[userData.language]}`,
-        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,    
+        5: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(3)}\`**: ${UserChapter.title[userData.language]}`,
+        6: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(4)}\`**: ${UserChapter.title[userData.language]}`,    
+        7: `**:trident: Chapter \`${Util.romanize(3)} - Part ${Util.romanize(5)}\`**: ${UserChapter.title[userData.language]}`,    
     }
 
 }
 
-export const Defeat = function MakeNPCQuest(npc: NPC): Quest {
+export const Defeat = (npc: NPC) : Quest => {
     return {
         id: 'defeat:' + npc.id,
         npc: {
@@ -140,4 +178,27 @@ export const Defeat = function MakeNPCQuest(npc: NPC): Quest {
             max_stamina: npc.stamina
         }
     }
+}
+
+export const KAKYOIN_BACK: Quest = {
+    id: "wait:kakyoin_back",
+    i18n: "KAKYOIN_BACK",
+    timeout: Date.now() + ((60000 * 60) * 2),
+    mails_push_timeout: [
+        Mails.P1C2_KAKYOIN_BACK
+    ],
+    mustRead: true
+}
+
+export const Get_At_The_Morioh_Airport: Quest = {
+    id: "wait:taxiupgo",
+    i18n: "TAXIUPGO",
+    completed: false
+}
+
+export const Remove_Fleshbud_Polnareff: Quest = {
+    id: "action:remove_fleshbud_polnareff",
+    i18n: "REMOVE_FLESHBUD_POLNAREFF",
+    emoji: "🐛",
+    completed: false
 }

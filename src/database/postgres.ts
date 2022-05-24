@@ -4,7 +4,7 @@ import log from '../utils/logger';
 export default class PostgresHandler {
     connect: Promise<void>;
     connected: boolean;
-    connectResolve: any;
+    connectResolve: (value: void | PromiseLike<void>) => void;
     client: Pool;
 
     constructor() {

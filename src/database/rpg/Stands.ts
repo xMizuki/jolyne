@@ -24,6 +24,8 @@ export const Star_Platinum: Stand = {
     text: {
         awakening_text: "OrRrr.. OrrRrRRrRrR... RrrRQRrR....",
         awaken_text: "ORAAAAAAAAAAAAAAAA !!!!",
+        timestop_text: "Toki wo TOMARE!",
+        timestop_end_text: "Toki wo Ugokidase.",
     },
     emoji: Emojis.sp,
     available: true
@@ -50,7 +52,7 @@ export const The_World: Stand = {
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
         awaken_text: "WRRRRYYYYYYYY !!!!",
-        timestop_text: "Toki wo TAMARE!",
+        timestop_text: "Toki wo TOMARE!",
         timestop_end_text: "Zero...",
     },
     emoji: Emojis.the_world,
@@ -159,7 +161,8 @@ export const Hermit_Purple: Stand = {
     description: "Hermit Purple is the Stand of [Joseph Joestar](https://jojo.fandom.com/wiki/Joseph_Joestar), featured in Stardust Crusaders, and occasionally in Diamond is Unbreakable. The Hermit Hermit Purple manifests itself as multiple, purple, thorn-covered vines that spawn from its handler's hand.",
     abilities: [
         Abilities.Vine_Slap,
-        Abilities.The_Joestar_Technique
+        Abilities.The_Joestar_Technique,
+        Abilities.OhMyGod
     ],
     color: "PURPLE",
     image: "https://static.wikia.nocookie.net/jjba/images/c/c8/HermitPurple.png/revision/latest?cb=20180414181107&path-prefix=fr",
@@ -225,3 +228,23 @@ export const Magicians_Red: Stand = {
     emoji: Emojis.Magiciansred,
     available: true
 };
+
+export const Ebony_Devil: Stand = { // This is a private stand, not available in the RPG
+    name: 'Ebony Devil',
+    rarity: 'C',
+    description: '',
+    abilities: [
+        Abilities.Hatred_powered_Object_Possession
+    ],
+    color: '#000000',
+    image: '',
+    skill_points: {
+        strength: 0,
+        defense: 0,
+        perception: 0,
+        stamina: 0
+    },
+    text: Hierophant_Green.text,
+    emoji: '\uD83D\uDC7F',
+    available: false
+}
