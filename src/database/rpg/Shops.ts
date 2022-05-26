@@ -32,5 +32,5 @@ export const Black_Market: Shop = {
         Items["Mysterious_Arrow"],
     ],
     emoji: '🏷',
-    open_date: 6
+    open_date: 3
 }

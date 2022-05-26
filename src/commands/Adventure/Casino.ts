@@ -22,7 +22,7 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    const fruits = [Emojis.sevensl, Emojis.money_gif, "🍌", Emojis.diary, Emojis.watermelon_gif1, "🍒", Emojis.diamond_gif];
+    const fruits = ["🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒"]; // [Emojis.sevensl, Emojis.money_gif, "🍌", Emojis.diary, Emojis.watermelon_gif1, "🍒", Emojis.diamond_gif];
     let slotMachineFruits: string[] = Util.shuffle([...Util.shuffle([...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits)])]); // Am I shuffling too much? Yes.
 
     const betID = Util.generateID();
@@ -72,15 +72,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             });
             return collector.stop('DONT_DISABLE_COMPONENTS');
         } else if (i.customId === pullAgainID) {
-            collector.stop('DONT_DISABLE_COMPONENTS');
-            await followUpReply.delete().catch(() => { }); //eslint-disable-line no-empty
+            collector.stop();
+            await followUpReply.fetch().then(m => m.delete().catch(() => { })); //eslint-disable-line no-empty
+            // await followUpReply.delete() 
             return ctx.client.commands.get('casino').execute(ctx, userData);
         }
         ctx.timeoutCollector(collector, 30000);
         ctx.client.database.setCooldownCache('casino', userData.id);
 
         while (left !== -1) {
-            console.log(left);
             await runSlotMachine();
             await Util.wait(1000);
             left--;
@@ -90,7 +90,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     });
 
     async function runSlotMachine() {
-        console.log(left);
         let msg = "[  :slot_machine: | **CASINO** ]\n+----------------+\n"
                 + "| " + slotMachineFruits[0] + " : " + slotMachineFruits[1] + " : " + slotMachineFruits[2] + "  | \n"
                 + "| " + slotMachineFruits[3] + " : " + slotMachineFruits[4] + " : " + slotMachineFruits[5] + "  | **<**\n"
@@ -116,15 +115,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             ctx.client.database.delCooldownCache('casino', userData.id);
             ctx.client.database.saveUserData(userData);
-            await ctx.makeMessage({
+            followUpReply = await ctx.followUp({
+                content: followUpMSG,
+                fetchReply: true
+            });
+            ctx.makeMessage({
                 content: msg,
                 components: [
                     Util.actionRow([ pullAgainBTN ])
                 ]
-            });
-            followUpReply = await ctx.followUp({
-                content: followUpMSG,
-                fetchReply: true
             });
         } else {
             slotMachineFruits = slotMachineFruits.slice(3);

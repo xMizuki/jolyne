@@ -110,9 +110,14 @@ export default class InteractionCommandContext {
     clearTimeout(this._timeoutCollector);
     if (!collectorsCache.has(collector.messageId)) {
       collectorsCache.set(collector.messageId, collector.messageId);
-      collector.on('end', async (reason: string) => {
+      collector.on('end', async (int: any, reason: string) => {
+        console.log(reason)
         collectorsCache.delete(collector.messageId);
-        if (!disableComponents || (reason && !reason.includes('DONT_DISABLE_COMPONENTS'))) this.disableInteractionComponents()
+        if (!disableComponents) {
+          if (reason) {
+            if (!reason.includes('DONT_DISABLE_COMPONENTS')) this.disableInteractionComponents();
+          } else this.disableInteractionComponents();
+        }
       });
     }
     return this._timeoutCollector = setTimeout(async () => {

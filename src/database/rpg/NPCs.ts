@@ -45,7 +45,6 @@ export const Kakyoin: NPC = {
     },
     stand: Stands.Hierophant_Green["name"],
     avatarURL: 'https://steamuserimages-a.akamaihd.net/ugc/921427477593480623/EA78387AF7B63E522A76CA04E2557C886C66300A/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false'
-
 }
 
 export const Security_Guard: NPC = {

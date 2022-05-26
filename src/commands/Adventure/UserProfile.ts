@@ -52,7 +52,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const embed = new MessageEmbed()
         .setAuthor({ name: userData.tag, iconURL: userOption?.displayAvatarURL({ dynamic: true }) ?? ctx.interaction.user.displayAvatarURL({ dynamic: true }) })
         .setDescription(ctx.translate("profile:ADVENTUREAT", {
-            rUnix: Util.generateDiscordTimestamp(userData.adventureat, 'REMAINS'), //`<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
+            rUnix: Util.generateDiscordTimestamp(userData.adventureat, 'FROM_NOW'), //`<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
             dUnix: Util.generateDiscordTimestamp(userData.adventureat, 'DATE') //`<t:${(userData.adventureat/1000).toFixed(0)}:D>`,
         }))
         .addField("Player Infos", `:heart: HP: ${Util.localeNumber(userData.health)}/${Util.localeNumber(userData.max_health)}\n:zap: Stamina: ${Util.localeNumber(userData.stamina)}/${Util.localeNumber(userData.max_stamina)}`, true)

@@ -65,7 +65,7 @@ export const The_World__Over_Heaven: Stand = {
     description: "The World is a humanoid Stand. It is a very tall humanoid with a very muscular build. It bears a striking resemblance to [Dio Brando](https://jojo.fandom.com/wiki/Dio_Brando) in terms of appearance.",
     abilities: [],
     color: "YELLOW",
-    image: "https://pbs.twimg.com/media/EiN6WPVWoAAAODC?format=jpg&name=large",
+    image: "https://static.wikia.nocookie.net/jjba/images/4/47/Heaven_Ascension_Dio.png/revision/latest/scale-to-width-down/250?cb=20201125221026",
     skill_points: {
         strength: 10,
         defense: 5,
@@ -79,7 +79,7 @@ export const The_World__Over_Heaven: Stand = {
         timestop_end_text: "Toki wa Ugokidasu.",
 
     },
-    emoji: "<:sp:925699121745104918>",
+    emoji: Emojis.the_world,
     available: true
 };
 

@@ -158,7 +158,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
         if (Util.isNPC(opponent) && type !== "custom") {
             const rawNPC = Object.keys(NPCs).map(v => NPCs[v as keyof typeof NPCs]).find(n => n.id === opponent.id) || opponent;
-            opponent = rawNPC;
+            opponent = {...rawNPC};
         }
         const attackID = Util.generateID();
         const defendID = Util.generateID();
@@ -497,7 +497,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 if (ended) return;
                 const currentUser = whosTurn() as UserData;
                 const currentUserUsername = ctx.client.users.cache.get(currentUser.id)?.username ?? "?";
-                const toRemove = user ? currentUser.health : Math.round(currentUser.max_health/6);
+                const toRemove = !user ? currentUser.health : Math.round(currentUser.max_health/6);
                 if (!turns[turns.length-1]) pushTurn();
                 if (!turns[turns.length-1].logs) turns[turns.length-1].logs = [];
                 turns[turns.length-1].logs.push(`${Emojis.timerIcon} \`TIMEOUT:\` **${currentUserUsername}** did not played in time: -${toRemove} hp.`);
@@ -529,7 +529,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             if (ended && Util.isNPC(opponent)) {
                 if (winner.id !== opponent.id && type !== 'custom') {
-                    userData.chapter_quests.find(q => q.npc && q.npc.id === opponent.id).npc.health = 0;
+                    userData.chapter_quests.find(q => q.npc && q.id === `defeat:${opponent.id}`).npc.health = 0;
                     if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
                         components.push(nxtbtn);
                     }
@@ -665,12 +665,13 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 if (type !== "custom") {
                     let editedNPC = false;
                     getUserQuests().forEach(n => {
-                        if (n.id === opponent.id && !n.completed && !editedNPC) {
+                        if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
+                            console.log('G EDIT EDIT EDIT EDITE DEIT SUCCESS')
                             n.npc.health = 0;
                             n.completed = true;
                             editedNPC = true;
                         }
-                    });    
+                    });
                 }
                 const rewardsArr: string[] = [];
                 Object.keys(opponent.fight_rewards).map((r) => {

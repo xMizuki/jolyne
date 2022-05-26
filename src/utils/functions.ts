@@ -5,7 +5,9 @@ import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
 import Canvas from 'canvas';
 
-const bufferCache: Array<Buffer> = [];
+const bufferCache: {
+    [key: string]: Buffer
+} = {};
 
 export const getRandomInt = function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -68,7 +70,6 @@ export const removeItem = function RemoveOneFromArray(array: Array<any>, toRemov
 }
 
 export const generateStandCart = async function standCart(stand: Stand): Promise<Buffer> {
-    // @ts-expect-error
     if (bufferCache[stand.name as keyof typeof String]) return bufferCache[stand.name as keyof typeof bufferCache];
 
     const canvas = Canvas.createCanvas(230, 345);
@@ -76,21 +77,26 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
     const image = await Canvas.loadImage(stand.image);
     let card_link;
     let color: ColorResolvable;
-    if (stand.rarity === "S") {
-        color = "#2b82ab";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480216277905418/S_CARD.png";
-    } else if (stand.rarity === "A") {
-        color = "#3b8c4b";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959459394205126726/A_CARD.png";
-    } else if (stand.rarity === "B") {
-        color = "#786d23"
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480058651766874/B_CARD.png";
-    } else if (stand.rarity === "C") {
-        color = "#181818";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480090331316334/C_CARD.png";
-    } else {
-        color = 0xff0000;
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480253175201862/SS_CARD.png"
+    switch (stand.rarity) {
+        case "S":
+            color = "#2b82ab";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480216277905418/S_CARD.png";
+            break;
+        case "A":
+            color = "#3b8c4b";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959459394205126726/A_CARD.png";
+            break;
+        case "B":
+            color = "#786d23"
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480058651766874/B_CARD.png";
+            break;
+        case "C":
+            color = "#181818";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480090331316334/C_CARD.png";
+            break;
+        default:
+            color = 0xff0000;
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480253175201862/SS_CARD.png"
     }
     
     let card_image = await Canvas.loadImage(card_link);
@@ -123,7 +129,6 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
         }
         ctx.fillText(content, 40, 40 - (20 - stand.name.length));
     }
-    // @ts-expect-error
     bufferCache[stand.name as keyof typeof bufferCache] = canvas.toBuffer();
 
     return canvas.toBuffer();
@@ -223,7 +228,7 @@ export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    return  (userATKDMG / 45 * ability.damages) + ability.damages
+    return  Math.round((userATKDMG / 45 * ability.damages) + ability.damages)
 }
 
 export const randomFood = function getRandomFood(): Item {
@@ -292,10 +297,18 @@ export const isMailArray = function isMailArray(item: any): item is Mail[] {
     return item instanceof Array && (item as Mail[]).every(i => isMail(i));
 }
 
-export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'REMAINS' | 'DATE' | 'FULL_DATE'): string {
+export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'FROM_NOW' | 'DATE' | 'FULL_DATE'): string {
     const fixedDate = typeof date === "number" ? new Date(date) : date;
     return `<t:${(fixedDate.getTime() / 1000).toFixed(0)}:${type
-        .replace('REMAINS', 'R')
+        .replace('FROM_NOW', 'R')
         .replace('DATE', 'D')
         .replace('FULL_D', 'F')}>`;
+}
+
+export const standPrices = {
+    "SS": 500000,
+    "S": 100000,
+    "A": 50000,
+    "B": 10000,
+    "C": 5000
 }

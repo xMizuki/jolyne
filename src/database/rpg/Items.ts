@@ -106,7 +106,7 @@ export const Mysterious_Arrow: Item = {
     await Util.wait(2000);
 
     let stand: Stand;
-    let color: ColorResolvable = "DARK_GOLD";
+    let color: ColorResolvable;
     if (percent <= 4) {
       stand = Util.randomArray(StandsArray.filter(r => r.rarity === "S"));
       color = "#2b82ab";
@@ -134,7 +134,7 @@ export const Mysterious_Arrow: Item = {
 **Abilities [${stand.abilities.length}]:** ${stand.abilities.map(v => v.name).join(", ")}
 **Skill-Points:** +${Util.calculateArrayValues(Object.keys(stand.skill_points).map(v => stand.skill_points[v as keyof typeof stand.skill_points]))}:
 ${Object.keys(stand.skill_points).map(v => "  • +" + stand.skill_points[v as keyof typeof stand.skill_points] + " " + v).join("\n")}
-`)
+`);
 
 
     ctx.makeMessage({
@@ -463,4 +463,15 @@ export const Ramen_Bowl: Item = {
   }
 }
 
+export const Requiem_Arrow: Item = {
+  id: "requiem_arrow",
+  name: "Requiem Arrow",
+  description: "Requiem wo... ONE WORLD!",
+  type: "other",
+  cost: 99999999,
+  tradable: true,
+  storable: false,
+  usable: false,
+  emoji: Emojis.requiem_arrow
+}
 

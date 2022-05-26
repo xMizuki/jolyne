@@ -55,7 +55,7 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
         if (command.rpgCooldown) {
             const cd = parseInt(await interaction.client.database.redis.client.get(`jjba:rpg_cooldown_${interaction.user.id}:${command.name}`));
             if (cd && cd > Date.now()) return interaction.reply({ content: interaction.client.translations.get("en-US")(command.rpgCooldown.i18n ?? 'base:RPG_COOLDOWN', {
-                time: Util.generateDiscordTimestamp(cd, 'REMAINS')
+                time: Util.generateDiscordTimestamp(cd, 'FROM_NOW')
             })});
             await interaction.client.database.redis.client.set(`jjba:rpg_cooldown_${interaction.user.id}:${command.name}`, Date.now() + command.rpgCooldown["base"]);
         }

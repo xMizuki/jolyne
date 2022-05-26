@@ -73,7 +73,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     let protectedNPC: NPC = {
         ...NPC
-    };
+    }
 
     ctx.client.database.setCooldownCache("cooldown", userData.id);
     await ctx.defer();

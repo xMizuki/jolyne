@@ -61,13 +61,7 @@ async function init() {
             description: `A disc which contains ${stand.name}'s power...`,
             rarity: stand.rarity,
             type: "disc",
-            cost: {
-                "SS": 500000,
-                "S": 100000,
-                "A": 50000,
-                "B": 10000,
-                "C": 5000
-            }[stand.rarity],
+            cost: Util.standPrices[stand.rarity],
             tradable: true,
             storable: true,
             usable: true,
