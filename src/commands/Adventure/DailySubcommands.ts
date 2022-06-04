@@ -36,17 +36,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 time: ctx.convertMs(nextDate - Date.now())
             });
         }
-        let rewards = {
-            money: (userData.level * 1000) - ((userData.level * 1000) * 25 / 100),
-            xp:  (userData.level * 400) - ((userData.level * 400) * 10 / 100),
-            premium: {
-                money: (userData.level * 400) - ((userData.level * 400) * 25 / 100),
-                xp: (userData.level * 100) - ((userData.level * 100) * 10 / 100)
-            }
-        };
-        if (rewards.money > 6000) rewards.money = 6000;
+        let rewards = Util.getRewards(userData);
+
         // check if the user last daily was claimed after 2 days
-        if (userData.daily.claimedAt >= (dateAtMidnight - 86400000)) {
+        if (userData.daily.claimedAt !== dateAtMidnight - 86400000) {
             userData.daily.streak = 0;
         }
         userData.daily.claimedAt = dateAtMidnight;

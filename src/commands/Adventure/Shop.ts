@@ -13,7 +13,7 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 3;
 export const data: SlashCommand["data"] = {
     name: "shop",
-    description: "Show informations about your current chapter & your chapter quests",
+    description: "Display the shop",
 };
 
 
@@ -57,7 +57,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setStyle("SECONDARY"))
             let content = '';
             for (const item of shop.items) {
-                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.cost)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
             }
             fields.push({
                 name: `${shop.emoji} ${shop.name}`,
@@ -90,7 +90,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         let content = '';
         for (const item of shop.items) {
-            content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.cost)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+            content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
         }
         ctx.makeMessage({
             embeds: [{
@@ -130,7 +130,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             updShopMsg(shop);
         }
         if (item && i.isSelectMenu()) {
-            if (item.cost > userData.money) {
+            if (item.price > userData.money) {
                 followUp({
                     embeds: [{
                         title: ':x: Error',
@@ -143,7 +143,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 });
                 return;
             }
-            userData.money -= item.cost;
+            userData.money -= item.price;
             /*
             const components = ctx.fetchReply().then(m => m.components); // Update select menu's place holder
             ctx.makeMessage({
@@ -152,7 +152,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             if (item.storable) {
                 userData.items.push(item.id);
                 followUp({
-                    content: `You bought ${item.emoji} **${item.name}** for **${Util.localeNumber(item.cost)}** ${Emojis.jocoins}`,
+                    content: `You bought ${item.emoji} **${item.name}** for **${Util.localeNumber(item.price)}** ${Emojis.jocoins}`,
                 });    
             } else {
                 if (item.use) {
@@ -182,7 +182,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     })
     
                 } else { // not supported
-                    userData.money -= item.cost;
+                    userData.money -= item.price;
                 }
             }
 

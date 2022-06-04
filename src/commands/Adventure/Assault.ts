@@ -16,7 +16,7 @@ export const rpgCooldown: SlashCommand["rpgCooldown"] = {
 }
 export const data: SlashCommand["data"] = {
     name: "assault",
-    description: "assaultassaultassaultassaultassault",
+    description: "Assault a random person in the city",
 };
 
 

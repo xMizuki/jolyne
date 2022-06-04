@@ -59,7 +59,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     let rows: UserData[] = (await ctx.client.database.redis.client.keys("cachedUser*").then(async keys => await Promise.all(keys.map(async key => JSON.parse(await ctx.client.database.redis.client.get(key)))))); // OLD CODE (causing too much latency) await ctx.client.database.postgres.client.query(`SELECT * FROM users WHERE adventureat IS NOT NULL AND level IS NOT NULL AND xp IS NOT NULL ORDER BY level DESC, xp DESC`).then(r => r.rows);
     let title: string;
-    let strfilter: Function;
+    let strfilter: (user: UserData) => string;
     let page: number = 1;
 
     switch (ctx.interaction.options.getSubcommand()) {

@@ -5,6 +5,7 @@ import * as Stands from '../../database/rpg/Stands';
 import * as Util from '../../utils/functions';
 import * as Emojis from '../../emojis.json';
 import * as Items from '../../database/rpg/Items';
+import * as NPCs from '../../database/rpg/NPCs';
 
 export const name: SlashCommand["name"] = "stand";
 export const category: SlashCommand["category"] = "adventure";
@@ -33,6 +34,7 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData) => {
+    if (!userData.stand) return ctx.sendT('base:NO_STAND');
     const switchID = Util.generateID();
     const confirmID = Util.generateID();
     const cancelID = Util.generateID();
@@ -129,20 +131,58 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 if (i.customId === confirmID) {
                     collector.stop('DONT_DISABLE_COMPONENTS');
                     if (userData.money < Util.standPrices[stand.rarity]) {
-                        ctx.sendT('base:NOT_ENOUGH_COINS');
+                        ctx.sendT('base:NOT_ENOUGH_COINS', {
+                            components: []
+                        });
                         return;
                     }
                     userData.money -= Util.standPrices[stand.rarity];
                     userData.stand = null;
                     userData.items.push(`${stand.name}:disk`);
                     ctx.client.database.saveUserData(userData);
-                    ctx.sendT('base:YOUR_STAND_DISC_HAS_BEEN_STORED');
+                    ctx.sendT('base:YOUR_STAND_DISC_HAS_BEEN_STORED', {
+                        components: []
+                    });
                 } else collector.stop();
             });
+            break;
         }        
         case "delete": {
             if (!userData.stand) return ctx.sendT('base:NO_STAND');
             const stand = Util.getStand(userData.stand);
+            const price = 1000;
+
+            await ctx.makeMessage({
+                content: `${Util.makeNPCString(NPCs.Pucci)}: It'll cost you **${Util.localeNumber(price)}** ${Emojis.jocoins} to reset your stand (${stand.name}). Are you sure?`,
+                components: [
+                    Util.actionRow([ confirmBTN, cancelBTN ])
+                ]
+            });
+            const filter = (i: MessageComponentInteraction) => {
+                i.deferUpdate().catch(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
+                return (i.customId === confirmID || i.customId === cancelID) && i.user.id === ctx.author.id;
+            }
+            const collector = ctx.interaction.channel.createMessageComponentCollector({ filter });
+            ctx.timeoutCollector(collector);
+            collector.on('collect', async (i: MessageComponentInteraction) => {
+                if ((await ctx['componentAntiCheat'](i, userData)) === true) return;
+                if (i.customId === confirmID) {
+                    collector.stop('DONT_DISABLE_COMPONENTS');
+                    if (userData.money < price) {
+                        ctx.sendT('base:NOT_ENOUGH_COINS', {
+                            components: []
+                        });
+                        return;
+                    }
+                    userData.money -= price;
+                    userData.stand = null;
+                    ctx.client.database.saveUserData(userData);
+                    ctx.sendT('base:YOUR_STAND_HAS_BEEN_RESET', {
+                        components: []
+                    });
+                } else collector.stop();
+            });
+            break;
         }
       
     }
