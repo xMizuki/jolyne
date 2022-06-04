@@ -248,3 +248,29 @@ export const Ebony_Devil: Stand = { // This is a private stand, not available in
     emoji: '\uD83D\uDC7F',
     available: false
 }
+
+export const White_Snake: Stand = {
+    name: "White Snake",
+    rarity: "S",
+    description: "bro wtf",
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities.Hallucinogen,
+        Abilities.Gun,
+        Abilities.Stand_Disc
+    ],
+    color: 'WHITE',
+    image: Star_Platinum.image,
+    skill_points: {
+        strength: 3,
+        defense: 7,
+        perception: 10,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "bro wtf"
+    },
+    emoji: Star_Platinum.emoji,
+    available: false
+};

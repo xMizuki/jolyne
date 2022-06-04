@@ -17,6 +17,12 @@ export const Jolyne_Team: NPC = {
     emoji: Emojis.happyjolyne
 }
 
+export const Jolyne: NPC = {
+    id: 'jolyne',
+    name: "Jolyne",
+    emoji: Emojis.jolyne
+}
+
 export const SPEEDWAGON_FOUNDATION: NPC = {
     id: 'speedwagon_foundation',
     email: 'contact@speedwagon.net',
@@ -384,5 +390,26 @@ export const Mysterious_Stand_User: NPC = {
         const stands = Object.values(Stands)
         return stands[Math.floor(Math.random() * stands.length)].name
     })()
+}
+
+export const Pucci: NPC = {
+    id: 'pucci',
+    name: 'Pucci',
+    emoji: Emojis.Pucci,
+    level: 200,
+    health: 5000,
+    max_health: 5000,
+    stamina: 5000,
+    skill_points: {
+        strength: 200,
+        defense: 200,
+        perception: 200,
+        stamina: 200
+    },
+    fight_rewards: {
+        xp: 1000000,
+        money: 1000000
+    },
+    stand: Stands.White_Snake["name"]
 }
 

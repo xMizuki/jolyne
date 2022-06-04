@@ -1,5 +1,6 @@
 import type { Ability, UserData, NPC, Turn } from '../../@types';
 import * as Util from '../../utils/functions';
+import * as Emojis from '../../emojis.json';
 import CommandInteractionContext from '../../structures/Interaction';
 
 export const Stand_Barrage: Ability = {
@@ -330,4 +331,105 @@ export const Hatred_powered_Object_Possession: Ability = {
     blockable: false,
     dodgeable: true,
     stamina: 20
+}
+
+export const Stand_Disc: Ability = {
+    name: 'Stand Disc',
+    description: 'Takes out your opponen\'s disc. They will be unable to use their stand\'s abilites for a few turns.',
+    cooldown: 8,
+    damages: 0,
+    blockable: false,
+    dodgeable: true,
+    stamina: 20,
+    ultimate: true,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const victimStand = victim.stand;
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 13,
+        };
+
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            if (gameOptions[tsID].cd === 0) {
+                turns[turns.length - 1].logs.push(`${victimUsername}'s stand is no longer disabled`);
+                victim.stand = victimStand;
+            }
+        });
+
+        if (victimStand) {
+            turns[turns.length - 1].logs.push(`${Emojis.disk} \`${victimUsername}\`'s stand (**${victimStand}**) is disabled for 3 turns.`);
+            victim.stand = null;
+            promises.push(func);
+        } else {
+            turns[turns.length - 1].logs.push(`${victimUsername} doesn't have a stand.. you fool lol you just wasted your stamina. HOW CAN YOU BE SO DUMB MAN LMAO SMH CANT BE ME`);
+        }
+    }
+}
+
+export const Hallucinogen: Ability = {
+    name: 'Hallucinogen',
+    description: 'Creates a hallucinogen that decreases your opponent\'s perception to 75% (and boosts your perception to 50%) for a few turns.',
+    cooldown: 7,
+    damages: 0,
+    blockable: false,
+    dodgeable: true,
+    stamina: 20,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const victimStand = victim.stand;
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 8,
+        };
+        let oldPerception: number = Util.isNPC(victim) ? victim.skill_points["perception"] : victim.spb["perception"];
+        let oldCallererception: number = Util.isNPC(caller) ? caller.skill_points["perception"] : caller.spb["perception"];
+        Util.isNPC(caller) ? caller.skill_points["perception"] += Math.floor(oldCallererception * 0.50) : caller.spb["perception"] += Math.floor(oldCallererception * 0.50);
+        Util.isNPC(victim) ? victim.skill_points["perception"] -= Math.floor(oldPerception * 0.75) : victim.spb["perception"] = Math.floor(oldPerception * 0.75);
+        turns[turns.length - 1].logs.push(`💭 WOW! **${victimUsername}** can't see anything.`);
+
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            if (gameOptions[tsID].cd === 0) {
+                turns[turns.length - 1].logs.push(`💭 The hallucinogen effect has expired`);
+                Util.isNPC(caller) ? caller.skill_points["perception"] -= Math.floor(oldCallererception * 0.50) : caller.spb["perception"] -= Math.floor(oldCallererception * 0.50);
+                Util.isNPC(victim) ? victim.skill_points["perception"] += Math.floor(oldPerception * 0.75) : victim.spb["perception"] -= Math.floor(oldPerception * 0.75);
+                victim.stand = victimStand;
+            }
+        });
+        promises.push(func);
+
+    }
+}
+
+export const Gun: Ability = {
+    name: 'Gun',
+    description: 'A gun that shoots a bullet at the opponent. The bullet will deal damage and stun the opponent for 2 turns.',
+    cooldown: 5,
+    damages: 60,
+    blockable: false,
+    dodgeable: true,
+    stamina: 20,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 3,
+        };
+        turns[turns.length - 1].logs.push(`${victimUsername} is stunned.`);
+
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            gameOptions.trns--;
+            if (gameOptions[tsID].cd === 0) {
+                gameOptions.trns--;
+                turns[turns.length - 1].logs.push(`${victimUsername} is no longer stunned.`);
+            }
+        });
+        promises.push(func);
+    }
 }
