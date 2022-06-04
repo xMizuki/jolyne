@@ -61,7 +61,7 @@ async function init() {
             description: `A disc which contains ${stand.name}'s power...`,
             rarity: stand.rarity,
             type: "disc",
-            cost: Util.standPrices[stand.rarity],
+            price: Util.standPrices[stand.rarity],
             tradable: true,
             storable: true,
             usable: true,
@@ -128,3 +128,5 @@ process
         process.exit(1);
     });
 client.login(process.env.CLIENT_TOKEN);
+
+client.on('debug', (message: string) => console.log(message));

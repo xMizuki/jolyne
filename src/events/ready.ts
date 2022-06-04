@@ -7,7 +7,7 @@ export const once: Event["once"] = true;
 
 export const execute: Event["execute"] = async (client: Client) => {
     client.user.setActivity({ name: "loading..."});
-
+    
     const lastCommands = await client.database.redis.client.get("jolyne:commands");
     const commandsData = client.commands.map((v: SlashCommand) => v.data);
 

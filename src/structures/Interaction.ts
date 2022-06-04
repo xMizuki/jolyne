@@ -111,7 +111,6 @@ export default class InteractionCommandContext {
     if (!collectorsCache.has(collector.messageId)) {
       collectorsCache.set(collector.messageId, collector.messageId);
       collector.on('end', async (int: any, reason: string) => {
-        console.log(reason)
         collectorsCache.delete(collector.messageId);
         if (!disableComponents) {
           if (reason) {

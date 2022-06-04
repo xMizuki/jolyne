@@ -15,6 +15,18 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) return;
 
+    if (command.cooldown && !isNaN(command.cooldown)) {
+        const cd = interaction.client.cooldowns.get(`${interaction.user.id}:${command.name}`);
+        if (cd) {
+            const timeLeft = cd - Date.now();
+            if (timeLeft > 0) {
+                return interaction.reply({ content: `You can use this command again in ${(timeLeft / 1000).toFixed(2)} seconds.`, ephemeral: true });
+            } else {
+                interaction.client.cooldowns.delete(`${interaction.user.id}:${command.name}`);
+            }
+        } else interaction.client.cooldowns.set(`${interaction.user.id}:${command.name}`, Date.now() + command.cooldown * 1000);
+    }
+
     if (command.category === "adventure") {
         const userData = await interaction.client.database.getUserData(interaction.user.id);
         if (!userData && command.name !== "adventure" && interaction.options.getSubcommand() !== "start") return interaction.reply({ content: interaction.client.translations.get("en-US")("base:NO_ADVENTURE", {
@@ -77,22 +89,18 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
                 });
             }
             if (await interaction.client.database.getCooldownCache(interaction.user.id)) return;
-            checkLVL()
-            function checkLVL() {
-                if (userData.xp >= Util.getMaxXp(userData.level)) {
-                    userData.xp = userData.xp - Util.getMaxXp(userData.level);
-                    userData.level++;
-                    ctx.followUp({
-                        content: ctx.translate("base:LEVEL_UP_MESSAGE", {
-                            level: userData.level
-                        })
-                    });
-                    ctx.client.database.saveUserData(userData);
-                    if (userData.xp >= Util.getMaxXp(userData.level)) checkLVL();
-                }
+
+            while (userData.xp >= Util.getMaxXp(userData.level)) {
+                console.log("Level up!");
+                userData.xp = userData.xp - Util.getMaxXp(userData.level);
+                userData.level++;
+                ctx.followUp({
+                    content: ctx.translate("base:LEVEL_UP_MESSAGE", {
+                        level: userData.level
+                    })
+                });
+                ctx.client.database.saveUserData(userData);
             }
-
-
         }
     } else command.execute(new InteractionCommandContext(interaction));
 

@@ -20,7 +20,7 @@ export const execute: Event["execute"] = async (interaction: InteractionAutocomp
         const itemsFound = items.filter(item => item.name.toLowerCase().includes(currentInput.toLowerCase()) || item.value.toLowerCase().includes(currentInput.toLowerCase()));
         interaction.respond(itemsFound.slice(0, 25))
     }
-    if (subCommand === "use") {
+    if (subCommand === "use" || subCommand === "throw" || subCommand === "sell") {
         const userData = await interaction.client.database.getUserData(interaction.user.id);
         if (!userData) interaction.respond([]);
         const userItems: Item[] = userData.items.map(v => {
@@ -35,8 +35,6 @@ export const execute: Event["execute"] = async (interaction: InteractionAutocomp
                 value: v.id
             }
         }).slice(0, 25))  
-
-
     }
 
 
