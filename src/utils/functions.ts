@@ -4,6 +4,7 @@ import moment from 'moment-timezone';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
 import Canvas from 'canvas';
+import JolyneClient from '../structures/Client';
 
 const bufferCache: {
     [key: string]: Buffer
@@ -143,6 +144,10 @@ export const getItemIdByName = function getItemById(name: string): string {
 }
 
 export const getItem = function getItemByString(name: string): Item {
+    if (name.endsWith('disk')) {
+        const stand = getStand(name.split(':')[0]);
+        return Items[`${stand.name.replace(/ /gi, "_")}_Disc` as keyof typeof Items];
+    }
     const item: Item = Items[getItemIdByName(name) as keyof typeof Items] || Items[getItemNameById(name) as keyof typeof Items] || Object.keys(Items).map(v => Items[v as keyof typeof Items]).find(v => v.id === name);
     if (!item) return null;
     return item;
@@ -306,9 +311,60 @@ export const generateDiscordTimestamp = function generateDiscordTimestamp(date: 
 }
 
 export const standPrices = {
-    "SS": 500000,
-    "S": 100000,
-    "A": 50000,
+    "SS": 200000,
+    "S": 50000,
+    "A": 25000,
     "B": 10000,
     "C": 5000
+}
+
+export const getImageColor = async function getImageColor(client: JolyneClient, url: string): Promise<ColorResolvable> {
+    try {
+        const alr = await client.database.redis.get(`jjba:color:${url}`) as ColorResolvable;
+        if (alr) return alr;
+        let ext = "png";
+        if (url.endsWith("jpg")) ext = "jpg";
+        const axios = require("axios");
+        const response = await axios.get(url, {
+            responseType: 'arraybuffer'
+        })
+        const buffer = Buffer.from(response.data, "utf-8");
+
+        function blendColors(colorA: string, colorB: string, amount: number) {
+            const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+            const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+            const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+            return '#' + r + g + b;
+        } 
+
+        const getColors = require('get-image-colors');
+        let color;
+        await getColors(buffer, 'image/' + ext).then(async (colors: any[]) => {
+            await client.database.redis.set(`jjba:color:${url}`, blendColors(colors.map(color => color.hex())[0], colors.map(color => color.hex())[colors.length - 1], 0.5));
+            color = blendColors(colors.map(color => color.hex())[0], colors.map(color => color.hex())[colors.length - 1], 0.5);
+        });
+        return color;
+
+    } catch (e) {
+        const color = [...Array(6)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        client.database.redis.set(`jjba:color:${url}`, color);
+        return color as ColorResolvable;
+    }
+}
+
+export const getRewards = (userData: UserData) => {
+    let rewards = {
+        money: (userData.level * 1000) - ((userData.level * 1000) * 25 / 100),
+        xp:  (userData.level * 400) - ((userData.level * 400) * 10 / 100),
+        premium: {
+            money: (userData.level * 400) - ((userData.level * 400) * 25 / 100),
+            xp: (userData.level * 100) - ((userData.level * 100) * 10 / 100)
+        }
+    };
+    if (rewards.money > 6000) rewards.money = 6000;
+    if (rewards.premium.money > 15000) rewards.money = 15000;
+
+    return rewards;
 }
