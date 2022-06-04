@@ -466,9 +466,9 @@ interface Item {
    */
   readonly type: "consumable" | "box" | "cloth" | "arrow" | "body_part" | "scroll" | "disc" | "other";
   /**
-   * The item's cost.
+   * The item's price.
    */
-  readonly cost: number;
+  readonly price?: number;
   /**
    * If the item is tradable.
    */
@@ -632,24 +632,24 @@ interface NPC {
    */
   max_health?: number;
   /**
-   * The Quest's stamina.
+   * The NPC's stamina.
    * @type {number}
    * @memberof Quest
    */
   max_stamina?: number; // NPCs doesn't have max_stamina
   /**
-   * The Quest's skill-points.
+   * The NPC's skill-points.
    * @memberof Quest
    * @readonly
    */
   readonly skill_points?: SkillPoints;
   /**
-   * The Quest's stand.
+   * The NPC's stand.
    * @type {string}
    * @memberof Quest
    * @readonly
    */
-  readonly stand?: string;
+  stand?: string;
   /**
    * The NPC's rewards when he's defeated.
    */
