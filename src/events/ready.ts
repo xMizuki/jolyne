@@ -1,6 +1,8 @@
-import type { Event, SlashCommand } from '../@types';
+import type { Event, SlashCommand, UserData } from '../@types';
 import Client from '../structures/Client';
-import { Routes } from 'discord-api-types/v9';
+import { Routes } from 'discord-api-types/v9'
+import { CronJob } from 'cron';
+import * as Util from '../utils/functions';
 
 export const name: Event["name"] = "ready";
 export const once: Event["once"] = true;
@@ -28,7 +30,36 @@ export const execute: Event["execute"] = async (client: Client) => {
 
     // Daily quests
     if (client.guilds.cache.random().shardId === 0) {
+        client.log('Daily quests cron job is starting...', 'cmd');
+        let toSaveUSERS: UserData[] = [];
+        const job = new CronJob('0 0 * * *', async function () {
+            const cachedUsers = await client.database.redis.client.keys("*cachedUser*");
+            let formattedUsers: UserData[] = [];
+
+            for (const id of cachedUsers) {
+                const userData = await client.database.redis.client.get(id);
+                formattedUsers.push(JSON.parse(userData));
+            }
+            for (const user of formattedUsers) {
+                client.database.redis.del(`jjba:finishedQ:${user.id}`);
+                if (await client.database.getCooldownCache(user.id)) {
+                    toSaveUSERS.push(user);
+                    continue;
+                }
+                user.daily.quests = Util.generateDailyQuests(user.level);
+                client.database.saveUserData(user);
+
+            }
+        }, null, true, 'Europe/Paris');
+        setInterval(async () => {
+            for (const user of toSaveUSERS) {
+                if (await client.database.getCooldownCache(user.id)) continue;
+                user.daily.quests = Util.generateDailyQuests(user.level);
+                client.database.saveUserData(user);
+            }
+        }, 5000);
         
+        job.start();
     }
     client._ready = true;
     client.user.setActivity({ name: "The Way To Heaven", type: "WATCHING" });

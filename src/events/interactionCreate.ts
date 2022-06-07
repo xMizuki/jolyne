@@ -1,6 +1,8 @@
 import type { Event, InteractionCommand } from '../@types';
 import * as Util from '../utils/functions';
 import * as Items from '../database/rpg/Items';
+import * as NPCs from '../database/rpg/NPCs';
+import * as Chapters from '../database/rpg/Chapters';
 import * as Emojis from '../emojis.json';
 import InteractionCommandContext from '../structures/Interaction';
 
