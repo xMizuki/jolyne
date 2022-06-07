@@ -3,6 +3,8 @@ import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageA
 import moment from 'moment-timezone';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
+import * as Quests from '../database/rpg/Quests';
+import * as NPCs from '../database/rpg/NPCs';
 import Canvas from 'canvas';
 import JolyneClient from '../structures/Client';
 
@@ -105,10 +107,10 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
     ctx.drawImage(image, 40, 50, 230-RM+15, 345-RM+20);
     ctx.drawImage(card_image, 0, 0, 230, 345);
     ctx.fillStyle = "white";
-    if (stand.name === "Muhammad Avdol" || stand.name === "Giorno Giovanna") {
-        ctx.font = "20px Impact";
-        let content = stand.name.substring(0, 10) + "...";
-        ctx.fillText(content, 40, 40);
+    if (stand.name.length === 10) {
+        ctx.font = "22px Impact";
+        let content = stand.name.substring(0, 10);
+        ctx.fillText(content, 50, 40);
     } else if (stand.name.length <= 7) {
         ctx.font = "30px Impact";
         ctx.fillText(stand.name, 74, 40);
@@ -227,13 +229,14 @@ ${Object.keys(stand.skill_points).map(r =>  `  • +${stand.skill_points[r as ke
 }
 
 export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData: UserData | NPC): number {
+    if (ability.damages === 0) return 0;
     const userATKDMG = calcATKDMG(userData);
     /*
     if (ability.damages === 0) return 0;
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    return  Math.round((userATKDMG / 45 * ability.damages) + ability.damages)
+    return Math.round(ability.damages + ((userATKDMG / ability.damages) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
 }
 
 export const randomFood = function getRandomFood(): Item {
@@ -367,4 +370,72 @@ export const getRewards = (userData: UserData) => {
     if (rewards.premium.money > 15000) rewards.money = 15000;
 
     return rewards;
+}
+
+export const RandomNPC = (level: number): NPC => {
+    const NPCSArray = Object.values(NPCs).filter(r => r.level <= level);
+    const StandsArray = Object.values(Stands);
+    const NPC = NPCSArray[Math.floor(Math.random() * NPCSArray.length)];
+    return {
+        ...NPC,
+        stand: NPC.stand?.replace('RANDOM', StandsArray[Math.floor(Math.random() * StandsArray.length)].name) ?? null
+    }
+}
+
+export const generateDailyQuests = (level: number): Quest[] => {
+    const quests: Quest[] = [Quests.ClaimDaily(1)];
+
+    for (let i = 0; i < level; i++) {
+        if (RNG(80)) {
+            quests.push(Quests.Defeat(RandomNPC(level)));
+        }
+    }
+    quests.push(Quests.ClaimCoins(getRandomInt(1, level * 1000)));
+
+    let max = level;
+    if (max > 10) max = 10;
+
+    if (RNG(50)) {
+        quests.push(Quests.UseLoot(getRandomInt(1, max)));
+    }
+    if (RNG(50)) {
+        quests.push(Quests.Assault(getRandomInt(1, max)));
+    }
+    if (RNG(50)) {
+        quests.push(Quests.LootCoins(getRandomInt(1, max * 250)));
+    }
+
+    return quests;
+}
+
+export const RNG = (percent: number): boolean => {
+    return getRandomInt(0, 100) < percent;
+}
+
+export const forEveryQuests = (userData: UserData, filter: (q: Quest) => boolean, callback: (quest: Quest) => void) => {
+    for (const key in userData) {
+        if (userData.hasOwnProperty(key)) {
+            const element = userData[key as keyof typeof userData];
+            if (isQuestArray(element)) {
+                for (const quest of element.filter(q => filter(q))) {
+                    callback(quest)
+                }
+                // @ts-ignore
+                userData[key as keyof typeof userData] = element;
+            } else if (typeof element === 'object' && element !== null) {
+                for (const key2 of Object.keys(element)) {
+                    const element2 = element[key2 as keyof typeof element] as any;
+                    if (isQuestArray(element2)) {
+                        for (const quest of element2.filter(q => filter(q))) {
+                            callback(quest)
+                        }
+                        // @ts-ignore
+                        userData[key as keyof typeof userData][key2 as keyof typeof userData] = element[key2 as keyof typeof element];
+                    }
+                }
+            }
+        }
+
+    }
+    
 }

@@ -12,7 +12,6 @@ import * as Items from './database/rpg/Items';
 import * as Emojis from './emojis.json';
 import * as Util from './utils/functions';
 
-
 // Import types
 import type { SlashCommand, Event } from './@types';
 
@@ -128,5 +127,3 @@ process
         process.exit(1);
     });
 client.login(process.env.CLIENT_TOKEN);
-
-client.on('debug', (message: string) => console.log(message));

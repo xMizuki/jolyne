@@ -370,6 +370,10 @@ interface Ability {
    */
   readonly ultimate?: boolean;
   /**
+   * How much health the ability heals.
+   */
+  readonly heal?: number | `${number}%`;
+  /**
    * Trigger the ability (only if it's a special ability).
    */
   trigger?: (ctx: CommandInteractionContext, promises: any, promisesOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => any;
