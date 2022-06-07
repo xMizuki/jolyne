@@ -410,6 +410,6 @@ export const Pucci: NPC = {
         xp: 1000000,
         money: 1000000
     },
-    stand: Stands.White_Snake["name"]
+    stand: Stands.Whitesnake["name"]
 }
 

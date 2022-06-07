@@ -24,7 +24,7 @@ export const Star_Platinum: Stand = {
     text: {
         awakening_text: "OrRrr.. OrrRrRRrRrR... RrrRQRrR....",
         awaken_text: "ORAAAAAAAAAAAAAAAA !!!!",
-        timestop_text: "Toki wo TOMARE!",
+        timestop_text: "The WORLD!",
         timestop_end_text: "Toki wo Ugokidase.",
     },
     emoji: Emojis.sp,
@@ -249,10 +249,10 @@ export const Ebony_Devil: Stand = { // This is a private stand, not available in
     available: false
 }
 
-export const White_Snake: Stand = {
-    name: "White Snake",
+export const Whitesnake: Stand = {
+    name: "Whitesnake",
     rarity: "S",
-    description: "bro wtf",
+    description: "Whitesnake is a humanoid Stand of a height and build similar to [Pucci](https://jojo.fandom.com/wiki/Enrico_Pucci)'s. It is sparsely clothed in black, with a mask covering its face to the bottom of where its nose would be, in a piece that rises above its head by half its height in a row of peaks, like a crown.",
     abilities: [
         Abilities.Stand_Barrage,
         Abilities.Hallucinogen,
@@ -260,7 +260,7 @@ export const White_Snake: Stand = {
         Abilities.Stand_Disc
     ],
     color: 'WHITE',
-    image: Star_Platinum.image,
+    image: 'https://static.wikia.nocookie.net/jjba/images/e/ea/WhitesnakeAnime1.png/revision/latest?cb=20211202052847&path-prefix=pt-br',
     skill_points: {
         strength: 3,
         defense: 7,
@@ -269,8 +269,60 @@ export const White_Snake: Stand = {
     },
     text: {
         awakening_text: "[awakening in you...]",
-        awaken_text: "bro wtf"
+        awaken_text: "c-moon... made in heaven... RRrRRRrRRR!!!"
     },
-    emoji: Star_Platinum.emoji,
+    emoji: Emojis.whitesnake,
+    available: true
+};
+
+export const Gold_Experience: Stand = {
+    name: "Gold Experience",
+    rarity: "S",
+    description: "Gold Experience is a humanoid Stand of slender build and average height, like [Giorno](https://jojo.fandom.com/wiki/Giorno_Giovanna). The top of its head is similar to that of a typical helmet of a soldier with a ladybug-like design, with curved markings similar to the letter J coming down from the eyes on both sides.",
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities.Self_Heal,
+        Abilities.Life_Shot,
+        Abilities.Life_Giver
+    ],
+    color: 'GOLD',
+    image: 'https://static.wikia.nocookie.net/jjba/images/1/14/Gold_Experience_color.png/revision/latest/scale-to-width-down/285?cb=20161020091009',
+    skill_points: {
+        strength: 5,
+        defense: 15,
+        perception: 0,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "*golden wind ost* 🐞 🐞 🐞"
+    },
+    emoji: Emojis.gold_experience,
+    available: true
+};
+
+export const Purple_Haze: Stand = {
+    name: "Purple Haze",
+    rarity: "A",
+    description: 'A aa a a ',
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities['Capsule_Shot'],
+        Abilities['Rage'],
+        Abilities['Poison_Gas']
+    ],
+    color: 'PURPLE',
+    image: Star_Platinum['image'],
+    skill_points: {
+        strength: 10,
+        defense: 5,
+        perception: 0,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "POIIIIIIIISON GAS!"
+    },
+    emoji: Emojis['JolyneAhhhhh'],
     available: false
 };
