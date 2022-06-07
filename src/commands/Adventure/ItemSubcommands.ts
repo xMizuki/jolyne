@@ -177,7 +177,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 if (i.customId === acceptID) {
                     userData.money += price;
                     userData.items = userData.items.map(u => Util.getItem(u).id); // migration fix, remove after a while
-                    Util.removeItem(userData.items, item.id);
+                    for (let i = 0; i < quantity; i++) {
+                        Util.removeItem(userData.items, item.id);
+                    }
                     await ctx.client.database.saveUserData(userData);
                     ctx.makeMessage({ content: `${Util.makeNPCString(NPCs.Pucci)} You sold ${quantity} ${item.emoji} ${item.name} for **${Util.localeNumber(price)}** ${Emojis.jocoins}.` });
                 } else {
@@ -215,7 +217,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             if (item.type === "consumable") {
                 const changed: any = {};
                 for (let i = 0; i < quantity; i ++) {
-                    Util.removeItem(userData.items, item.id);
+                    Util.removeItem(userData.items, ctx.interaction.options.data[0].options.find(r => r.name === 'item').value as string);
                     Object.keys(item.benefits).forEach((v) => {
                         const oldValue = userData[v as keyof typeof userData];
                         // We add the value to the user data

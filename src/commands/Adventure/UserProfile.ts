@@ -33,7 +33,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const userGlobalPosition = rows.sort((a: UserData, b: UserData) => (b.level * 100000) + b.xp - (a.level * 100000) + a.xp).findIndex(p => p.id === userData.id) + 1;
     const userRankedPosition = rows.sort((a: UserData, b: UserData) => (b.stats?.rankedBattle?.wins ?? 0 - b.stats?.rankedBattle?.losses) - (a.stats?.rankedBattle?.wins ?? 0 - a.stats?.rankedBattle?.losses)).findIndex(p => p.id === userData.id) + 1;
     const userMoneyPosition = rows.sort((a: UserData, b: UserData) => b.money - a.money).findIndex(p => p.id === userData.id) + 1;
-    const userStand = userData.stand ? Stands[(userData.stand.replace(/ /gi, "_").replace(/:/gi, "_")) as keyof typeof Stands] : null;
+    const userStand = userData.stand ? Util.getStand(userData.stand) : null;
     let color: ColorResolvable = (await ctx.client.database.redis.client.get(`color${userData.level}_${userData.level}`)) as ColorResolvable;
     if (!color) {
         const randomHex =  [...Array(6)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');

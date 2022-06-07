@@ -43,6 +43,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     }
     
     function menuMessage(): void {
+        const fields: { value: string, name: string, inline?: boolean }[] = [];
         const components: MessageActionRowComponentResolvable[] = [];
         for (const shop of shopsArray) {
             if (shop.open_date) {
@@ -105,7 +106,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 Util.actionRow([ ItemsSelectMenu ]),
                 Util.actionRow([ goBackBTN])
             ]
-        })    
+        });
+
 
     }
     const filter = (i: MessageComponentInteraction) => {
@@ -132,15 +134,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (item && i.isSelectMenu()) {
             if (item.price > userData.money) {
                 followUp({
-                    embeds: [{
-                        title: ':x: Error',
-                        description: `You don't have enough ${Emojis.jocoins}`,
-                        color: 'RED'
-                    }],
-                    components: [
-                        Util.actionRow([ goBackBTN])
-                    ]
+                    content: `${Emojis.jocoins} | You need **${Util.localeNumber(item.price - userData.money)}** more coins to buy this item.`,
                 });
+                    
                 return;
             }
             userData.money -= item.price;
