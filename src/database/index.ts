@@ -27,62 +27,53 @@ export default class DatabaseHandler {
             else userData.tag = await this._client.users.fetch(userData.id).then((r: User) => r.tag || "Unknown#0000").catch(() => "Unknown#0000");
 
             const changes: { query: string, value: any }[] = [];
-            
-            Object.keys(oldData).filter(r => oldData[r as keyof UserData] !== undefined && userData[r as keyof UserData] !== undefined).forEach((key: string | object | boolean | Array<any>) => {
+            for await (const b of Object.keys(oldData).filter(r => oldData[r as keyof UserData] !== undefined && userData[r as keyof UserData] !== undefined)) {
+                const key: string | object | boolean | Array<any> = b;
+
                 const oldValue = oldData[key as keyof UserData];
                 const newValue = userData[key as keyof UserData];
 
                 const pushChanges = async () => {
                     if (key === "mails" && Util.isMailArray(oldValue) && Util.isMailArray(newValue)) {
                         if (oldValue.length < newValue.length) {
+                            console.log(oldValue, newValue);
                             const count: number = parseInt(await this.redis.client.get(`jjba:newUnreadMails:${userData.id}`)) || 0;
                             this.redis.client.set(`jjba:newUnreadMails:${userData.id}`, count + newValue.length - oldValue.length);
                         }
                     }
+                    
                     changes.push({
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
                     });
+                    console.log(changes.length, Date.now(), 'a');
+
                 };
 
                 if (typeof oldValue === 'boolean') {
-                    if (newValue !== oldValue) pushChanges()
+                    if (newValue !== oldValue) await pushChanges()
                 } else if (typeof oldValue !== 'object') {
-                    if (String(newValue) !== String(oldValue)) pushChanges();
+                    if (String(newValue) !== String(oldValue)) await pushChanges();
                 } else {
                     if (oldValue instanceof Array && newValue instanceof Array) {
-                        if(!arrayEqual(newValue, oldValue)) pushChanges();
+                        if(!arrayEqual(newValue, oldValue)) await pushChanges();
                     } else {
-                        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) pushChanges();
+                        if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) await pushChanges();
                     }
                 }
-            });
+                
+            }
             if (userData.health < 0) userData.health = 0;
             if (userData.stamina < 0) userData.stamina = 0;
 
             if (changes.length > 0) {
+                console.log("PNIK.")
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
-                    for (const key in userData) {
-                        if (userData.hasOwnProperty(key)) {
-                            const element = userData[key as keyof typeof userData];
-                            if (Util.isQuestArray(element)) {
-                                for (const quest of element.filter(q => q.id.startsWith("cc") && !q.completed)) {
-                                    let goal = Number(quest.id.split(":")[1]);
-                                    if (quest.total) quest.total = quest.total + userData.money - oldData.money;
-                                    else quest.total = userData.money - oldData.money;
-                                    if (quest.total < 0) quest.total = 0;
-                                    if (quest.total >= goal) {
-                                        quest.completed = true;
-                                        quest.total = goal;
-                                    };
-                                }
-                                // @ts-ignore
-                                userData[key as keyof typeof userData] = element;
-                            }
-                        }
-                    }
-        
+                    Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("cc") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
+                        quest.total += userData.money - oldData.money;
+                    });
+
                 }
                 this.fixStats(userData);
                 await this.postgres.client.query(`UPDATE users SET ${changes.map((r) => r.query).join(', ')} WHERE id = $${changes.length + 1}`, [...changes.map((r) => r.value), userData.id]);
@@ -127,7 +118,7 @@ export default class DatabaseHandler {
                 daily: {
                     claimedAt: 0,
                     streak: 0,
-                    quests: []
+                    quests: Util.generateDailyQuests(1)
                 },
                 stats: {}
             };
@@ -203,10 +194,10 @@ export default class DatabaseHandler {
 
                 return resolve(finalData);
             }
-            const userData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userId]).then(r => r.rows[0] || null);
+            const userData: UserData = await this.postgres.client.query(`SELECT * FROM users WHERE id = $1`, [userId]).then(r => r.rows[0] || null);
             if (userData) {
                 await this.redis.client.set(`cachedUser:${userId}`, JSON.stringify(userData));
-                const finalData: UserData = userData;
+                const finalData = userData;
                 this.fixStats(finalData);
                 if (!this.languages.get(userId) || this.languages.get(userId) !== finalData.language) this.languages.set(userId, finalData.language);
                 return resolve(finalData);
