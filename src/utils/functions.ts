@@ -147,7 +147,8 @@ export const getItemIdByName = function getItemById(name: string): string {
 
 export const getItem = function getItemByString(name: string): Item {
     if (name.endsWith('disk')) {
-        const stand = getStand(name.split(':')[0]);
+        const st = name.split(':');
+        const stand = getStand(st[0] + (st.length > 2 ? ':' + st[1] : ''));
         return Items[`${stand.name.replace(/ /gi, "_")}_Disc` as keyof typeof Items];
     }
     const item: Item = Items[getItemIdByName(name) as keyof typeof Items] || Items[getItemNameById(name) as keyof typeof Items] || Object.keys(Items).map(v => Items[v as keyof typeof Items]).find(v => v.id === name);
