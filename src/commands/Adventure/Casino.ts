@@ -114,7 +114,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 userData.money -= bet;
                 followUpMSG = Util.randomArray(ctx.translateObject('casino:LOSE_MESSAGES'));
             }
-            ctx.client.database.delCooldownCache('casino', userData.id);
+            await ctx.client.database.delCooldownCache('casino', userData.id);
             ctx.client.database.saveUserData(userData);
             followUpReply = await ctx.followUp({
                 content: followUpMSG,
