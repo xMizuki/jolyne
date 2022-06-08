@@ -1,3 +1,52 @@
 {
-    "REMOVE_THING_KAKYOIN": "You tried to"
+    "NO_ACTIONS": "You can't do anything for the moment.",
+    "REMOVE_THING_KAKYOIN": {
+        "BASE": "You tried to remove the thing...",
+        "FAILED": "And you failed. Your only choice now is to bring kakyoin to the hospital.",
+        "SUCCESS": "And you succeeded."
+    },
+    "BRING_KAKYOIN_HOSPITAL": {
+        "SUCCESS": "👨‍⚕️ **Male Nurse:** Kakyoin was taken back to the hospital and his costs were paid. He'll get back to you when he's better.",
+        "MONEY": "👨‍⚕️ **Male Nurse:** It is the hospital that does not care about charity... WHERE'S YOUR MONEY ???"
+    },
+    "ANALYSE_HAIR": {
+        "SUCCESS": "📧 These hairs have been sent to the SPEEDWAGON FOUNDATION."
+    },
+    "GO_TO_AIRPORT": {
+        "BASE": "{{npc.taxi_driver}} Hello sir, it'll cost you **{{slowPrice}}** {{emojis.jocoins}}. The journey will take 2 hours. If you want, I can go four times faster for triple the price (please don't tell to my boss). What is your choice?",
+        "MONEY": "{{npc.taxi_driver}} You fool, you don't have enough money. You can't go anywhere.",
+        "SLOW": "{{npc.taxi_driver}} You're going to the airport. You'll be there in 2 hours. You can come back anytime you want. Thank you for your business.",
+        "FAST": "{{npc.taxi_driver}} Alright, I'll get you to the Morioh Airport in only **30 minutes**. GET READY!"
+    },
+    "TYGAD": {
+        "SUCCESS": "📧 You've successfully sent an e-mail about the current situation to your Grandfather."
+    },
+    "REMOVE_FLESHBUD_POLNAREFF": {
+        "DIALOGUES_1": [
+            "You notice a strange creature similar to Kakyoin... You try to remove it.\n",
+            "{{npc.polnareff}} Bro... WHAT THE HELL ARE YOU DOING ???? IT HURTS SO BAD STOP",
+            "🔱 **{{user.username}}**: STFU, I'm not going to hurt you, I'm just going to save you.\n",
+            "*You're trying to remove the fleshbud from polnareff, but it is too strong.*",
+            "{{npc.polnareff}} ARGHHHHHH STOP IT C'MON DUDE STOP IT\n",
+            "It didn't work...\n",
+            "{{npc.jotaro}} Oh no, I've already seen this creature... Yare yare daze, do you need some help?"
+        ],
+        "DIALOGUES_JOTARO": [
+            "{{npc.jotaro}} k.\n",
+            "*Jotaro tried to remove the fleshbud from polnareff, but it was too strong.*\n",
+            "{{npc.jotaro}} Ah I see...",
+            "{{npc.jotaro}} Star Platinum: The World!\n",
+            "The fleshbud is gone... and jotaro too... It seems like that this man stopped the time",
+            "*Toki wa Ugokidasu.*\n",
+            "🔱 **{{user.username}}**: What a strange man... I wonder where did he go and how did he remove the fleshbud so quickly?! Well, atleast you're saved",
+            "{{npc.polnareff}} Thanks for saving me, a mysterious guy called Dio manipulated me, I couldn't control myself. Take this arrow, it may help you."
+        ],
+        "DIALOGUES_2": [
+            "{{npc.jotaro}} hmm, good luck...\n",
+            "The fleshbud is gone... and jotaro too... It seems like that this man somehow stopped the time and removed the fleshbud\n",
+            "🔱 **{{user.username}}**: Where did the fleshbud go??? What the hell happened??",
+            "{{npc.polnareff}} Thanks for saving me, a mysterious guy called Dio manipulated me, I couldn't control myself. Take this arrow, it may help you.",
+            "🔱 **{{user.username}}**: Huh? Ok thanks..."
+        ]
+    }
 }

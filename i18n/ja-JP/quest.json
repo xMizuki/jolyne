@@ -22,7 +22,7 @@
         "DESCRIPTION": "Loot {{cc}} coins (using the `/loot` command)"
     },
     "CLAIM_DAILY": {
-        "DESCRIPTION": "Claim your daily reward {{cc}} time{{s}} (using the `/loot` command)"
+        "DESCRIPTION": "Claim your daily reward {{cc}} time{{s}} (using the `/daily claim` command)"
     },
     "CLAIM_COINS": {
         "DESCRIPTION": "Claim {{cc}} coins"
@@ -32,5 +32,31 @@
     },
     "USE_ASSAULT": {
         "DESCRIPTION": "Use the `/assault` command {{cc}} time{{s}}"
+    },
+    "SPEEDWAGON_ANSWER": {
+        "TITLE": "Wait for the SPEEDWAGON to answer",
+        "DESCRIPTION": "Wait for the SPEEDWAGON to send you their results about these hairs"
+    },
+    "KAKYOIN_BACK": {
+        "TITLE": "Wait for kakyoin to recover",
+        "DESCRIPTION": "Wait for kakyoin to recover from the hospital"
+    },
+    "TAXIUPGO": {
+        "DESCRIPTION": "Get at the Morioh airport 🚕"
+    },
+    "TYGAD": {
+        "TITLE": "Send an e-mail to your grandfather about the situation",
+        "DESCRIPTION": "Tell to your grandfather about Dio"
+    },
+    "TYGAD_ANSWER": {
+        "DESCRIPTION": "Wait for your grandfather to answer"
+    },
+    "GO_TO_AIRPORT": {
+        "TITLE": "Get to the airport",
+        "DESCRIPTION": "Find a taxi that goes to the Morioh's International Airport"
+    },
+    "REMOVE_FLESHBUD_POLNAREFF": {
+        "TITLE": "Remove the fleshbud",
+        "DESCRIPTION": "Remove the fleshbud on the head of the polnareff"
     }
 }

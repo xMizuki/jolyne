@@ -1,6 +1,6 @@
 {
     "NO_MONEY": "{{emojis.daniel}} **__Daniel J. D'Arby:__** Oi oi, you don't have enough money, bozo.",
-    "CONFIRM_MESSAGE": "{{emojis.daniel}} **__Daniel J. D'Arby:__** Yo __{{user.username}}__,\n\nYou're going to bet **{{bet}}** coins {{emojis.jocoins}}.\nAre you sure you want to do this ?",
+    "CONFIRM_MESSAGE": "{{emojis.daniel}} **__Daniel J. D'Arby:__** Yo __{{user.username}}__,\n\nYou're going to bet **{{bet}}** coins {{emojis.jocoins}}.\nYou currently have **{{left}}** coins {{emojis.jocoins}}.\nAre you sure you want to do this ?",
     "CANCEL_MESSAGE": "{{emojis.daniel}} **__Daniel J. D'Arby:__** I see, you're too scared.",
     "JACKPOT_MESSAGES": [
         "{{emojis.daniel}} **__Daniel J. D'Arby:__** You're a lucky one, you won the jackpot !",
