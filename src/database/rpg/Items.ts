@@ -310,7 +310,7 @@ const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: s
   const common_items = Object.keys(Items).filter(v => Items[v as keyof typeof Items].rarity === "C" && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'box' && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'disc');
   const mid_items = Object.keys(Items).filter(v => Items[v as keyof typeof Items].rarity === "B" && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'box' && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'disc');
   const rare_items = Object.keys(Items).filter(v => Items[v as keyof typeof Items].rarity === "A" && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'box');
-  const epic_items = Object.keys(Items).filter(v => Items[v as keyof typeof Items].rarity === "S" && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'box');
+  const epic_items = Object.keys(Items).filter(v => Items[v as keyof typeof Items].rarity === "S" && Items[v as keyof typeof Items].storable && Items[v as keyof typeof Items].type !== 'box' && Items[v as keyof typeof Items].type !== 'disc');
   let emoji: { emoji?: string, shaking?: string } = {};
   if (box.toLowerCase().startsWith("money")) {
     superator = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
