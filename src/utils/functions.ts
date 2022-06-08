@@ -3,9 +3,14 @@ import { Collection, MessageEmbed, MessageActionRowComponentResolvable, MessageA
 import moment from 'moment-timezone';
 import * as Items from '../database/rpg/Items';
 import * as Stands from '../database/rpg/Stands';
+import * as Quests from '../database/rpg/Quests';
+import * as NPCs from '../database/rpg/NPCs';
 import Canvas from 'canvas';
+import JolyneClient from '../structures/Client';
 
-const bufferCache: Array<Buffer> = [];
+const bufferCache: {
+    [key: string]: Buffer
+} = {};
 
 export const getRandomInt = function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -68,7 +73,6 @@ export const removeItem = function RemoveOneFromArray(array: Array<any>, toRemov
 }
 
 export const generateStandCart = async function standCart(stand: Stand): Promise<Buffer> {
-    // @ts-expect-error
     if (bufferCache[stand.name as keyof typeof String]) return bufferCache[stand.name as keyof typeof bufferCache];
 
     const canvas = Canvas.createCanvas(230, 345);
@@ -76,21 +80,26 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
     const image = await Canvas.loadImage(stand.image);
     let card_link;
     let color: ColorResolvable;
-    if (stand.rarity === "S") {
-        color = "#2b82ab";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480216277905418/S_CARD.png";
-    } else if (stand.rarity === "A") {
-        color = "#3b8c4b";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959459394205126726/A_CARD.png";
-    } else if (stand.rarity === "B") {
-        color = "#786d23"
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480058651766874/B_CARD.png";
-    } else if (stand.rarity === "C") {
-        color = "#181818";
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480090331316334/C_CARD.png";
-    } else {
-        color = 0xff0000;
-        card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480253175201862/SS_CARD.png"
+    switch (stand.rarity) {
+        case "S":
+            color = "#2b82ab";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480216277905418/S_CARD.png";
+            break;
+        case "A":
+            color = "#3b8c4b";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959459394205126726/A_CARD.png";
+            break;
+        case "B":
+            color = "#786d23"
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480058651766874/B_CARD.png";
+            break;
+        case "C":
+            color = "#181818";
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480090331316334/C_CARD.png";
+            break;
+        default:
+            color = 0xff0000;
+            card_link = "https://cdn.discordapp.com/attachments/898236400195993622/959480253175201862/SS_CARD.png"
     }
     
     let card_image = await Canvas.loadImage(card_link);
@@ -98,10 +107,10 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
     ctx.drawImage(image, 40, 50, 230-RM+15, 345-RM+20);
     ctx.drawImage(card_image, 0, 0, 230, 345);
     ctx.fillStyle = "white";
-    if (stand.name === "Muhammad Avdol" || stand.name === "Giorno Giovanna") {
-        ctx.font = "20px Impact";
-        let content = stand.name.substring(0, 10) + "...";
-        ctx.fillText(content, 40, 40);
+    if (stand.name.length === 10) {
+        ctx.font = "22px Impact";
+        let content = stand.name.substring(0, 10);
+        ctx.fillText(content, 50, 40);
     } else if (stand.name.length <= 7) {
         ctx.font = "30px Impact";
         ctx.fillText(stand.name, 74, 40);
@@ -123,7 +132,6 @@ export const generateStandCart = async function standCart(stand: Stand): Promise
         }
         ctx.fillText(content, 40, 40 - (20 - stand.name.length));
     }
-    // @ts-expect-error
     bufferCache[stand.name as keyof typeof bufferCache] = canvas.toBuffer();
 
     return canvas.toBuffer();
@@ -138,6 +146,10 @@ export const getItemIdByName = function getItemById(name: string): string {
 }
 
 export const getItem = function getItemByString(name: string): Item {
+    if (name.endsWith('disk')) {
+        const stand = getStand(name.split(':')[0]);
+        return Items[`${stand.name.replace(/ /gi, "_")}_Disc` as keyof typeof Items];
+    }
     const item: Item = Items[getItemIdByName(name) as keyof typeof Items] || Items[getItemNameById(name) as keyof typeof Items] || Object.keys(Items).map(v => Items[v as keyof typeof Items]).find(v => v.id === name);
     if (!item) return null;
     return item;
@@ -217,13 +229,14 @@ ${Object.keys(stand.skill_points).map(r =>  `  • +${stand.skill_points[r as ke
 }
 
 export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData: UserData | NPC): number {
+    if (ability.damages === 0) return 0;
     const userATKDMG = calcATKDMG(userData);
     /*
     if (ability.damages === 0) return 0;
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    return  (userATKDMG / 45 * ability.damages) + ability.damages
+    return Math.round(ability.damages + ((userATKDMG / ability.damages) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
 }
 
 export const randomFood = function getRandomFood(): Item {
@@ -292,10 +305,137 @@ export const isMailArray = function isMailArray(item: any): item is Mail[] {
     return item instanceof Array && (item as Mail[]).every(i => isMail(i));
 }
 
-export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'REMAINS' | 'DATE' | 'FULL_DATE'): string {
+export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'FROM_NOW' | 'DATE' | 'FULL_DATE'): string {
     const fixedDate = typeof date === "number" ? new Date(date) : date;
     return `<t:${(fixedDate.getTime() / 1000).toFixed(0)}:${type
-        .replace('REMAINS', 'R')
+        .replace('FROM_NOW', 'R')
         .replace('DATE', 'D')
         .replace('FULL_D', 'F')}>`;
+}
+
+export const standPrices = {
+    "SS": 200000,
+    "S": 50000,
+    "A": 25000,
+    "B": 10000,
+    "C": 5000
+}
+
+export const getImageColor = async function getImageColor(client: JolyneClient, url: string): Promise<ColorResolvable> {
+    try {
+        const alr = await client.database.redis.get(`jjba:color:${url}`) as ColorResolvable;
+        if (alr) return alr;
+        let ext = "png";
+        if (url.endsWith("jpg")) ext = "jpg";
+        const axios = require("axios");
+        const response = await axios.get(url, {
+            responseType: 'arraybuffer'
+        })
+        const buffer = Buffer.from(response.data, "utf-8");
+
+        function blendColors(colorA: string, colorB: string, amount: number) {
+            const [rA, gA, bA] = colorA.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const [rB, gB, bB] = colorB.match(/\w\w/g).map((c) => parseInt(c, 16));
+            const r = Math.round(rA + (rB - rA) * amount).toString(16).padStart(2, '0');
+            const g = Math.round(gA + (gB - gA) * amount).toString(16).padStart(2, '0');
+            const b = Math.round(bA + (bB - bA) * amount).toString(16).padStart(2, '0');
+            return '#' + r + g + b;
+        } 
+
+        const getColors = require('get-image-colors');
+        let color;
+        await getColors(buffer, 'image/' + ext).then(async (colors: any[]) => {
+            await client.database.redis.set(`jjba:color:${url}`, blendColors(colors.map(color => color.hex())[0], colors.map(color => color.hex())[colors.length - 1], 0.5));
+            color = blendColors(colors.map(color => color.hex())[0], colors.map(color => color.hex())[colors.length - 1], 0.5);
+        });
+        return color;
+
+    } catch (e) {
+        const color = [...Array(6)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        client.database.redis.set(`jjba:color:${url}`, color);
+        return color as ColorResolvable;
+    }
+}
+
+export const getRewards = (userData: UserData) => {
+    let rewards = {
+        money: (userData.level * 1000) - ((userData.level * 1000) * 25 / 100),
+        xp:  (userData.level * 400) - ((userData.level * 400) * 10 / 100),
+        premium: {
+            money: (userData.level * 400) - ((userData.level * 400) * 25 / 100),
+            xp: (userData.level * 100) - ((userData.level * 100) * 10 / 100)
+        }
+    };
+    if (rewards.money > 6000) rewards.money = 6000;
+    if (rewards.premium.money > 15000) rewards.money = 15000;
+
+    return rewards;
+}
+
+export const RandomNPC = (level: number, onlyPublic?: boolean): NPC => {
+    const NPCSArray = Object.values(NPCs).filter(r => r.level <= level && (onlyPublic ? !r.private : true));
+    const StandsArray = Object.values(Stands);
+    const NPC = NPCSArray[Math.floor(Math.random() * NPCSArray.length)];
+    return {
+        ...NPC,
+        stand: NPC.stand?.replace('RANDOM', StandsArray[Math.floor(Math.random() * StandsArray.length)].name) ?? null
+    }
+}
+
+export const generateDailyQuests = (level: number): Quest[] => {
+    const quests: Quest[] = [Quests.ClaimDaily(1)];
+
+    for (let i = 0; i < level; i++) {
+        if (RNG(80)) {
+            quests.push(Quests.Defeat(RandomNPC(level, true)));
+        }
+    }
+    quests.push(Quests.ClaimCoins(getRandomInt(1, level * 1000)));
+
+    let max = level;
+    if (max > 10) max = 10;
+
+    if (RNG(50)) {
+        quests.push(Quests.UseLoot(getRandomInt(1, max)));
+    }
+    if (RNG(50)) {
+        quests.push(Quests.Assault(getRandomInt(1, max)));
+    }
+    if (RNG(50)) {
+        quests.push(Quests.LootCoins(getRandomInt(1, max * 250)));
+    }
+
+    return quests;
+}
+
+export const RNG = (percent: number): boolean => {
+    return getRandomInt(0, 100) < percent;
+}
+
+export const forEveryQuests = (userData: UserData, filter: (q: Quest) => boolean, callback: (quest: Quest) => void) => {
+    for (const key in userData) {
+        if (userData.hasOwnProperty(key)) {
+            const element = userData[key as keyof typeof userData];
+            if (isQuestArray(element)) {
+                for (const quest of element.filter(q => filter(q))) {
+                    callback(quest)
+                }
+                // @ts-ignore
+                userData[key as keyof typeof userData] = element;
+            } else if (typeof element === 'object' && element !== null) {
+                for (const key2 of Object.keys(element)) {
+                    const element2 = element[key2 as keyof typeof element] as any;
+                    if (isQuestArray(element2)) {
+                        for (const quest of element2.filter(q => filter(q))) {
+                            callback(quest)
+                        }
+                        // @ts-ignore
+                        userData[key as keyof typeof userData][key2 as keyof typeof userData] = element[key2 as keyof typeof element];
+                    }
+                }
+            }
+        }
+
+    }
+    
 }

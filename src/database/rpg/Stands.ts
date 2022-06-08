@@ -24,7 +24,7 @@ export const Star_Platinum: Stand = {
     text: {
         awakening_text: "OrRrr.. OrrRrRRrRrR... RrrRQRrR....",
         awaken_text: "ORAAAAAAAAAAAAAAAA !!!!",
-        timestop_text: "Toki wo TOMARE!",
+        timestop_text: "The WORLD!",
         timestop_end_text: "Toki wo Ugokidase.",
     },
     emoji: Emojis.sp,
@@ -65,7 +65,7 @@ export const The_World__Over_Heaven: Stand = {
     description: "The World is a humanoid Stand. It is a very tall humanoid with a very muscular build. It bears a striking resemblance to [Dio Brando](https://jojo.fandom.com/wiki/Dio_Brando) in terms of appearance.",
     abilities: [],
     color: "YELLOW",
-    image: "https://pbs.twimg.com/media/EiN6WPVWoAAAODC?format=jpg&name=large",
+    image: "https://static.wikia.nocookie.net/jjba/images/4/47/Heaven_Ascension_Dio.png/revision/latest/scale-to-width-down/250?cb=20201125221026",
     skill_points: {
         strength: 10,
         defense: 5,
@@ -74,12 +74,12 @@ export const The_World__Over_Heaven: Stand = {
     },
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
-        awaken_text: "WRRRRYYYYYYYY !!!!",
+        awaken_text: "OVER HEAVENd !!!!",
         timestop_text: "Toki wo TAMARE!",
         timestop_end_text: "Toki wa Ugokidasu.",
 
     },
-    emoji: "<:sp:925699121745104918>",
+    emoji: Emojis.the_world,
     available: true
 };
 
@@ -133,7 +133,7 @@ export const Aerosmith: Stand = {
 
 export const The_Hand: Stand = {
     name: "The Hand",
-    rarity: "C",
+    rarity: "A",
     description: "The hand is a humanoid-type stand who can erase things from existence, it was originally owned by [Okuyasu Nijimura](https://jojo.fandom.com/wiki/Okuyasu_Nijimura)",
     abilities: [
         Abilities.Light_Speed_Barrage,
@@ -142,9 +142,9 @@ export const The_Hand: Stand = {
     color: "#1d57e5",
     image: "https://static.wikia.nocookie.net/jjba/images/4/46/The_Hand_Anime.png/revision/latest?cb=20161217225524&path-prefix=fr",
     skill_points: {
-        strength: 10,
-        defense: 5,
-        perception: 5,
+        strength: 15,
+        defense: 0,
+        perception: 0,
         stamina: 0,
     },
     text: {
@@ -248,3 +248,81 @@ export const Ebony_Devil: Stand = { // This is a private stand, not available in
     emoji: '\uD83D\uDC7F',
     available: false
 }
+
+export const Whitesnake: Stand = {
+    name: "Whitesnake",
+    rarity: "S",
+    description: "Whitesnake is a humanoid Stand of a height and build similar to [Pucci](https://jojo.fandom.com/wiki/Enrico_Pucci)'s. It is sparsely clothed in black, with a mask covering its face to the bottom of where its nose would be, in a piece that rises above its head by half its height in a row of peaks, like a crown.",
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities.Hallucinogen,
+        Abilities.Gun,
+        Abilities.Stand_Disc
+    ],
+    color: 'WHITE',
+    image: 'https://static.wikia.nocookie.net/jjba/images/e/ea/WhitesnakeAnime1.png/revision/latest?cb=20211202052847&path-prefix=pt-br',
+    skill_points: {
+        strength: 3,
+        defense: 7,
+        perception: 10,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "c-moon... made in heaven... RRrRRRrRRR!!!"
+    },
+    emoji: Emojis.whitesnake,
+    available: true
+};
+
+export const Gold_Experience: Stand = {
+    name: "Gold Experience",
+    rarity: "S",
+    description: "Gold Experience is a humanoid Stand of slender build and average height, like [Giorno](https://jojo.fandom.com/wiki/Giorno_Giovanna). The top of its head is similar to that of a typical helmet of a soldier with a ladybug-like design, with curved markings similar to the letter J coming down from the eyes on both sides.",
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities.Self_Heal,
+        Abilities.Life_Shot,
+        Abilities.Life_Giver
+    ],
+    color: 'GOLD',
+    image: 'https://static.wikia.nocookie.net/jjba/images/1/14/Gold_Experience_color.png/revision/latest/scale-to-width-down/285?cb=20161020091009',
+    skill_points: {
+        strength: 5,
+        defense: 15,
+        perception: 0,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "*golden wind ost* 🐞 🐞 🐞"
+    },
+    emoji: Emojis.gold_experience,
+    available: true
+};
+
+export const Purple_Haze: Stand = {
+    name: "Purple Haze",
+    rarity: "A",
+    description: 'A aa a a ',
+    abilities: [
+        Abilities.Stand_Barrage,
+        Abilities['Capsule_Shot'],
+        Abilities['Rage'],
+        Abilities['Poison_Gas']
+    ],
+    color: 'PURPLE',
+    image: Star_Platinum['image'],
+    skill_points: {
+        strength: 10,
+        defense: 5,
+        perception: 0,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "POIIIIIIIISON GAS!"
+    },
+    emoji: Emojis['JolyneAhhhhh'],
+    available: false
+};

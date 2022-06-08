@@ -92,7 +92,7 @@ const lastXDayss = (numberOfDays: number, monthIndex: any[]) => {
 };
 
 
-export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext) => {
     await ctx.defer();
     const numberOfDays = 30;
 

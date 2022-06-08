@@ -1,6 +1,8 @@
 import type { Event, InteractionCommand } from '../@types';
 import * as Util from '../utils/functions';
 import * as Items from '../database/rpg/Items';
+import * as NPCs from '../database/rpg/NPCs';
+import * as Chapters from '../database/rpg/Chapters';
 import * as Emojis from '../emojis.json';
 import InteractionCommandContext from '../structures/Interaction';
 
@@ -14,6 +16,18 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
 
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) return;
+
+    if (command.cooldown && !isNaN(command.cooldown)) {
+        const cd = interaction.client.cooldowns.get(`${interaction.user.id}:${command.name}`);
+        if (cd) {
+            const timeLeft = cd - Date.now();
+            if (timeLeft > 0) {
+                return interaction.reply({ content: `You can use this command again in ${(timeLeft / 1000).toFixed(2)} seconds.`, ephemeral: true });
+            } else {
+                interaction.client.cooldowns.delete(`${interaction.user.id}:${command.name}`);
+            }
+        } else interaction.client.cooldowns.set(`${interaction.user.id}:${command.name}`, Date.now() + command.cooldown * 1000);
+    }
 
     if (command.category === "adventure") {
         const userData = await interaction.client.database.getUserData(interaction.user.id);
@@ -55,7 +69,7 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
         if (command.rpgCooldown) {
             const cd = parseInt(await interaction.client.database.redis.client.get(`jjba:rpg_cooldown_${interaction.user.id}:${command.name}`));
             if (cd && cd > Date.now()) return interaction.reply({ content: interaction.client.translations.get("en-US")(command.rpgCooldown.i18n ?? 'base:RPG_COOLDOWN', {
-                time: Util.generateDiscordTimestamp(cd, 'REMAINS')
+                time: Util.generateDiscordTimestamp(cd, 'FROM_NOW')
             })});
             await interaction.client.database.redis.client.set(`jjba:rpg_cooldown_${interaction.user.id}:${command.name}`, Date.now() + command.rpgCooldown["base"]);
         }
@@ -65,6 +79,22 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
         await command.execute(ctx, userData);
 
         await Util.wait(2000);
+
+        // Vote
+        if (await interaction.client.database.redis.get(`jjba:voteTold:${interaction.user.id}`)) {
+            let rewards = Util.getRewards(userData);
+
+            rewards.money = Math.round(rewards.money / 4.5);
+            rewards.xp = Math.round(rewards.money / 2);
+        
+            let content = `:up: | <@${interaction.user.id}>, thanks for voting ! You got **${Util.localeNumber(rewards.xp)}** <:xp:925111121600454706> and **${Util.localeNumber(rewards.money)}** <:jocoins:927974784187392061>`;
+            const got_myst = await interaction.client.database.redis.get(`jjba:voteTold:${interaction.user.id}`);
+            if (got_myst === "m") content += " __and a **Mysterious Arrow**__ <:mysterious_arrow:924013675126358077>"
+            interaction.client.database.redis.del(`jjba:voteTold:${interaction.user.id}`);
+            interaction.followUp({
+                content: content
+            });
+        }  
         // Misc
         if (interaction.replied) {
             const newMails = await interaction.client.database.redis.client.get(`jjba:newUnreadMails:${interaction.user.id}`);
@@ -77,22 +107,18 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
                 });
             }
             if (await interaction.client.database.getCooldownCache(interaction.user.id)) return;
-            checkLVL()
-            function checkLVL() {
-                if (userData.xp >= Util.getMaxXp(userData.level)) {
-                    userData.xp = userData.xp - Util.getMaxXp(userData.level);
-                    userData.level++;
-                    ctx.followUp({
-                        content: ctx.translate("base:LEVEL_UP_MESSAGE", {
-                            level: userData.level
-                        })
-                    });
-                    ctx.client.database.saveUserData(userData);
-                    if (userData.xp >= Util.getMaxXp(userData.level)) checkLVL();
-                }
+
+            while (userData.xp >= Util.getMaxXp(userData.level)) {
+                console.log("Level up!");
+                userData.xp = userData.xp - Util.getMaxXp(userData.level);
+                userData.level++;
+                ctx.followUp({
+                    content: ctx.translate("base:LEVEL_UP_MESSAGE", {
+                        level: userData.level
+                    })
+                });
+                ctx.client.database.saveUserData(userData);
             }
-
-
         }
     } else command.execute(new InteractionCommandContext(interaction));
 

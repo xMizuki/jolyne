@@ -12,11 +12,12 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 3;
 export const rpgCooldown: SlashCommand["rpgCooldown"] = {
     base: 1800000 / 2,
-    premium: 1800000 / 4
+    premium: 1800000 / 4,
+    emoji: "💰"
 }
 export const data: SlashCommand["data"] = {
     name: "loot",
-    description: "lootlootlootloot",
+    description: "Search something...",
 };
 
 interface Loot {
@@ -204,25 +205,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         } else {
             userData.money += loot.loot;
             // loop on values chapter_quests, side_quests and daily.quests from userData
-            for (const key in userData) {
-                if (userData.hasOwnProperty(key)) {
-                    const element = userData[key as keyof typeof userData];
-                    if (Util.isQuestArray(element)) {
-                        for (const quest of element.filter(q => (q.id.startsWith("loot") || q.id.startsWith("lloot")) && !q.completed)) {
-                            if (quest.id.startsWith("lloot")) quest.total++; // quest = use loot
-                            else quest.total += loot.loot; // quest = loot money
+            Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("loot") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
+                quest.total += loot.loot as number;
+            });
 
-                            const goal = parseInt(quest.id.split(":")[1]);
-                            if (quest.total >= goal) {
-                                quest.completed = true;
-                            }        
-                        }
-                        // @ts-ignore
-                        userData[key as keyof typeof userData] = element;
-                    }
-                }
-            }
-                
             infos = {
                 emoji: Emojis.jocoins,
                 prize: Util.localeNumber(loot.loot)
@@ -237,6 +223,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 timestamp: new Date()
             }]
         });
+
+        Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("lloot") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
+            quest.total++;
+        });
+        
         await ctx.client.database.saveUserData(userData);
         await ctx.client.database.delCooldownCache("cooldown", userData.id);
 

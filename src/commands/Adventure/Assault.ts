@@ -12,11 +12,13 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 3;
 export const rpgCooldown: SlashCommand["rpgCooldown"] = {
     base: 60000 * 5,
-    premium: 60000 * 2
+    premium: 60000 * 2,
+    emoji: Emojis['JolyneAhhhhh']
+
 }
 export const data: SlashCommand["data"] = {
     name: "assault",
-    description: "assaultassaultassaultassaultassault",
+    description: "Assault a random person in the city"
 };
 
 
@@ -73,7 +75,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     let protectedNPC: NPC = {
         ...NPC
-    };
+    }
 
     ctx.client.database.setCooldownCache("cooldown", userData.id);
     await ctx.defer();

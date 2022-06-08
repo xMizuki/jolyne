@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 import { Pool } from 'pg';
+import ioredis from 'ioredis';
 import log from '../utils/logger';
 import type { Quest, NPC, UserData, Mail, Stand, SkillPoints } from '../@types';
 import * as Util from '../utils/functions';
@@ -65,10 +66,12 @@ const old_client = new Pool({
     log("Ready to compare.", "postgres");
 });
 
+const redisClient = new ioredis();
 async function init() {
     const users = await old_client.query("SELECT * FROM users");
     old_client.end();
     users.rows.forEach(async (user) => {
+        if (Number(user.xp) < 0) user.xp = -(Number(user.xp));
         // @ts-expect-error
         const formattedUser: UserData = {
             id: user.id,
@@ -81,7 +84,7 @@ async function init() {
             daily: {
                 claimedAt: 0,
                 streak: 0,
-                quests: []
+                quests: Util.generateDailyQuests(user.level)
             },
             health: Number(user.health),
             stamina: Number(user.stamina),
@@ -99,6 +102,8 @@ async function init() {
             mails: [],
             stand: user.stand ? Util.getStand(user.stand).name : null
         };
+        formattedUser.daily.claimedAt = parseInt(await redisClient.get(`jjba:daily:claimedAt:${formattedUser.id}`));
+        formattedUser.daily.streak = parseInt(await redisClient.get(`jjba:daily:streak:${formattedUser.id}`));
 
         user.items.forEach(async (item: string) => {
             const Uitem = Util.getItem(item)
@@ -205,8 +210,10 @@ async function init() {
     
         await client.query(`DELETE FROM users WHERE id='${formattedUser.id}'`);
         await client.query(`INSERT INTO users (${Object.keys(formattedUser).join(", ")}) VALUES (${Object.keys(formattedUser).map((r: string) => `$${Object.keys(formattedUser).indexOf(r) + 1}`).join(', ')})`, [...Object.values(formattedUser)]);
+        console.log(user.id + " DONE");
 
     });
+    //redisClient.quit()
     setTimeout(() => {
         log(`${handledQuests.length}/${handledQuests.length + unhandledQuests.length} handled quests`, "CMD");
         log(`${handledItems.length}/${Object.keys(Items).length} handled items`, "CMD");

@@ -33,7 +33,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const userGlobalPosition = rows.sort((a: UserData, b: UserData) => (b.level * 100000) + b.xp - (a.level * 100000) + a.xp).findIndex(p => p.id === userData.id) + 1;
     const userRankedPosition = rows.sort((a: UserData, b: UserData) => (b.stats?.rankedBattle?.wins ?? 0 - b.stats?.rankedBattle?.losses) - (a.stats?.rankedBattle?.wins ?? 0 - a.stats?.rankedBattle?.losses)).findIndex(p => p.id === userData.id) + 1;
     const userMoneyPosition = rows.sort((a: UserData, b: UserData) => b.money - a.money).findIndex(p => p.id === userData.id) + 1;
-    const userStand = userData.stand ? Stands[(userData.stand.replace(/ /gi, "_").replace(/:/gi, "_")) as keyof typeof Stands] : null;
+    const userStand = userData.stand ? Util.getStand(userData.stand) : null;
     let color: ColorResolvable = (await ctx.client.database.redis.client.get(`color${userData.level}_${userData.level}`)) as ColorResolvable;
     if (!color) {
         const randomHex =  [...Array(6)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
@@ -52,11 +52,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const embed = new MessageEmbed()
         .setAuthor({ name: userData.tag, iconURL: userOption?.displayAvatarURL({ dynamic: true }) ?? ctx.interaction.user.displayAvatarURL({ dynamic: true }) })
         .setDescription(ctx.translate("profile:ADVENTUREAT", {
-            rUnix: Util.generateDiscordTimestamp(userData.adventureat, 'REMAINS'), //`<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
+            rUnix: Util.generateDiscordTimestamp(userData.adventureat, 'FROM_NOW'), //`<t:${(userData.adventureat/1000).toFixed(0)}:R>`,
             dUnix: Util.generateDiscordTimestamp(userData.adventureat, 'DATE') //`<t:${(userData.adventureat/1000).toFixed(0)}:D>`,
         }))
         .addField("Player Infos", `:heart: HP: ${Util.localeNumber(userData.health)}/${Util.localeNumber(userData.max_health)}\n:zap: Stamina: ${Util.localeNumber(userData.stamina)}/${Util.localeNumber(userData.max_stamina)}`, true)
-        .addField("Rank", `:globe_with_meridians: \`${userGlobalPosition}\`/\`${rows.length}\`\n⚔️: \`${userRankedPosition}\`/\`${rows.length}\`\n${Emojis.jocoins}: \`${userMoneyPosition}\`/\`${rows.length}\``, true)
+        .addField("Rank", `:globe_with_meridians: \`${userGlobalPosition}\`/\`${rows.length}\`\n⚔️ \`${userRankedPosition}\`/\`${rows.length}\`\n${Emojis.jocoins} \`${userMoneyPosition}\`/\`${rows.length}\``, true)
         .setColor(color)
         .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${Util.localeNumber(userData.money)}`, true)
         .addField("Combat Infos", `:crossed_swords: ATK Damages: ${Util.getATKDMG(userData)}\n🍃 Dodge Chances: ~${userData.dodge_chances}%`, true)

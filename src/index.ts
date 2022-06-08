@@ -12,7 +12,6 @@ import * as Items from './database/rpg/Items';
 import * as Emojis from './emojis.json';
 import * as Util from './utils/functions';
 
-
 // Import types
 import type { SlashCommand, Event } from './@types';
 
@@ -61,13 +60,7 @@ async function init() {
             description: `A disc which contains ${stand.name}'s power...`,
             rarity: stand.rarity,
             type: "disc",
-            cost: {
-                "SS": 500000,
-                "S": 100000,
-                "A": 50000,
-                "B": 10000,
-                "C": 5000
-            }[stand.rarity],
+            price: Util.standPrices[stand.rarity],
             tradable: true,
             storable: true,
             usable: true,

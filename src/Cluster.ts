@@ -20,4 +20,5 @@ const manager = new Manager(`${__dirname}/index.js`, { // compiled file
 });
 
 manager.on('clusterCreate', cluster => console.log(`Launched Cluster ${cluster.id}\n-------------------------------------------------------------`));
-manager.spawn({ timeout: -1 });
+manager.spawn({ timeout: -1 }).catch((e) => { console.log(e)});
+

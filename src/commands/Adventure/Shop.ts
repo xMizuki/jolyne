@@ -1,5 +1,5 @@
-import type { SlashCommand, UserData, Item } from '../../@types';
-import { MessageActionRow, MessageSelectMenu, MessageButton, MessageComponentInteraction, MessageActionRowComponentResolvable, SelectMenuInteraction, ButtonInteraction } from 'discord.js';
+import type { SlashCommand, UserData, Item, Shop } from '../../@types';
+import { Message, MessageSelectMenu, MessageButton, MessageComponentInteraction, MessageActionRowComponentResolvable, SelectMenuInteraction, ButtonInteraction, MessageEditOptions, MessagePayload } from 'discord.js';
 import InteractionCommandContext from '../../structures/Interaction';
 import type { Quest, Chapter } from '../../@types';
 import * as Util from '../../utils/functions';
@@ -13,11 +13,11 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 3;
 export const data: SlashCommand["data"] = {
     name: "shop",
-    description: "Show informations about your current chapter & your chapter quests",
+    description: "Display the shop",
 };
 
 
-export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData, followUp?: boolean) => {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
     const shopsArray = Object.values(Shops);
     const itemsArray = Object.values(Items);
     const fields: { value: string, name: string, inline?: boolean }[] = [];
@@ -27,12 +27,27 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         .setEmoji("◀️")
         .setStyle("SECONDARY");
     menuMessage();
+    let currentShop: Shop;
+    let followUpMessage: Message;
+
+    async function followUp(content: MessageEditOptions | MessagePayload): Promise<void> {
+        if (followUpMessage) {
+            followUpMessage.edit(content);
+        } else {
+            followUpMessage = await ctx.followUp({
+                ...content,
+                fetchReply: true
+            });
+        }
+
+    }
     
     function menuMessage(): void {
+        const fields: { value: string, name: string, inline?: boolean }[] = [];
         const components: MessageActionRowComponentResolvable[] = [];
         for (const shop of shopsArray) {
             if (shop.open_date) {
-                if ((shop.open_date as `${string}-${string}`) !== `${new Date().getUTCDay()}-${new Date().getUTCMonth()}` || (shop.open_date as number) !== new Date().getUTCDate()) {
+                if ((shop.open_date as number) !== new Date().getDay() || (shop.open_date as `${number}-${number}`) !== `${new Date().getMonth() + 1}-${new Date().getDate()}`) {
                     continue;
                 }
             }
@@ -43,7 +58,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setStyle("SECONDARY"))
             let content = '';
             for (const item of shop.items) {
-                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.cost)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
             }
             fields.push({
                 name: `${shop.emoji} ${shop.name}`,
@@ -60,6 +75,40 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 Util.actionRow(components),
             ]
         });
+    }
+    function updShopMsg(shop: Shop): void {
+        const ItemsSelectMenu = new MessageSelectMenu()
+        .setMaxValues(1)
+        .setMinValues(1)
+        .setCustomId(shop.name)
+        .setOptions(...shop.items.map((i) => {
+            return {
+                label: i.name,
+                value: i.id,
+                emoji: i.emoji
+            }
+        }));
+
+        let content = '';
+        for (const item of shop.items) {
+            content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+        }
+        ctx.makeMessage({
+            embeds: [{
+                title: `${shop.emoji} ${shop.name}`,
+                description: content,
+                color: 'ORANGE',
+                footer: {
+                    text: `You have ${Util.localeNumber(userData.money)} coins left`
+                }
+            }],
+            components: [
+                Util.actionRow([ ItemsSelectMenu ]),
+                Util.actionRow([ goBackBTN])
+            ]
+        });
+
+
     }
     const filter = (i: MessageComponentInteraction) => {
         i.deferUpdate().catch(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
@@ -79,49 +128,18 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const item = (i as SelectMenuInteraction).values ? itemsArray.find((it) => it.id === (i as SelectMenuInteraction).values[0]) : null;
 
         if (shop) {
-            const ItemsSelectMenu = new MessageSelectMenu()
-            .setMaxValues(1)
-            .setMinValues(1)
-            .setCustomId(shop.name)
-            .setOptions(...shop.items.map((i) => {
-                return {
-                    label: i.name,
-                    value: i.id,
-                    emoji: i.emoji
-                }
-            }));
-
-            let content = '';
-            for (const item of shop.items) {
-                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.cost)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
-            }
-            ctx.makeMessage({
-                embeds: [{
-                    title: `${shop.emoji} ${shop.name}`,
-                    description: content,
-                    color: 'ORANGE'
-                }],
-                components: [
-                    Util.actionRow([ ItemsSelectMenu ]),
-                    Util.actionRow([ goBackBTN])
-                ]
-            })    
+            currentShop = shop;
+            updShopMsg(shop);
         }
         if (item && i.isSelectMenu()) {
-            if (item.cost > userData.money) {
-                ctx.followUp({
-                    embeds: [{
-                        title: ':x: Error',
-                        description: `You don't have enough ${Emojis.jocoins}`,
-                        color: 'RED'
-                    }],
-                    components: [
-                        Util.actionRow([ goBackBTN])
-                    ]
-                })
+            if (item.price > userData.money) {
+                followUp({
+                    content: `${Emojis.jocoins} | You need **${Util.localeNumber(item.price - userData.money)}** more coins to buy this item.`,
+                });
+                    
                 return;
             }
-            userData.money -= item.cost;
+            userData.money -= item.price;
             /*
             const components = ctx.fetchReply().then(m => m.components); // Update select menu's place holder
             ctx.makeMessage({
@@ -129,8 +147,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             });*/
             if (item.storable) {
                 userData.items.push(item.id);
-                ctx.followUp({
-                    content: `You bought ${item.emoji} **${item.name}** for **${Util.localeNumber(item.cost)}** ${Emojis.jocoins}`,
+                followUp({
+                    content: `You bought ${item.emoji} **${item.name}** for **${Util.localeNumber(item.price)}** ${Emojis.jocoins}`,
                 });    
             } else {
                 if (item.use) {
@@ -155,14 +173,16 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         // @ts-expect-error
                         changed[v] += (userData[v as keyof typeof userData] - oldValue);
                     });
-                    ctx.followUp({
-                        content: `You used **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `${changed[v] < 0 ? '-' : '+'}${changed[v]} ${v}`).join(", ")}`,
+                    followUp({
+                        content: `You used **${item.name}**  ${item.emoji} and got: ${Object.keys(changed).map(v => `${changed[v] < 0 ? '-' : '+'}${changed[v]} ${v}`).join(", ")} (:heart: ${userData.health}/${userData.max_health}, :zap: ${userData.stamina}/${userData.max_stamina})`,
                     })
     
                 } else { // not supported
-                    userData.money -= item.cost;
+                    userData.money -= item.price;
                 }
             }
+
+            updShopMsg(currentShop);
         }
         ctx.client.database.saveUserData(userData);
     });

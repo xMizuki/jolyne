@@ -1,4 +1,4 @@
-import type { SlashCommand, UserData, Item, Mail } from '../../@types';
+import type { SlashCommand, UserData, Item, Mail, Quest } from '../../@types';
 import { MessageActionRow, MessageSelectMenu, MessageButton, MessageEmbed, MessageComponentInteraction, ColorResolvable } from 'discord.js';
 import InteractionCommandContext from '../../structures/Interaction';
 import * as Stands from '../../database/rpg/Stands';
@@ -94,7 +94,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (userData.mails.filter(m => m.archived === showOnlyArchived).length === 0) {
             collector.stop();
             return ctx.makeMessage({
-                content: `📤 | You don't have any ${showOnlyArchived ? "unarchived" : "archived"} e-mails.`,
+                content: `📤 | You don't have any ${showOnlyArchived ? "archived" : "unarchived"} e-mails.`,
                 components: [],
                 embeds: []
             });
@@ -121,7 +121,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 author: { iconURL: ctx.interaction.user.displayAvatarURL({ dynamic: true }), name: `Inbox` },
                 color: "#70926c",
                 fields: fields,
-                description: `${emoji} You have ${mails.length} ${showOnlyArchived ? "unarchived" : "archived"} e-mails.`
+                description: `${emoji} You have ${mails.length} ${showOnlyArchived ? "archived" : "unarchived"} e-mails.`
             }],
             components: [Util.actionRow([ mailsSelection ])]
         });
@@ -132,17 +132,13 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const fields: { name: string, value: string, inline?: boolean }[] = [];
         let saveData: boolean = false;
 
-        // Check if in their chapter quests, they had to read this e-mail
-        for (let i = 0; i < userData.chapter_quests.length; i++) {
-            if (userData.chapter_quests[i].id.startsWith("rdem")) {
-                let tord = userData.chapter_quests[i].id.split("+")[1];
-                if (mail.id === tord) {
-                    userData.chapter_quests[i].completed = true;
-                    saveData = true;
-                    break;
-                }
+        Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith('rdem'), (quest: Quest) => {
+            let tord = quest.id.split("+")[1];
+            if (mail.id === tord) {
+                quest.completed = true;
+                saveData = true;
             }
-        }
+        });
 
         if (mail.prize) {
             saveData = true;

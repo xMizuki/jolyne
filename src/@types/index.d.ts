@@ -48,7 +48,8 @@ interface SlashCommand {
   rpgCooldown?: {
     base: number,
     premium: number,
-    i18n?: string
+    i18n?: string,
+    emoji?: string
   }
   /**
    * The category of the command.
@@ -85,6 +86,10 @@ interface DiscordSlashCommandsData {
   | 5
   | 6
   options?: DiscordSlashCommandsData[]
+  choices?: {
+    name: string,
+    value: string
+  }[]
 }
 
 /**
@@ -366,6 +371,10 @@ interface Ability {
    */
   readonly ultimate?: boolean;
   /**
+   * How much health the ability heals.
+   */
+  readonly heal?: number | `${number}%`;
+  /**
    * Trigger the ability (only if it's a special ability).
    */
   trigger?: (ctx: CommandInteractionContext, promises: any, promisesOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => any;
@@ -462,9 +471,9 @@ interface Item {
    */
   readonly type: "consumable" | "box" | "cloth" | "arrow" | "body_part" | "scroll" | "disc" | "other";
   /**
-   * The item's cost.
+   * The item's price.
    */
-  readonly cost: number;
+  readonly price?: number;
   /**
    * If the item is tradable.
    */
@@ -628,24 +637,24 @@ interface NPC {
    */
   max_health?: number;
   /**
-   * The Quest's stamina.
+   * The NPC's stamina.
    * @type {number}
    * @memberof Quest
    */
   max_stamina?: number; // NPCs doesn't have max_stamina
   /**
-   * The Quest's skill-points.
+   * The NPC's skill-points.
    * @memberof Quest
    * @readonly
    */
   readonly skill_points?: SkillPoints;
   /**
-   * The Quest's stand.
+   * The NPC's stand.
    * @type {string}
    * @memberof Quest
    * @readonly
    */
-  readonly stand?: string;
+  stand?: string;
   /**
    * The NPC's rewards when he's defeated.
    */
@@ -666,6 +675,11 @@ interface NPC {
    */
    stamina?: number;
    health?: number;
+
+   /**
+    * If the NPC is private (can appear on daily quests)
+    */
+    readonly private?: boolean;
  
 
   
