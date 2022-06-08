@@ -367,6 +367,7 @@ const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: s
           userData[togive as keyof typeof userData] = Number(item_value.split(":")[1]) + Number(userData[togive as keyof typeof userData]);
       }
   }
+  ctx.client.database.saveUserData(userData);
   await ctx.makeMessage({ content: `${emoji.shaking} Your ${box.split("_").map(v => Util.capitalize(v)).join(" ")} is shaking...`, components: [] });
   await Util.wait(3000);
   let content = `▬▬▬▬▬「${emoji.emoji} **${box.split("_").map(v => v.toUpperCase()).join(" ")}**」▬▬▬▬▬▬\n`;
