@@ -146,12 +146,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (i.customId === `${ctx.interaction.id}:authorSL` && i.user.id === ctx.interaction.user.id && i.isSelectMenu()) {
             confirmed = [];
             if (i.values[0].includes("disk")) {
-                if (user_data.items.filter(r => r.includes("disk")).length + authorOffers.filter(r => r.includes("disk")).length >= 3 && true) {
+                if (user_data.items.filter(r => r.includes("disk")).length + authorOffers.filter(r => r.includes("disk")).length >= 3 && false) {
                     ctx.interaction.editReply({ content: `<:disk:929724918483013692> **${user.username}** has already 3 discs. They can't have more`});
                     return i.deferUpdate().catch(() => { });
 
                 };
-                if (user_data.items.filter(r => r.includes("disk")).length + authorOffers.filter(r => r.includes("disk")).length>= 6) {
+                if (user_data.items.filter(r => r.includes("disk")).length + authorOffers.filter(r => r.includes("disk")).length>= 6 && false) {
                     ctx.interaction.editReply({ content: `<:disk:929724918483013692> **${user.username}** has already 6 discs. They can't have more`})
                     return i.deferUpdate().catch(() => { });
                 } 
