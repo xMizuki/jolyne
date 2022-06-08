@@ -22,7 +22,7 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    const fruits = ["🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒","🍌", "🍒"]; // [Emojis.sevensl, Emojis.money_gif, "🍌", Emojis.diary, Emojis.watermelon_gif1, "🍒", Emojis.diamond_gif];
+    const fruits = [Emojis['JolyneAhhhhh'], Emojis['a_'], "🍌", Emojis.diary, Emojis['complete_pizza'], "🍒", Emojis['jocoins']];
     let slotMachineFruits: string[] = Util.shuffle([...Util.shuffle([...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits)])]); // Am I shuffling too much? Yes.
 
     const betID = Util.generateID();
@@ -44,7 +44,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         .setEmoji('🎰')
         .setStyle('SECONDARY');
     
-    const bet = ctx.interaction.options.getInteger('bet');
+    let bet = ctx.interaction.options.getInteger('bet');
+    if (bet < 0) bet = 1;
     let left = Util.getRandomInt(2, 5);
 
     await ctx.sendT('casino:CONFIRM_MESSAGE', {
