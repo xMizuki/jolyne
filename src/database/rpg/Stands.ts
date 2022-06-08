@@ -165,7 +165,7 @@ export const Hermit_Purple: Stand = {
         Abilities.OhMyGod
     ],
     color: "PURPLE",
-    image: "https://static.wikia.nocookie.net/jjba/images/c/c8/HermitPurple.png/revision/latest?cb=20180414181107&path-prefix=fr",
+    image: "https://static.wikia.nocookie.net/heros/images/9/94/Joseph_Joestar_senior_Infobox.jpg/revision/latest?cb=20201223201734&path-prefix=fr",
     skill_points: {
         strength: 0,
         defense: 3,
