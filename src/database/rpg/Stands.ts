@@ -63,7 +63,12 @@ export const The_World__Over_Heaven: Stand = {
     name: "The World: Over Heaven",
     rarity: "SS",
     description: "The World is a humanoid Stand. It is a very tall humanoid with a very muscular build. It bears a striking resemblance to [Dio Brando](https://jojo.fandom.com/wiki/Dio_Brando) in terms of appearance.",
-    abilities: [],
+    abilities: [
+        Abilities.Reality_Overwriting_Punch,
+        Abilities.Road_Roller_DA,
+        Abilities.Heaven_Ascended_Smite,
+        Abilities.Time_Stop
+    ],
     color: "YELLOW",
     image: "https://static.wikia.nocookie.net/jjba/images/4/47/Heaven_Ascension_Dio.png/revision/latest/scale-to-width-down/250?cb=20201125221026",
     skill_points: {
