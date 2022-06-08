@@ -71,6 +71,7 @@ async function init() {
     const users = await old_client.query("SELECT * FROM users");
     old_client.end();
     users.rows.forEach(async (user) => {
+        if (Number(user.xp) < 0) user.xp = -(Number(user.xp));
         // @ts-expect-error
         const formattedUser: UserData = {
             id: user.id,
@@ -83,7 +84,7 @@ async function init() {
             daily: {
                 claimedAt: 0,
                 streak: 0,
-                quests: []
+                quests: Util.generateDailyQuests(user.level)
             },
             health: Number(user.health),
             stamina: Number(user.stamina),
@@ -209,6 +210,7 @@ async function init() {
     
         await client.query(`DELETE FROM users WHERE id='${formattedUser.id}'`);
         await client.query(`INSERT INTO users (${Object.keys(formattedUser).join(", ")}) VALUES (${Object.keys(formattedUser).map((r: string) => `$${Object.keys(formattedUser).indexOf(r) + 1}`).join(', ')})`, [...Object.values(formattedUser)]);
+        console.log(user.id + " DONE");
 
     });
     //redisClient.quit()

@@ -70,7 +70,7 @@ export default class DatabaseHandler {
                 console.log("PNIK.")
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
-                    Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("cc") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
+                    if (userData.money > oldData.money) Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("cc") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
                         quest.total += userData.money - oldData.money;
                     });
 

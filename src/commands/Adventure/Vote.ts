@@ -26,7 +26,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     let rewards = Util.getRewards(userData);
 
     rewards.money = Math.round(rewards.money / 4.5);
-    rewards.xp = Math.round(rewards.money / 4.5);
+    rewards.xp = Math.round(rewards.money / 2);
 
     let content = `By [voting](https://top.gg/bot/923619190831730698/vote), you get **${Util.localeNumber(rewards.xp)}** <:xp:925111121600454706> and **${Util.localeNumber(rewards.money)}** <:jocoins:927974784187392061> and perhaps a **Mysterious Arrow** <:mysterious_arrow:924013675126358077> (10%)`;
 

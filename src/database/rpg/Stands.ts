@@ -74,7 +74,7 @@ export const The_World__Over_Heaven: Stand = {
     },
     text: {
         awakening_text: "WrRrR3.. WrRrrR WRYYRrR...",
-        awaken_text: "WRRRRYYYYYYYY !!!!",
+        awaken_text: "OVER HEAVENd !!!!",
         timestop_text: "Toki wo TAMARE!",
         timestop_end_text: "Toki wa Ugokidasu.",
 
@@ -133,7 +133,7 @@ export const Aerosmith: Stand = {
 
 export const The_Hand: Stand = {
     name: "The Hand",
-    rarity: "C",
+    rarity: "A",
     description: "The hand is a humanoid-type stand who can erase things from existence, it was originally owned by [Okuyasu Nijimura](https://jojo.fandom.com/wiki/Okuyasu_Nijimura)",
     abilities: [
         Abilities.Light_Speed_Barrage,
@@ -142,9 +142,9 @@ export const The_Hand: Stand = {
     color: "#1d57e5",
     image: "https://static.wikia.nocookie.net/jjba/images/4/46/The_Hand_Anime.png/revision/latest?cb=20161217225524&path-prefix=fr",
     skill_points: {
-        strength: 10,
-        defense: 5,
-        perception: 5,
+        strength: 15,
+        defense: 0,
+        perception: 0,
         stamina: 0,
     },
     text: {

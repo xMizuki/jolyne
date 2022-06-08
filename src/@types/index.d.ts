@@ -48,7 +48,8 @@ interface SlashCommand {
   rpgCooldown?: {
     base: number,
     premium: number,
-    i18n?: string
+    i18n?: string,
+    emoji?: string
   }
   /**
    * The category of the command.
@@ -674,6 +675,11 @@ interface NPC {
    */
    stamina?: number;
    health?: number;
+
+   /**
+    * If the NPC is private (can appear on daily quests)
+    */
+    readonly private?: boolean;
  
 
   

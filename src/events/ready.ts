@@ -3,6 +3,8 @@ import Client from '../structures/Client';
 import { Routes } from 'discord-api-types/v9'
 import { CronJob } from 'cron';
 import * as Util from '../utils/functions';
+import TopGG from '../utils/TopGGAPI'
+
 
 export const name: Event["name"] = "ready";
 export const once: Event["once"] = true;
@@ -30,6 +32,7 @@ export const execute: Event["execute"] = async (client: Client) => {
 
     // Daily quests
     if (client.guilds.cache.random().shardId === 0) {
+        TopGG(client);
         client.log('Daily quests cron job is starting...', 'cmd');
         let toSaveUSERS: UserData[] = [];
         const job = new CronJob('0 0 * * *', async function () {

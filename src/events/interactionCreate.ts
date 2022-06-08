@@ -79,6 +79,22 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
         await command.execute(ctx, userData);
 
         await Util.wait(2000);
+
+        // Vote
+        if (await interaction.client.database.redis.get(`jjba:voteTold:${interaction.user.id}`)) {
+            let rewards = Util.getRewards(userData);
+
+            rewards.money = Math.round(rewards.money / 4.5);
+            rewards.xp = Math.round(rewards.money / 2);
+        
+            let content = `:up: | <@${interaction.user.id}>, thanks for voting ! You got **${Util.localeNumber(rewards.xp)}** <:xp:925111121600454706> and **${Util.localeNumber(rewards.money)}** <:jocoins:927974784187392061>`;
+            const got_myst = await interaction.client.database.redis.get(`jjba:voteTold:${interaction.user.id}`);
+            if (got_myst === "m") content += " __and a **Mysterious Arrow**__ <:mysterious_arrow:924013675126358077>"
+            interaction.client.database.redis.del(`jjba:voteTold:${interaction.user.id}`);
+            interaction.followUp({
+                content: content
+            });
+        }  
         // Misc
         if (interaction.replied) {
             const newMails = await interaction.client.database.redis.client.get(`jjba:newUnreadMails:${interaction.user.id}`);

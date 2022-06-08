@@ -199,7 +199,8 @@ export const Mohammed_Avdol: NPC = {
         xp: 10000,
         money: 10000
     },
-    stand: Stands.Magicians_Red["name"]
+    stand: Stands.Magicians_Red["name"],
+    private: true
 }
 
 export const Lisa: NPC = {
@@ -227,7 +228,8 @@ export const Polnareff: NPC = {
         money: 10000
     },
     stand: Stands.Silver_Chariot["name"],
-    avatarURL: 'https://pbs.twimg.com/media/EZq-yvPXkAQc6Bv.jpg'
+    avatarURL: 'https://pbs.twimg.com/media/EZq-yvPXkAQc6Bv.jpg',
+    private: true
 }
 
 export const Devo: NPC = {
@@ -256,7 +258,8 @@ export const Devo: NPC = {
     dialogues: {
         lose: 'NOOOOOO PLEASE SPARE ME fsdmlgsdkgl!sdf42144242241! ! ! ! ! ! ! !',
         win: 'LOL NOT EVEN HARD GET REKT BOZO L L L L L L'
-    }
+    },
+    private: true
 }
 
 export const Jotaro: NPC = {
@@ -389,7 +392,8 @@ export const Mysterious_Stand_User: NPC = {
     stand: (() => {
         const stands = Object.values(Stands)
         return stands[Math.floor(Math.random() * stands.length)].name
-    })()
+    })(),
+    private: true
 }
 
 export const Pucci: NPC = {

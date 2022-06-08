@@ -1,3 +1,4 @@
+import type { SlashCommand, command } from '../@types';
 import { Client, Collection, ClientOptions } from 'discord.js-light';
 import { REST } from '@discordjs/rest';
 import emojis from '../emojis.json';
@@ -9,7 +10,7 @@ export default class Jolyne extends Client {
     _ready: boolean;
     _emojis: object = emojis;
     _rest: REST;
-    commands: Collection<string, any> = new Collection();
+    commands: Collection<string, SlashCommand> = new Collection();
     cooldowns: Collection<string, any> = new Collection();
     log: Function;
     database: database;

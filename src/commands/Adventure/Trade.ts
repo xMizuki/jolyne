@@ -93,7 +93,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     await ctx.interaction.reply({ content: `<@${user.id}> | **${ctx.interaction.user.username}** would like to trade with you.`, components: [btns] });
     const filter = (i: MessageComponentInteraction) => i.user.id === user.id || i.user.id === ctx.interaction.user.id;
-    const collector =  ctx.interaction.channel.createMessageComponentCollector({ filter, time: 60000 * 3 });
+    const collector =  ctx.interaction.channel.createMessageComponentCollector({ filter, time: 60000 * 10 });
     collector.on("end", async () => {
         if (ended) return;
         ctx.client.database.delCooldownCache("trade", user.id);

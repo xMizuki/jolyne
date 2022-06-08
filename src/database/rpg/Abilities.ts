@@ -148,7 +148,7 @@ export const Road_Roller: Ability = {
 export const Emerald_Splash: Ability = {
     name: 'Emerald Splash',
     description: 'fires off a large amount of energy which takes the form of emeralds.',
-    cooldown: 10,
+    cooldown: 5,
     damages: 25,
     blockable: false,
     dodgeable: true,
@@ -158,7 +158,7 @@ export const Emerald_Splash: Ability = {
 export const Vola_Barrage: Ability = {
     name: 'Vola Barrage',
     description: 'Sends a wave of bullets in the direction the user is facing.',
-    cooldown: 10,
+    cooldown: 4,
     damages: 15,
     blockable: false,
     dodgeable: true,
@@ -168,7 +168,7 @@ export const Vola_Barrage: Ability = {
 export const Little_Boy: Ability = {
     name: 'Little Boy',
     description: 'drop 3 bombs behind its opponent that will explode instantly',
-    cooldown: 15,
+    cooldown: 10,
     damages: 30,
     blockable: false,
     dodgeable: false,
@@ -178,7 +178,7 @@ export const Little_Boy: Ability = {
 export const Light_Speed_Barrage: Ability = {
     name: 'Light-Speed Barrage',
     description: 'erases matter to jump on the enemies and assault them with rapid punches.',
-    cooldown: 10,
+    cooldown: 4,
     damages: 25,
     blockable: false,
     dodgeable: false,
@@ -188,7 +188,7 @@ export const Light_Speed_Barrage: Ability = {
 export const Deadly_Erasure: Ability = {
     name: 'Deadly Erasure',
     description: 'uses their right hand to erase space and jump one you and use the effect of surprise to erase you and make you discover where thing he erase go..',
-    cooldown: 20,
+    cooldown: 10,
     damages: 60,
     blockable: false,
     dodgeable: false,

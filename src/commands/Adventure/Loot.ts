@@ -12,11 +12,12 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 3;
 export const rpgCooldown: SlashCommand["rpgCooldown"] = {
     base: 1800000 / 2,
-    premium: 1800000 / 4
+    premium: 1800000 / 4,
+    emoji: "💰"
 }
 export const data: SlashCommand["data"] = {
     name: "loot",
-    description: "lootlootlootloot",
+    description: "Search something...",
 };
 
 interface Loot {
