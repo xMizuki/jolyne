@@ -5,6 +5,7 @@ import * as NPCs from '../database/rpg/NPCs';
 import * as Chapters from '../database/rpg/Chapters';
 import * as Emojis from '../emojis.json';
 import InteractionCommandContext from '../structures/Interaction';
+import { LogWebhook } from '../structures/Webhook';
 
 export const name: Event["name"] = "interactionCreate";
 export const execute: Event["execute"] = async (interaction: InteractionCommand) => {
@@ -16,6 +17,7 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
 
     const command = interaction.client.commands.get(interaction.commandName);
     if (!command) return;
+    LogWebhook.log(interaction.user, interaction.guild, command);
 
     if (command.cooldown && !isNaN(command.cooldown)) {
         const cd = interaction.client.cooldowns.get(`${interaction.user.id}:${command.name}`);
