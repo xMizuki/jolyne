@@ -56,6 +56,8 @@ export const Time_Stop: Ability = {
             completed: false
         };
 
+        if (callerStand.name === "The World: Over Heaven") gameOptions[tsID].cd = 7;
+
         turns[turns.length - 1].logs.push(`!!! **${callerUsername}:** ${callerStand.name}: ${callerStand.text.timestop_text}`);
         if (gameOptions.cooldowns.find((r: any) => r.id === caller.id && r.move === "defend")) {
             gameOptions.cooldowns.forEach((c: any) => {
@@ -874,4 +876,34 @@ export const Capsule_Shot: Ability = {
 
         promises.push(func);
     }
+}
+
+export const Reality_Overwriting_Punch: Ability = {
+    name: 'Reality Overwriting Punch',
+    description: "OUUUUUUUUUUUCH",
+    cooldown: 0,
+    damages: 60,
+    blockable: false,
+    dodgeable: false,
+    stamina: 50
+}
+
+export const Road_Roller_DA: Ability = {
+    name: 'Road Roller DA!',
+    description: "MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDA MUDAAAAAA !",
+    cooldown: 0,
+    damages: 100,
+    blockable: false,
+    dodgeable: false,
+    stamina: 50
+}
+
+export const Heaven_Ascended_Smite: Ability = {
+    name: 'Heaven Ascended Smite',
+    description: "HOLY SHIT!",
+    cooldown: 0,
+    damages: 120,
+    blockable: false,
+    dodgeable: false,
+    stamina: 50
 }
