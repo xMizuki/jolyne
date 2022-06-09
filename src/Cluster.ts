@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Manager } from 'discord-hybrid-sharding';
 import redis from 'ioredis';
-const TempRedis = new redis({ db: process.env.TEST_MODE === "true" ? 0 : 1 });
+const TempRedis = new redis({ db: process.env.TEST_MODE === "true" ? 1 : 0 });
 
 TempRedis.keys('*tempCache_*').then(keys => {
     for (const key of keys) {
