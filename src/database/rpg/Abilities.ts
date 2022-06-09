@@ -27,7 +27,7 @@ export const Star_Finger: Ability = {
     name: 'Star Finger',
     description: 'Extends Star Platinum\'s finger and stabs the target in the eyes',
     cooldown: 10,
-    damages: 15,
+    damages: 25,
     blockable: false,
     dodgeable: true,
     stamina: 20
