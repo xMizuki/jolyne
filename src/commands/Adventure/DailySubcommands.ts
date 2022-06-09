@@ -198,11 +198,14 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 // TODO: collector.on("collect", (i: MessageComponentInteraction) => {
                 collector.on("collect", async (i: MessageComponentInteraction) => {
                     collector.stop();
+                    ctx.disableInteractionComponents();
                     // Anti-cheat
                     if ((await ctx['componentAntiCheat'](i, userData)) === true) return;
                     if (await ctx.client.database.redis.get(`jjba:finishedQ:${userData.id}`)) return;
                     userData.money += cRewards;
                     userData.xp += xpRewards;
+                    await ctx.client.database.redis.set(`jjba:finishedQ:${userData.id}`, 'indeed');
+                    ctx.client.database.saveUserData(userData);
 
                     ctx.followUp({
                         content: `GG! You got **${Util.localeNumber(cRewards)}** <:jocoins:927974784187392061> and **${Util.localeNumber(xpRewards)}** <:xp:925111121600454706>`,
