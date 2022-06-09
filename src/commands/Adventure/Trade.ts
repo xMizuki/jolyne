@@ -167,11 +167,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (i.customId === `${ctx.interaction.id}:userSL` && i.user.id === user.id && i.isSelectMenu()) {
             confirmed = [];
             if (i.values[0].includes("disk")) {
-                if (userData.items.filter(r => r.includes("disk")).length + userOffers.filter(r => r.includes("disk")).length >= 3 && true) {
+                if (userData.items.filter(r => r.includes("disk")).length + userOffers.filter(r => r.includes("disk")).length >= 3 && false) {
                     await ctx.interaction.editReply({ content: `<:disk:929724918483013692> **${ctx.interaction.user.username}** has already 3 discs. They can't have more`})
                     return i.deferUpdate().catch(() => { });
                 };
-                if (userData.items.filter(r => r.includes("disk")).length + userOffers.filter(r => r.includes("disk")).length>= 6) {
+                if (userData.items.filter(r => r.includes("disk")).length + userOffers.filter(r => r.includes("disk")).length>= 6 && false) {
                     await ctx.interaction.editReply({ content: `<:disk:929724918483013692> **${ctx.interaction.user.username}** has already 6 discs. They can't have more`})
                     return i.deferUpdate().catch(() => { });
                 } 
