@@ -17,7 +17,7 @@ export const Kick_Barrage: Ability = {
     name: 'Kick Barrage',
     description: 'Performs an astoundingly fast flurry of punches that deals small damage per hit',
     cooldown: 3,
-    damages: 7,
+    damages: 5,
     blockable: true,
     dodgeable: true,
     stamina: 5
@@ -27,7 +27,7 @@ export const Star_Finger: Ability = {
     name: 'Star Finger',
     description: 'Extends Star Platinum\'s finger and stabs the target in the eyes',
     cooldown: 10,
-    damages: 25,
+    damages: 15,
     blockable: false,
     dodgeable: true,
     stamina: 20
