@@ -22,6 +22,9 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
+    return ctx.makeMessage({
+        content: 'Due to a huge bug, this command is currently unavailable. Please try again later.'
+    })
     const fruits = [Emojis['JolyneAhhhhh'], Emojis['a_'], "🍌", Emojis.diary, Emojis['complete_pizza'], "🍒", Emojis['jocoins']];
     let slotMachineFruits: string[] = Util.shuffle([...Util.shuffle([...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits)])]); // Am I shuffling too much? Yes.
 
@@ -114,7 +117,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 userData.money -= bet;
                 followUpMSG = Util.randomArray(ctx.translateObject('casino:LOSE_MESSAGES'));
             }
-            ctx.client.database.delCooldownCache('casino', userData.id);
+            await ctx.client.database.delCooldownCache('casino', userData.id);
             ctx.client.database.saveUserData(userData);
             followUpReply = await ctx.followUp({
                 content: followUpMSG,

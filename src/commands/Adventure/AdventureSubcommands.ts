@@ -68,6 +68,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         });
     } else {
         if (!userData) return ctx.sendT("base:NO_ADVENTURE");
+        if (await ctx.client.database.redis.get('jjba:reset' + ctx.author.id)) return ctx.makeMessage({
+            content: 'You have already reset your adventure.',
+        })
         const firstComponent: object = {
             components: [{
                 custom_id: ctx.interaction.id + ":confirm",
@@ -95,6 +98,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             ctx.timeoutCollector(collector);
             i.deferUpdate().catch(() => {});
             if (i.customId === ctx.interaction.id + ":final_confirm") {
+                await ctx.client.database.redis.set('jjba:reset' + ctx.author.id, 'yesyesyesy')
                 await ctx.client.database.delUserData(ctx.interaction.user.id);
                 ctx.sendT("adventure:ADVENTURE_RESET_MESSAGE", {
                     components: []

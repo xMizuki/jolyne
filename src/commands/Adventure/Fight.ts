@@ -562,14 +562,17 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             if (ended && Util.isNPC(opponent)) {
                 if (winner.id !== opponent.id && type !== 'custom') {
+                    /*
                     let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
+                            console.log('YEAH I DID IT 3')
+
                             n.npc.health = 0;
                             n.completed = true;
                             editedNPC = true;
                         }
-                    });
+                    });*/
                     if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
                         components.push(nxtbtn);
                     }
@@ -577,7 +580,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     collector.stop();
                 }
             }
-            const fields = [];
+            let fields = [];
             for (let i = 0; i < turns.filter(r => r.logs.length !== 0).length; i++) {
                 const turn = turns[i];
                 fields.push({
@@ -585,6 +588,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     value: turn.logs.join("\n")
                 })
             }
+            if (fields.length > 24) fields = fields.slice(fields.length-24, fields.length);
             try {
                 console.log("plouf is")
 
@@ -722,6 +726,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
+                            console.log('YEAH I DID IT')
                             n.npc.health = 0;
                             n.completed = true;
                             editedNPC = true;
@@ -748,16 +753,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         }
                     }    
                 });
-                if (type !== "custom") {
-                    let editedNPC = false;
-                    getUserQuests().forEach(n => {
-                        if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
-                            n.npc.health = 0;
-                            n.completed = true;
-                            editedNPC = true;
-                        }
-                    });
-                }
                 ctx.client.database.saveUserData(userData);
                 ctx.followUp({
                     content: `:crossed_swords: **${winnerUsername}** has defeated **${loserUsername}**! They got ${rewardsArr.length > 0 ? rewardsArr.join(", ") : "nothing"}.`,

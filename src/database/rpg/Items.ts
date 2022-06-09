@@ -364,7 +364,7 @@ const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: s
           win_content += `+ **${Util.localeNumber(Number(item_value.split(":")[1]))}** ${emoji} ${item_value.split(":")[0].toUpperCase().replace("COINS", "coins")}\n`;
           if (emoji === Emojis.xp) win_content+=superator+"\n";
           // @ts-expect-error
-          userData[togive as keyof typeof userData] = Number(item_value.split(":")[1]) + Number(userData[togive as keyof typeof userData]);
+          userData[togive.replace('coins', 'money') as keyof typeof userData] = Number(item_value.split(":")[1]) + Number(userData[togive.replace('coins', 'money') as keyof typeof userData]);
       }
   }
   await ctx.makeMessage({ content: `${emoji.shaking} Your ${box.split("_").map(v => Util.capitalize(v)).join(" ")} is shaking...`, components: [] });

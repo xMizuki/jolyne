@@ -192,6 +192,7 @@ export const KAKYOIN_BACK: Quest = {
 
 export const Get_At_The_Morioh_Airport: Quest = {
     id: "wait:taxiupgo",
+    timeout: Date.now() + ((60000 * 60) * 2),
     i18n: "TAXIUPGO",
     completed: false
 }

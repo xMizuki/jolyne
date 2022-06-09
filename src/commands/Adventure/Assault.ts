@@ -52,23 +52,12 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         npc: NPCs.Bandit_Boss,
         luck: 40
     }];
-    for (const key in userData) {
-        if (userData.hasOwnProperty(key)) {
-            const element = userData[key as keyof typeof userData];
-            if (Util.isQuestArray(element)) {
-                for (const quest of element.filter(q => q.id.startsWith("assault") && !q.completed)) {
-                    quest.total++;
-                    const goal = parseInt(quest.id.split(":")[1]);
-                    if (quest.total >= goal) {
-                        quest.completed = true;
-                    }
-                }
-                // @ts-ignore
-                userData[key as keyof typeof userData] = element;
-            }
-        }
-    }
-    ctx.client.database.saveUserData(userData);
+
+    Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("assault") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
+        quest.total++;
+    });
+
+    await ctx.client.database.saveUserData(userData);
 
     const luck = Util.getRandomInt(1, 10000);
     const NPC = rng.filter(l => (l.luck * 100) >= luck).sort((a, b) => a.luck - b.luck)[0].npc;
