@@ -580,7 +580,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     collector.stop();
                 }
             }
-            const fields = [];
+            let fields = [];
             for (let i = 0; i < turns.filter(r => r.logs.length !== 0).length; i++) {
                 const turn = turns[i];
                 fields.push({
@@ -588,6 +588,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     value: turn.logs.join("\n")
                 })
             }
+            if (fields.length > 24) fields = fields.slice(fields.length-24, fields.length);
             try {
                 console.log("plouf is")
 
