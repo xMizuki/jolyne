@@ -373,7 +373,7 @@ export const Stand_Disc: Ability = {
 
 export const Hallucinogen: Ability = {
     name: 'Hallucinogen',
-    description: 'Creates a hallucinogen that decreases your opponent\'s perception to 75% (and boosts your perception to 50%) for a few turns.',
+    description: 'Creates a hallucinogen that decreases your opponent\'s perception to 90% (and boosts your perception to 90%) for a few turns.',
     cooldown: 7,
     damages: 0,
     blockable: false,
@@ -384,12 +384,12 @@ export const Hallucinogen: Ability = {
         const victimStand = victim.stand;
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: 4,
+            cd: 7,
         };
         let oldPerception: number = Util.isNPC(victim) ? victim.skill_points["perception"] : victim.spb["perception"];
         let oldCallererception: number = Util.isNPC(caller) ? caller.skill_points["perception"] : caller.spb["perception"];
-        Util.isNPC(caller) ? caller.skill_points["perception"] += Math.floor(oldCallererception * 0.50) : caller.spb["perception"] += Math.floor(oldCallererception * 0.50);
-        Util.isNPC(victim) ? victim.skill_points["perception"] -= Math.floor(oldPerception * 0.75) : victim.spb["perception"] = Math.floor(oldPerception * 0.75);
+        Util.isNPC(caller) ? caller.skill_points["perception"] += Math.floor(oldCallererception * 0.90) : caller.spb["perception"] += Math.floor(oldCallererception * 0.90);
+        Util.isNPC(victim) ? victim.skill_points["perception"] -= Math.floor(oldPerception * 0.90) : victim.spb["perception"] = Math.floor(oldPerception * 0.90);
         turns[turns.length - 1].logs.push(`💭 WOW! **${victimUsername}** can't see anything.`);
 
         const func = (async () => {
@@ -397,8 +397,8 @@ export const Hallucinogen: Ability = {
             gameOptions[tsID].cd--;
             if (gameOptions[tsID].cd === 0) {
                 turns[turns.length - 1].logs.push(`💭 The hallucinogen effect has expired`);
-                Util.isNPC(caller) ? caller.skill_points["perception"] -= Math.floor(oldCallererception * 0.50) : caller.spb["perception"] -= Math.floor(oldCallererception * 0.50);
-                Util.isNPC(victim) ? victim.skill_points["perception"] += Math.floor(oldPerception * 0.75) : victim.spb["perception"] -= Math.floor(oldPerception * 0.75);
+                Util.isNPC(caller) ? caller.skill_points["perception"] -= Math.floor(oldCallererception * 0.90) : caller.spb["perception"] -= Math.floor(oldCallererception * 0.90);
+                Util.isNPC(victim) ? victim.skill_points["perception"] += Math.floor(oldPerception * 0.90) : victim.spb["perception"] -= Math.floor(oldPerception * 0.90);
                 victim.stand = victimStand;
             }
         });
