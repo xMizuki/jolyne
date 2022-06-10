@@ -53,13 +53,16 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData, customNPC?: NPC) => {
-    let ennemy: NPC;
     const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).sort((a, b) => a.npc.max_health - b.npc.max_health)[0];
     const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
 
     const selectMenuID = Util.generateID();
 
     const user = ctx.interaction.options.getUser("user");
+    if (user && user.id === userData.id) return ctx.makeMessage({
+        content: Emojis['jolyne']
+    })
+
     const filter = (i: MessageComponentInteraction) => {
         i.deferUpdate().catch(() => { });
         if (user) return i.user.id === user.id || i.user.id === userData.id;
