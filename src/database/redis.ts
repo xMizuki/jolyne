@@ -9,7 +9,7 @@ export default class RedisHandler {
 
     constructor() {
         this.connect = new Promise((resolve) => this.connectResolve = resolve);
-        this.client = new redis({ db: process.env.TEST_MODE === "true" ? 1 : 0 })
+        this.client = new redis({ db: process.env.DEV_MODE === "true" ? 1 : 0 })
         .on('connect', () => {
             log("Connected.", "redis");
             if (this.connectResolve)
