@@ -13,7 +13,7 @@ export const execute: Event["execute"] = async (client: Client) => {
     client.user.setActivity({ name: "loading..."});
     
     const lastCommands = await client.database.redis.client.get("jolyne:commands");
-    const commandsData = client.commands.map((v: SlashCommand) => v.data);
+    const commandsData = client.commands.map((v) => v.data);
 
     if (JSON.stringify(commandsData) !== lastCommands) {
         client.log('Slash commands has changed. Loading...', 'cmd');
@@ -39,16 +39,16 @@ export const execute: Event["execute"] = async (client: Client) => {
             const cachedUsers = await client.database.redis.client.keys("*cachedUser*");
             let formattedUsers: UserData[] = [];
 
-            for (const id of cachedUsers) {
+            for await (const id of cachedUsers) {
                 const userData = await client.database.redis.client.get(id);
                 formattedUsers.push(JSON.parse(userData));
             }
-            for (const user of formattedUsers) {
-                client.database.redis.del(`jjba:finishedQ:${user.id}`);
+            for await (const user of formattedUsers) {
                 if (await client.database.getCooldownCache(user.id)) {
                     toSaveUSERS.push(user);
                     continue;
                 }
+                client.database.redis.del(`jjba:finishedQ:${user.id}`);
                 user.daily.quests = Util.generateDailyQuests(user.level);
                 client.database.saveUserData(user);
 
@@ -57,10 +57,11 @@ export const execute: Event["execute"] = async (client: Client) => {
         setInterval(async () => {
             for (const user of toSaveUSERS) {
                 if (await client.database.getCooldownCache(user.id)) continue;
+                client.database.redis.del(`jjba:finishedQ:${user.id}`);
                 user.daily.quests = Util.generateDailyQuests(user.level);
                 client.database.saveUserData(user);
             }
-        }, 5000);
+        }, 10000);
         
         job.start();
     }
