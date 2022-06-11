@@ -57,6 +57,12 @@ export const C2: Chapter = {
         Items.Yellow_Hair,
         Items.Mysterious_Arrow
     ],
+    tips: {
+        'en-US': 'You may need the `/action` command in order to complete some of your quests',
+        'fr-FR': 'Tu peux avoir besoin de la commande `/action` pour compléter certaines de tes quêtes',
+        'es-ES': 'Puedes necesitar la `/action` para completar algunas de tus misiones',
+        'de-DE': 'Du kannst das `/action`-Kommando benutzen, um einige deiner Aufgaben zu erfüllen'
+    },
     quests: [
         Quests.Remove_Thing_Kakyoin,
         Quests.Analyse_Hair,
