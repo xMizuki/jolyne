@@ -156,7 +156,7 @@ export default class DatabaseHandler {
         return new Promise(async (resolve) => {
             await this.postgres.client.query(`DELETE FROM users WHERE id = $1`, [userId]);
             const keys = await this.redis.client.keys(`*${userId}*`);
-            for (const key of keys) await this.redis.client.del(key);
+            for (const key of keys.filter(r => !r.includes('reset'))) await this.redis.client.del(key);
             return resolve(keys.length);
         });
     }
