@@ -70,7 +70,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
     });
 
-    collector.on("end", (int: any, reason: any) => {
+    collector.on("end", (int: any, reason: string) => {
         if (reason !== "action") ctx.disableInteractionComponents();
     });
         

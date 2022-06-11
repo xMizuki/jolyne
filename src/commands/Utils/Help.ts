@@ -21,13 +21,12 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext) => {
-    const allCommands: any = ctx.client.commands.filter((r: command) => r.category !== "owner").map((v: command) => {
+    const allCommands: any = ctx.client.commands.filter((r: SlashCommand) => r.category !== "owner").map((v: SlashCommand) => {
         if (v.data?.options?.length !== 0 && v.data.options instanceof Array && v.data.options.filter((r: any) => !r.choices).filter((r: any) => r.type !== 3).filter((r: any) => r.type !== 6).filter((r: any) => r.type !== 4).length !== 0) {
             return v.data.options.map((c: any) => {
                 return {
                     cooldown: v.cooldown,
                     category: v.category,
-                    // @ts-expect-error
                     options: v.data?.options?.filter((r: any) => r.name === c.name)[0]?.options,
                     name: `${v.name} ${c.name}`,
                     description: removeEmoji(c.description)
