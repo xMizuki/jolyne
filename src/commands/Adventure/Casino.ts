@@ -12,7 +12,7 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 10;
 export const data: SlashCommand["data"] = {
     name: "casino",
-    description: "lootlocasinocasinocasinocasinocasinootlootloot",
+    description: "Casino.",
     options: [{
         name: 'bet',
         description: 'The amount of your bet. To win, you must have at least 2 identical symbols',
@@ -22,10 +22,21 @@ export const data: SlashCommand["data"] = {
 };
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData?: UserData) => {
-    return ctx.makeMessage({
-        content: 'Due to a huge bug, this command is currently unavailable. Please try again later.'
-    })
-    const fruits = [Emojis['JolyneAhhhhh'], Emojis['a_'], "🍌", Emojis.diary, Emojis['complete_pizza'], "🍒", Emojis['jocoins']];
+    // yo what the fuck was that, give me every fruits emoji
+    const fruits = [
+        "🍏",
+        "🍎",
+        "🍐",
+        "🍊",
+        "🍋",
+        "🍌",
+        "🍉",
+        "🍇",
+        "🍓",
+        "🍒",
+        "🍑",
+    ]
+    // const fruits = [Emojis['JolyneAhhhhh'], Emojis['a_'], "🍌", Emojis.diary, Emojis['complete_pizza'], "🍒", Emojis['jocoins']];
     let slotMachineFruits: string[] = Util.shuffle([...Util.shuffle([...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits), ...Util.shuffle(fruits)])]); // Am I shuffling too much? Yes.
 
     const betID = Util.generateID();
