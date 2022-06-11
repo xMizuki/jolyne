@@ -12,7 +12,7 @@ export const category: SlashCommand["category"] = "adventure";
 export const cooldown: SlashCommand["cooldown"] = 10;
 export const data: SlashCommand["data"] = {
     name: "casino",
-    description: "Casino.",
+    description: "Spins the casino machine.",
     options: [{
         name: 'bet',
         description: 'The amount of your bet. To win, you must have at least 2 identical symbols',
@@ -130,15 +130,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             await ctx.client.database.delCooldownCache('casino', userData.id);
             ctx.client.database.saveUserData(userData);
-            followUpReply = await ctx.followUp({
-                content: followUpMSG,
-                fetchReply: true
-            });
-            ctx.makeMessage({
+            await ctx.makeMessage({
                 content: msg,
                 components: [
                     Util.actionRow([ pullAgainBTN ])
                 ]
+            });
+            followUpReply = await ctx.followUp({
+                content: followUpMSG,
+                fetchReply: true
             });
         } else {
             slotMachineFruits = slotMachineFruits.slice(3);
