@@ -60,6 +60,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     
     let bet = ctx.interaction.options.getInteger('bet');
     if (bet < 0) bet = 1;
+    if (userData.money < bet) return ctx.makeMessage({
+        content: `You don't have enough money, BOZO!`,
+    })
     let left = Util.getRandomInt(2, 5);
 
     await ctx.sendT('casino:CONFIRM_MESSAGE', {
