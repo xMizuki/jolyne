@@ -111,7 +111,8 @@ export const The_World_User: NPC = {
     fight_rewards: {
         xp: 4000,
         money: 1000
-    }
+    },
+    stand: Stands.The_World["name"]
 }
 
 export const Weak_Bandit: NPC = {
