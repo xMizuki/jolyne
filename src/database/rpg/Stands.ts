@@ -56,7 +56,7 @@ export const The_World: Stand = {
         timestop_end_text: "Zero...",
     },
     emoji: Emojis.the_world,
-    available: false
+    available: true
 };
 
 export const The_World__Over_Heaven: Stand = {
@@ -85,7 +85,7 @@ export const The_World__Over_Heaven: Stand = {
 
     },
     emoji: Emojis.the_world,
-    available: true
+    available: false
 };
 
 export const Hierophant_Green: Stand = {
