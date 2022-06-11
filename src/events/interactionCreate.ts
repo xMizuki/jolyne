@@ -41,7 +41,7 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
 
         // Quests checker
         let hasChanged: boolean = false;
-        for (let i = 0; i < userData.chapter_quests.length; i++) {
+        if (userData) for (let i = 0; i < userData.chapter_quests.length; i++) {
             const quest = userData.chapter_quests[i];
             if (quest.completed) continue;
 

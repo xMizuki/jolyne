@@ -161,6 +161,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         let accepted: string[] = [];
 
         collector.on('collect', (i: MessageComponentInteraction) => {
+            ctx.timeoutCollector(collector);
             if (i.customId !== acceptID) accepted = []
             switch (i.customId) {
                 case authorItemsID:
