@@ -237,8 +237,9 @@ export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    const dmg = Math.round(ability.damages * (userATKDMG / 15) + ability.damages + ((userATKDMG / ability.damages) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
-    return ((ability.damages / 90) * dmg) + dmg;
+    const dmg = Math.round(ability.damages * ((userATKDMG / ability.damages) * (ability.damages / 10)) + ability.damages + ((ability.damages / 10) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
+    return Math.round((userATKDMG / 40) * dmg + ((ability.damages / userATKDMG) * ((userATKDMG / ability.damages) * 70)));
+    // OLD: Math.round(((ability.damages / 80) * dmg) + (dmg * 0.92));
 }
 
 export const randomFood = function getRandomFood(): Item {
@@ -395,7 +396,7 @@ export const generateDailyQuests = (level: number): Quest[] => {
     quests.push(Quests.ClaimCoins(getRandomInt(1, level * 1000)));
 
     let max = level;
-    if (max > 10) max = 10;
+    if (max > 5) max = 5;
 
     if (RNG(50)) {
         quests.push(Quests.UseLoot(getRandomInt(1, max)));
@@ -403,7 +404,7 @@ export const generateDailyQuests = (level: number): Quest[] => {
     if (RNG(50)) {
         quests.push(Quests.Assault(getRandomInt(1, max)));
     }
-    if (RNG(50)) {
+    if (RNG(10)) {
         quests.push(Quests.LootCoins(getRandomInt(1, max * 250)));
     }
 
