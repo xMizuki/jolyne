@@ -191,7 +191,7 @@ export const isItem = function isItem(item: any): item is Item {
 
 export const calcATKDMG = (data: UserData | NPC): number => {
     const strength = isNPC(data) ? data.skill_points.strength : data.spb.strength;
-    return Math.round(5 + Math.round((strength * 0.675) + ((Number(data.level) * 1.50) + ((5 / 100) * 15)) / 2));
+    return Math.round(5 + Math.round((strength * 0.252) + ((Number(data.level) * 1.50) + ((5 / 100) * 15)) / 2));
 };
 
 export const generateStandEmbed = function generateStandEmbed(stand: Stand, userData: UserData): MessageEmbed {
