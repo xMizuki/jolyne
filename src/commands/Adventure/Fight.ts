@@ -565,17 +565,14 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             if (ended && Util.isNPC(opponent)) {
                 if (winner.id !== opponent.id && type !== 'custom') {
-                    /*
                     let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
-                            console.log('YEAH I DID IT 3')
-
                             n.npc.health = 0;
                             n.completed = true;
                             editedNPC = true;
                         }
-                    });*/
+                    });
                     if (userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).length !== 0 || userData.daily.quests.filter(v => v.npc && v.npc.health !== 0).length !== 0) {
                         components.push(nxtbtn);
                     }
@@ -726,6 +723,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             // NPC
             if (Util.isNPC(loser) && Util.isNPC(opponent)) {
                 if (type !== "custom") {
+                    /*
                     let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
@@ -734,7 +732,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                             n.completed = true;
                             editedNPC = true;
                         }
-                    });
+                    });*/
                 }
                 const rewardsArr: string[] = [];
                 Object.keys(opponent.fight_rewards).map((r) => {
