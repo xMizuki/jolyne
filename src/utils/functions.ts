@@ -237,7 +237,8 @@ export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    return Math.round(ability.damages * (userATKDMG / 15) + ability.damages + ((userATKDMG / ability.damages) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
+    const dmg = Math.round(ability.damages * (userATKDMG / 15) + ability.damages + ((userATKDMG / ability.damages) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
+    return ((ability.damages / 90) * dmg) + dmg;
 }
 
 export const randomFood = function getRandomFood(): Item {
