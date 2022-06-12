@@ -190,7 +190,7 @@ export const isItem = function isItem(item: any): item is Item {
 //     return Math.round(5 + Math.round((userData.spb.strength * 0.675) + ((Number(userData.level) * 1.50) + ((5 / 100) * 15)) / 2));
 
 export const calcATKDMG = (data: UserData | NPC): number => {
-    const strength = isNPC(data) ? data.skill_points.perception : data.spb.perception;
+    const strength = isNPC(data) ? data.skill_points.strength : data.spb.strength;
     return Math.round(5 + Math.round((strength * 0.675) + ((Number(data.level) * 1.50) + ((5 / 100) * 15)) / 2));
 };
 
