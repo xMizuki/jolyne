@@ -37,10 +37,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         name: "wallet",
         emoji: "👛",
         loots: [{
-            percent: 50,
+            percent: 90,
             loot: Util.getRandomInt(1, 1000)
         }, {
-            percent: 70,
+            percent: 100,
             loot: Items.Candy
         }]
     }, {
@@ -86,7 +86,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         name: 'urn',
         emoji: '⚱️',
         loots: [{
-            percent: 70,
+            percent: 95,
             loot: Util.getRandomInt(1, 1000)
         }, {
             percent: 100,
