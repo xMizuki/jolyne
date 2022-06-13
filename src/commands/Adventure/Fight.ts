@@ -189,6 +189,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         const nextID = Util.generateID();
         const homeID = Util.generateID();
         let ended = false;
+        let editedNPC = false;
 
         const cooldowns: Array<{
             id: string,
@@ -565,7 +566,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             if (ended && Util.isNPC(opponent)) {
                 if (winner.id !== opponent.id && type !== 'custom') {
-                    let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
                             n.npc.health = 0;
@@ -764,7 +764,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     content: `:skull: **${winnerUsername}** has defeated **${loserUsername}**...`,
                 });
                 if (type !== "custom") {
-                    let editedNPC = false;
                     getUserQuests().forEach(n => {
                         if (n.id === `defeat:${opponent.id}` && n.npc.health !== 0 && !editedNPC) {
                             n.npc.health = opponent.max_health;
