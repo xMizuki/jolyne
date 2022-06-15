@@ -427,7 +427,7 @@ export const Gray_Fly: NPC = {
     max_health: 500,
     stamina: 500,
     skill_points: {
-        strength: 30,
+        strength: 40,
         defense: 30,
         perception: 30,
         stamina: 30

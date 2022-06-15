@@ -767,7 +767,7 @@ export const Life_Giver: Ability = {
 export const Rage: Ability = {
     name: "Rage",
     description: "The more damage taken, the more damage you deal. [PASSIVE]",
-    cooldown: 0,
+    cooldown: 5,
     damages: 0,
     blockable: false,
     dodgeable: false,
@@ -776,7 +776,7 @@ export const Rage: Ability = {
         const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: 12,
+            cd: 9,
         };
         turns[turns.length - 1].logs.push(`\`[RAGE]\` [**${callerUsername}:**] The more damage taken, the more damage you deal`);
 
