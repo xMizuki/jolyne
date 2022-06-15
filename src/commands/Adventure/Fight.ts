@@ -537,7 +537,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 const toRemove = !user ? currentUser.health : Math.round(currentUser.max_health/6);
                 if (!turns[turns.length-1]) pushTurn();
                 if (!turns[turns.length-1].logs) turns[turns.length-1].logs = [];
-                turns[turns.length-1].logs.push(`${Emojis.timerIcon} \`TIMEOUT:\` **${currentUserUsername}** did not played in time: -${toRemove} hp.`);
+                turns[turns.length-1].logs.push(`${Emojis.timerIcon} \`TIMEOUT:\` **${currentUserUsername}** did not play in time: -${toRemove} hp.`);
                 if (turns[turns.length-1].logs.length > 5) pushTurn();
                 gameOptions.trns++;
                 removeHealthToLastGuy(toRemove);
