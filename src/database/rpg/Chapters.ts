@@ -227,7 +227,7 @@ export const C3_P5: Chapter = {
     },
     title: C3_P1.title,
     quests: [
-        Quests.ClaimCoins(15_000),
+        Quests.ClaimCoins(35_000),
         Quests.Defeat(Util.AttributeChapterQuestToNPC(NPCs.Gray_Fly, [Quests.Drive_Airplane_To_Hongkong]))
     ],
     parent: C3_P1
