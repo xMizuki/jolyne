@@ -237,8 +237,10 @@ export const calcAbilityDMG = function calcAbilityDMG(ability: Ability, userData
     const diff = (ability.damages - userATKDMG) < 0 ? -(ability.damages - userATKDMG) : ability.damages - userATKDMG;
     const fixedDiff = (userATKDMG - diff) < 0 ? -(userATKDMG - diff) : userATKDMG - diff;
     return ability.damages + (fixedDiff * (userData.level + (userData.skill_points.strength / 2)));*/
-    const dmg = Math.round(ability.damages * ((userATKDMG / ability.damages) * (ability.damages / 10)) + ability.damages + ((ability.damages / 10) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * (userData.level + (userData.skill_points.strength / 2)));
-    return Math.round((userATKDMG / 40) * dmg + ((ability.damages / userATKDMG) * ((userATKDMG / ability.damages) * 70)));
+    const dmg = Math.round(ability.damages * ((userATKDMG / ability.damages) * (ability.damages / 10)) + ability.damages + ((ability.damages / 10) * (ability.damages * 2 + (userATKDMG / 4))) + (ability.damages / userATKDMG ) * ((userData.level) + (userData.skill_points.strength / 2)));
+    // return dmg + Math.round((dmg / userData.level) + (((ability.damages / userData.level) * userATKDMG) * (userATKDMG / userData.level)))
+    // RECENT OLD: 
+    return Math.round((userATKDMG / 50) * dmg + ((ability.damages / userATKDMG) * ((userATKDMG / ability.damages) * 60)));
     // OLD: Math.round(((ability.damages / 80) * dmg) + (dmg * 0.92));
 }
 
@@ -297,6 +299,7 @@ export const isQuest = function isQuest(item: any): item is Quest {
 }
 
 export const isQuestArray = function isQuestArray(item: any): item is Quest[] {
+    console.log(item);
     return item instanceof Array && (item as Quest[]).every(i => isQuest(i));
 }
 
@@ -306,6 +309,11 @@ export const isMail = function isMail(item: any): item is Mail {
 
 export const isMailArray = function isMailArray(item: any): item is Mail[] {
     return item instanceof Array && (item as Mail[]).every(i => isMail(i));
+}
+
+export const AttributeChapterQuestToNPC = function AttributeChapterQuestToNPC(npc: NPC, quests: Quest[]): NPC {
+    npc.fight_rewards.chapter_quests = quests;
+    return npc;
 }
 
 export const generateDiscordTimestamp = function generateDiscordTimestamp(date: Date | number, type: 'FROM_NOW' | 'DATE' | 'FULL_DATE'): string {
