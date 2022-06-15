@@ -329,7 +329,7 @@ export const Purple_Haze: Stand = {
         awaken_text: "POIIIIIIIISON GAS!"
     },
     emoji: Emojis['purple_haze'],
-    available: false
+    available: true
 };
 
 export const Tower_Of_Gray: Stand = {
