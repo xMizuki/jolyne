@@ -689,6 +689,7 @@ interface Prize {
   xp?: number,
   money?: number,
   items?: Item[],
+  chapter_quests?: Quest[]
 }
 
 interface Turn {
