@@ -203,3 +203,10 @@ export const Remove_Fleshbud_Polnareff: Quest = {
     emoji: "🐛",
     completed: false
 }
+
+export const Drive_Airplane_To_Hongkong: Quest = {
+    id: "action:drive_airplane_to_hongkong",
+    i18n: "DRIVE_AIRPLANE_TO_HONGKONG",
+    emoji: "🛩",
+    completed: false
+}

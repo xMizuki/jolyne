@@ -99,9 +99,9 @@ export const Hierophant_Green: Stand = {
     color: "#6AD398",
     image: "https://static.wikia.nocookie.net/jjba/images/c/c8/HierophantGreen.png/revision/latest/scale-to-width-down/350?cb=20140807094417",
     skill_points: {
-        strength: 10,
-        defense: 5,
-        perception: 5,
+        strength: 3,
+        defense: 1,
+        perception: 1,
         stamina: 0,
     },
     text: {
@@ -123,9 +123,9 @@ export const Aerosmith: Stand = {
     color: "#0981D1",
     image: "https://static.wikia.nocookie.net/jjba/images/6/66/Aerosmithcolor.png/revision/latest?cb=20180414181107&path-prefix=fr",
     skill_points: {
-        strength: 10,
-        defense: 5,
-        perception: 5,
+        strength: 1,
+        defense: 1,
+        perception: 3,
         stamina: 0,
     },
     text: {
@@ -147,7 +147,7 @@ export const The_Hand: Stand = {
     color: "#1d57e5",
     image: "https://static.wikia.nocookie.net/jjba/images/4/46/The_Hand_Anime.png/revision/latest?cb=20161217225524&path-prefix=fr",
     skill_points: {
-        strength: 15,
+        strength: 10,
         defense: 0,
         perception: 0,
         stamina: 0,
@@ -221,7 +221,7 @@ export const Magicians_Red: Stand = {
     color: "RED",
     image: "https://i.pinimg.com/736x/8a/cb/27/8acb27c4640370a8919e5fdc30d1d581.jpg",
     skill_points: {
-        strength: 8,
+        strength: 10,
         defense: 0,
         perception: 0,
         stamina: 0
@@ -309,7 +309,7 @@ export const Gold_Experience: Stand = {
 export const Purple_Haze: Stand = {
     name: "Purple Haze",
     rarity: "A",
-    description: 'A aa a a ',
+    description: "Purple Haze is a humanoid stand of height and and builds similar to Fugo's. Its face and body are patterned by horizontal lozenges of alternating shade, and armor pieces are present on its shoulders, elbows, and knees. It has spikes along its back.",
     abilities: [
         Abilities.Stand_Barrage,
         Abilities['Capsule_Shot'],
@@ -317,10 +317,10 @@ export const Purple_Haze: Stand = {
         Abilities['Poison_Gas']
     ],
     color: 'PURPLE',
-    image: Star_Platinum['image'],
+    image: 'https://cdn.discordapp.com/attachments/576020336902930434/986670882695041034/400px-Purple_Haze_Infobox_Manga.png',
     skill_points: {
         strength: 10,
-        defense: 5,
+        defense: 0,
         perception: 0,
         stamina: 0
     },
@@ -328,6 +328,29 @@ export const Purple_Haze: Stand = {
         awakening_text: "[awakening in you...]",
         awaken_text: "POIIIIIIIISON GAS!"
     },
-    emoji: Emojis['JolyneAhhhhh'],
+    emoji: Emojis['purple_haze'],
     available: false
 };
+
+export const Tower_Of_Gray: Stand = {
+    name: "Tower of Gray",
+    rarity: "C",
+    description: "Stand of Gray Fly",
+    abilities: [
+        Abilities['Secondary_Jaw']
+    ],
+    color: '#808080',
+    image: '',
+    skill_points: {
+        strength: 0,
+        defense: 0,
+        perception: 0,
+        stamina: 0
+    },
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "*tower of gray*"
+    },
+    emoji: '\uD83D\uDEA8',
+    available: false
+}

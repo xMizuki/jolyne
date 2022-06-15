@@ -814,11 +814,12 @@ export const Rage: Ability = {
 export const Poison_Gas: Ability = {
     name: 'Poison Gas',
     description: "deals your atk damage every turn to your opponent for some turns. 10% of your atk damage is also dealt to you every turn.",
-    cooldown: 0,
+    cooldown: 8,
     damages: 0,
     blockable: false,
     dodgeable: false,
     stamina: 50,
+    ultimate: true,
     trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
         const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
@@ -827,7 +828,7 @@ export const Poison_Gas: Ability = {
 
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: 3,
+            cd: 16,
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
@@ -848,8 +849,8 @@ export const Poison_Gas: Ability = {
 export const Capsule_Shot: Ability = {
     name: 'Capsule Shot',
     description: "shoot the capsules from your fist at your enemy, poisoning them for 6 turns.",
-    cooldown: 0,
-    damages: 40,
+    cooldown: 6,
+    damages: 15,
     blockable: false,
     dodgeable: false,
     stamina: 50,
@@ -903,6 +904,16 @@ export const Heaven_Ascended_Smite: Ability = {
     description: "HOLY SHIT!",
     cooldown: 0,
     damages: 120,
+    blockable: false,
+    dodgeable: false,
+    stamina: 50
+}
+
+export const Secondary_Jaw: Ability = {
+    name: 'Secondary Jaw',
+    description: 'no desc cuz private ability',
+    cooldown: 3,
+    damages: 30,
     blockable: false,
     dodgeable: false,
     stamina: 50

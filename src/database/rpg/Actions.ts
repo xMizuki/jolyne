@@ -251,7 +251,109 @@ export const remove_fleshbud_polnareff = async(ctx: InteractionCommandContext, u
         ctx.client.database.delCooldownCache("cooldown", userData.id);
         throw e;
     }
+}
 
-            
-    
+export const drive_airplane_to_hongkong = async (ctx: InteractionCommandContext, userData: UserData) => {
+    await ctx.client.database.setCooldownCache("cooldown", userData.id);
+    const finishEmoji = '🔲';
+    let map = [
+        finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji 
+    ];
+    const crashEmoji = '🪰';
+    for (let i = 0; i < 8; i++) {
+        const howMuch = Util.getRandomInt(1, 3);
+        let map2 = [
+            '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦'
+        ];
+        for (let i = 0; i < howMuch; i++) {
+            map2[i] = crashEmoji;
+        }
+        Util.shuffle(map2);
+        for (const i of map2) map.push(i);
+    }
+    function splitEvery10Array(arr: string[]) {
+        const result: string[][] = [];
+        for (let i = 0; i < arr.length; i += 10) {
+            result.push(arr.slice(i, i + 10));
+        }
+        return result.map(v => v.join(''));
+    }
+    let planeDirection = 85;
+    let oldEmoji = '🟦';
+
+    const backId = Util.generateID();
+    const centerId = Util.generateID();
+    const forwardId = Util.generateID();
+
+    const backBTN = new MessageButton()
+        .setCustomId(backId)
+        .setEmoji('⬅️')
+        .setStyle("SECONDARY");
+    const centerBTN = new MessageButton()
+        .setCustomId(centerId)
+        .setEmoji('⬆️')
+        .setStyle("PRIMARY");
+    const forwardBTN = new MessageButton()
+        .setCustomId(forwardId)
+        .setEmoji('➡️')
+        .setStyle("SECONDARY");
+    function makeMessage (): void {
+        map[planeDirection] = '✈️';
+        ctx.makeMessage({
+            components: [
+                Util.actionRow([backBTN, centerBTN, forwardBTN]),
+            ],
+            embeds: [{
+                title: '🌏 Hongkong',
+                description: splitEvery10Array(map).join('\n'),
+                footer: {
+                    text: "Drive the airplane to hongkong. Don't crash!"
+                }
+            }]
+        })
+    }
+    makeMessage();
+    const filter = async (i: MessageComponentInteraction) => {
+        i.deferUpdate().catch(() => {});
+        return (i.customId === backId || i.customId === centerId || i.customId === forwardId) && i.user.id === userData.id;
+    };
+    const collector = ctx.interaction.channel.createMessageComponentCollector({ filter, time: 150000 });
+    ctx.timeoutCollector(collector);
+
+    collector.on("collect", async (i: MessageComponentInteraction) => {
+        map[planeDirection] = oldEmoji;
+        if (i.customId === backId) {
+            planeDirection -= 1;
+        } else if (i.customId === forwardId) {
+            planeDirection += 1;
+        } else planeDirection -= 10;
+        if (map[planeDirection] === crashEmoji) {
+            collector.stop("crashed");
+            ctx.makeMessage({
+                content: '💥 YOURE SO BAD YOU CRASHED THE AIRPLANE!'
+            });
+        } else if (map[planeDirection] === finishEmoji) {
+            collector.stop("finished");
+            ctx.makeMessage({
+                content: 'You successfully landed in Hongkong!'
+            });
+            // validate quest
+            for (let i = 0; i < userData.chapter_quests.length; i++) {
+                if (userData.chapter_quests[i].id === 'action:drive_airplane_to_hongkong') {
+                    userData.chapter_quests[i].completed = true;
+                    break;
+                }
+            }
+            ctx.client.database.saveUserData(userData);
+        }
+        oldEmoji = map[planeDirection];
+        makeMessage()
+
+    });
+
+    collector.on('end', async (int: any, reason: string) => {
+        await ctx.client.database.delCooldownCache("cooldown", userData.id);
+    });
+
+
 }

@@ -418,3 +418,24 @@ export const Pucci: NPC = {
     stand: Stands.Whitesnake["name"]
 }
 
+export const Gray_Fly: NPC = {
+    id: 'gray_fly',
+    name: 'Gray Fly',
+    emoji: '🪰',
+    level: 20,
+    health: 500,
+    max_health: 500,
+    stamina: 500,
+    skill_points: {
+        strength: 30,
+        defense: 30,
+        perception: 30,
+        stamina: 30
+    },
+    fight_rewards: {
+        xp: 25000,
+        money: 10000,
+    },
+    stand: Stands.Tower_Of_Gray["name"],
+    private: true
+}
