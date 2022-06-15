@@ -58,5 +58,9 @@
     "REMOVE_FLESHBUD_POLNAREFF": {
         "TITLE": "Remove the fleshbud",
         "DESCRIPTION": "Remove the fleshbud on the head of the polnareff"
+    },
+    "DRIVE_AIRPLANE_TO_HONGKONG": {
+        "TITLE": "Drive the airplane",
+        "DESCRIPTION": "Drive the airplane immediately to Hong Kong"
     }
 }
