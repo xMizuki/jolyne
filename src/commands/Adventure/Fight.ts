@@ -52,7 +52,8 @@ export const data: SlashCommand["data"] = {
 
 
 
-export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData, customNPC?: NPC) => {
+export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData, customNPC?: NPC, updateUser?: boolean) => {
+    if (updateUser) userData = await ctx.client.database.getUserData(userData.id);
     const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).sort((a, b) => a.npc.max_health - b.npc.max_health)[0];
     const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
 
@@ -308,7 +309,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 if (AntiCheatResult === true) {
                     return collector.stop();
                 }
-                ctx.client.commands.get("fight").execute(ctx, userData);
+                ctx.client.commands.get("fight").execute(ctx, userData, null, true);
                 /*
                 const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0)[0];
                 const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
@@ -743,7 +744,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         // @ts-expect-error 
                         userData[r as keyof typeof userData] += reward;
                         rewardsArr.push(`${emoji} +${Util.localeNumber(reward)} ${r.replace("money", "coins")}`);
-                    } else {
+                    } else if (reward instanceof Array && !Util.isQuestArray(reward)) {
                         for (const rewardItem of reward) {
                             userData.items.push(rewardItem.id);
                         }
@@ -751,6 +752,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         for (const item of uniqueItems) {
                             const itemCount = reward.filter(r => r.id === item.id).length;
                             rewardsArr.push(`+${itemCount} ${item.name} ${item.emoji}`);
+                        }
+                    } else if (Util.isQuestArray(reward)) {
+                        for (const quest of reward) {
+                            rewardsArr.push(`:scroll: \`${quest['id']}\``);
+                            userData.chapter_quests.push(quest);
                         }
                     }    
                 });
