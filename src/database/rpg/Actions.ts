@@ -260,8 +260,8 @@ export const drive_airplane_to_hongkong = async (ctx: InteractionCommandContext,
         finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji,finishEmoji 
     ];
     const crashEmoji = '🪰';
-    for (let i = 0; i < 8; i++) {
-        const howMuch = Util.getRandomInt(1, 3);
+    for (let i = 0; i < 18; i++) {
+        const howMuch = Util.getRandomInt(2, 4);
         let map2 = [
             '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦', '🟦'
         ];
@@ -278,7 +278,8 @@ export const drive_airplane_to_hongkong = async (ctx: InteractionCommandContext,
         }
         return result.map(v => v.join(''));
     }
-    let planeDirection = 85;
+    let planeDirection = map.length - 5;
+    map[planeDirection - 10] = '🟦'; // anti impossible
     let oldEmoji = '🟦';
 
     const backId = Util.generateID();
