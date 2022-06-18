@@ -204,7 +204,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             ctx.interaction.reply({
                 content: `You threw x${quantity} ${item.emoji} ${item.name}`,
             });
-            Util.removeItem(userData.items, item.id);
+            for (let i = 0; i < quantity; i ++) Util.removeItem(userData.items, item.id);
             await ctx.client.database.saveUserData(userData);
             break;    
         }

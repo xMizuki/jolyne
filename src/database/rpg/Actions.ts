@@ -352,8 +352,8 @@ export const drive_airplane_to_hongkong = async (ctx: InteractionCommandContext,
 
     });
 
-    collector.on('end', async (int: any, reason: string) => {
-        await ctx.client.database.delCooldownCache("cooldown", userData.id);
+    collector.on('end', () => {
+        ctx.client.database.delCooldownCache("cooldown", userData.id);
     });
 
 

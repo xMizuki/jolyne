@@ -26,6 +26,9 @@ export const data: SlashCommand["data"] = {
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData) => {
     let user = ctx.interaction.options.getUser('user');
+    if (user.id === ctx.author.id) return ctx.makeMessage({
+        content: Emojis['jolyne']
+    })
     if (await ctx.client.database.getCooldownCache(user.id)) return ctx.makeMessage({ content: `<:jolyne:924029173708779540> **${user.username}** is currently busy. Try again later.` })
     if (userData.level < 5) return ctx.makeMessage({ content: `<:jolyne:924029173708779540> You must be level **5** or higher to trade` });
     let user_data = await ctx.client.database.getUserData(user.id);
@@ -226,6 +229,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         collector.on('end', () => {
             ctx.client.database.delCooldownCache('trade', user.id);
             ctx.client.database.delCooldownCache('trade', userData.id);
+            ctx.disableInteractionComponents();
         });
     
         loadEmbed();
