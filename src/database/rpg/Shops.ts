@@ -30,7 +30,8 @@ export const Black_Market: Shop = {
     name: 'Black Market',
     items: [
         Items["Mysterious_Arrow"],
+        Items.Skill_Points_Reset_Potion,
     ],
-    emoji: '🏷',
-    open_date: 3
+    emoji: '🃏',
+    color: 'NOT_QUITE_BLACK'
 }

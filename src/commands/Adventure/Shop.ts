@@ -58,7 +58,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setStyle("SECONDARY"))
             let content = '';
             for (const item of shop.items) {
-                content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+                content += `${item.emoji} **${item.name}**: ${item.benefits ? Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ') : item.description} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
             }
             fields.push({
                 name: `${shop.emoji} ${shop.name}`,
@@ -91,7 +91,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         let content = '';
         for (const item of shop.items) {
-            content += `${item.emoji} **${item.name}**: ${Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ')} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
+            content += `${item.emoji} **${item.name}**: ${item.benefits ? Object.keys(item.benefits).map((v) => `\`${item.benefits[v as keyof typeof item.benefits]}\` ${v}`).join(', ') : item.description} | **${Util.localeNumber(item.price)}** ${Emojis.jocoins} ${item.storable ? '' : '- \`[NOT STORABLE]\`'}\n`;
         }
         ctx.makeMessage({
             embeds: [{
@@ -178,7 +178,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     })
     
                 } else { // not supported
-                    userData.money -= item.price;
+                    followUp({
+                        content: 'THIS ITEM IS NOT SUPPORTED OR AN ERROR OCCURED. PLEASE REPORT THIS IMMEDIATELY TO OUR DEVS.'
+                    })
+                    userData.money += item.price;
                 }
             }
 

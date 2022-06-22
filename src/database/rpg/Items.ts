@@ -78,7 +78,7 @@ export const Mysterious_Arrow: Item = {
   description: "A mysterious arrow",
   rarity: 'A',
   type: "arrow",
-  price: 30000,
+  price: 35000,
   tradable: true,
   storable: true,
   usable: true,
@@ -474,3 +474,27 @@ export const Requiem_Arrow: Item = {
   emoji: Emojis.requiem_arrow
 }
 
+export const Skill_Points_Reset_Potion: Item = {
+  id: 'skill_points_reset_potion',
+  name: 'Skill Points reset potion',
+  description: 'resets your skill-points',
+  type: 'other',
+  price: 100000,
+  tradable: true,
+  storable: true,
+  usable: true,
+  emoji: Emojis.sp_potion,
+  use: async (ctx: CommandInteractionContext, userData: UserData, skip?: boolean, left?: number) => {
+    userData.skill_points = {
+      defense: 0,
+      strength: 0,
+      perception: 0,
+      stamina: 0
+    }
+    ctx.makeMessage({
+      content: 'Your skill-points have been reset.'
+    })
+    return true;
+  }
+
+}

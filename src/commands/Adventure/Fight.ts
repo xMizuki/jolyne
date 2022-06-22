@@ -472,6 +472,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             await loadBaseEmbed();
         }
         function triggerAbility(ability: Ability, user: UserData | NPC, dodged: boolean, turn: Turn) {
+            user.stamina -= ability.stamina;
             cooldowns.forEach(c => {
                 if (c.id === user.id && c.move === ability.name) {
                     c.cooldown = ability.cooldown;
