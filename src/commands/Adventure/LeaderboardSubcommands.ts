@@ -71,12 +71,18 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         case "level":
             title = `${Emojis.a_} Level Leaderboard`;
             strfilter = (user: UserData) => Emojis.replyEnd + " " + `${Emojis.a_} LVL **${user.level}** with **${Util.localeNumber(user.xp)}** ${Emojis.xp}`;
-            rows = rows.sort((a: UserData, b: UserData) => (b.level * 100000) + b.xp - (a.level * 100000) + a.xp);
+            rows = rows.sort((a: UserData, b: UserData) => (b.level * 1000000000000000) + b.xp - (a.level * 1000000000000000) + a.xp);
             break;
         case "ranked":
             title = `⚔️ Ranked Leaderboard`;
-            strfilter = (user: UserData) => `> :regional_indicator_w:ins: ${Util.localeNumber(user.stats?.rankedBattle?.wins ?? 0)}\n> :regional_indicator_l:osses: ${Util.localeNumber(user.stats?.rankedBattle?.losses ?? 0)}`;
-            rows = rows.sort((a: UserData, b: UserData) => (b.stats?.rankedBattle?.wins ?? 0 - b.stats?.rankedBattle?.losses) - (a.stats?.rankedBattle?.wins ?? 0 - a.stats?.rankedBattle?.losses));
+            function getRatio(user: UserData) {
+                let ratio: string | number = (user.stats.rankedBattle?.wins ?? 0) / (user.stats.rankedBattle?.losses ?? 0);
+                if (isNaN(ratio)) ratio = -1;
+                if (ratio === Infinity && (user.stats.rankedBattle?.wins ?? 0) < 3) ratio = -1
+                return ratio;            
+            }
+            strfilter = (user: UserData) => `> :regional_indicator_w:ins: ${Util.localeNumber(user.stats?.rankedBattle?.wins ?? 0)}\n> :regional_indicator_l:osses: ${Util.localeNumber(user.stats?.rankedBattle?.losses ?? 0)}\n:regional_indicator_w:/:regional_indicator_l: Ratio: ${getRatio(user).toFixed(2)}`;
+            rows = rows.filter(r => getRatio(r) !== -1).sort((a: UserData, b: UserData) => (getRatio(b) * 100) - (getRatio(a) * 100));
             break;
     };
 

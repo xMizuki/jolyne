@@ -26,11 +26,11 @@ export const Kick_Barrage: Ability = {
 export const Star_Finger: Ability = {
     name: 'Star Finger',
     description: 'Extends Star Platinum\'s finger and stabs the target in the eyes',
-    cooldown: 10,
+    cooldown: 7,
     damages: 25,
     blockable: false,
     dodgeable: true,
-    stamina: 20
+    stamina: 50
 };
 
 export const Time_Stop: Ability = {
@@ -140,11 +140,11 @@ export const Time_Stop: Ability = {
 export const Road_Roller: Ability = {
     name: 'Road Roller',
     description: 'jumps high into the sky, bringing a steamroller down with them, slamming it down where they were previously standing',
-    cooldown: 10,
-    damages: 25,
-    blockable: false,
-    dodgeable: true,
-    stamina: 20
+    cooldown: Star_Finger['cooldown'],
+    damages: Star_Finger['damages'],
+    blockable: Star_Finger['blockable'],
+    dodgeable: Star_Finger['dodgeable'],
+    stamina: Star_Finger['stamina']
 };
 
 export const Emerald_Splash: Ability = {
@@ -204,7 +204,30 @@ export const Crossfire_Hurricane: Ability = {
     damages: 10,
     blockable: true,
     dodgeable: true,
-    stamina: 20
+    stamina: 20,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const damage = Math.round(Util.calcAbilityDMG(Crossfire_Hurricane, caller) / 10);
+
+
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 3,
+        };
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
+            victim.health -= damage;
+            if (victim.health <= 0) {
+                victim.health = 0;
+                turns[turns.length - 1].logs.push(`:fire:${victimUsername} died by burning`);
+            }
+        });
+
+        if (Util.getStand(victim.stand).name !== Util.getStand('Magicians Red').name) promises.push(func);
+    }
+
 }
 
 export const Red_Bind: Ability = {
@@ -214,7 +237,30 @@ export const Red_Bind: Ability = {
     damages: 15,
     blockable: true,
     dodgeable: true,
-    stamina: 22
+    stamina: 22,
+    trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
+        const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
+        const damage = Math.round(Util.calcAbilityDMG(Red_Bind, caller) / 10);
+
+
+        const tsID = Util.generateID();
+        gameOptions[tsID] = {
+            cd: 3,
+        };
+        const func = (async () => {
+            if (gameOptions[tsID].cd === 0) return;
+            gameOptions[tsID].cd--;
+            turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
+            victim.health -= damage;
+            if (victim.health <= 0) {
+                victim.health = 0;
+                turns[turns.length - 1].logs.push(`:fire:${victimUsername} died by burning`);
+            }
+        });
+
+        if (Util.getStand(victim.stand).name !== Util.getStand('Magicians Red').name) promises.push(func);
+    }
+    
 }
 
 export const Bakugo: Ability = {
@@ -245,7 +291,7 @@ export const Bakugo: Ability = {
             }
         });
 
-        promises.push(func);
+        if (Util.getStand(victim.stand).name !== Util.getStand('Magicians Red').name) promises.push(func);
     }
 }
 

@@ -35,7 +35,7 @@ export const Spaghetti_Bowl: Item = {
   emoji: "🍝",
   benefits: {
     health: 200,
-    stamina: 30,
+    stamina: 15,
   }
 };
 
@@ -52,7 +52,7 @@ export const Salad_Bowl: Item = {
   emoji: "🥗",
   benefits: {
     health: 50,
-    stamina: 50
+    stamina: 25
   }
 };
 
@@ -159,7 +159,7 @@ export const Cola: Item = {
   usable: true,
   emoji: Emojis.cola,
   benefits: {
-    stamina: 35
+    stamina: 15
   }
 };
 
@@ -264,7 +264,7 @@ export const Burger: Item = {
   emoji: '🍔',
   benefits: {
     health: 70,
-    stamina: 15
+    stamina: 5
   }
 }
 
@@ -458,7 +458,7 @@ export const Ramen_Bowl: Item = {
   emoji: '🍜',
   benefits: {
     health: 170,
-    stamina: 100
+    stamina: 25
   }
 }
 

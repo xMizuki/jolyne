@@ -163,7 +163,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
         let accepted: string[] = [];
 
-        collector.on('collect', (i: MessageComponentInteraction) => {
+        collector.on('collect', async (i: MessageComponentInteraction) => {
             ctx.timeoutCollector(collector);
             if (i.customId !== acceptID) accepted = []
             switch (i.customId) {
@@ -208,6 +208,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     });
                     if (accepted.length === 2) {
                         collector.stop();
+                        // enforcing the cache
+                        ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(user.id));
+                        ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(userData.id));            
                         for (const item of userOffers) {
                             userData.items.push(item.id);
                         }
@@ -226,9 +229,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     break;
             }
         });
-        collector.on('end', () => {
-            ctx.client.database.delCooldownCache('trade', user.id);
-            ctx.client.database.delCooldownCache('trade', userData.id);
+        collector.on('end', async () => {
+            ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(user.id));
+            ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(userData.id));
             ctx.disableInteractionComponents();
         });
     

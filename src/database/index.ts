@@ -241,8 +241,10 @@ export default class DatabaseHandler {
         userData.max_health = 100;
         userData.max_stamina = 60;
         userData.max_health += Math.round(((userData.level + health) * 10) + ((userData.level + health) * 6 / 100) * 100);
-        userData.max_stamina += Math.round((userData.level + stamina) + ((userData.level + stamina) * 5 / 100) * ((userData.level + stamina) * 30));
+        userData.max_stamina += Math.round((stamina * 2.25) + ((stamina * 2.25) * 5 / 100) * ((userData.level + stamina) * 30));
         userData.dodge_chances = Math.round(Math.round((userData.level / 2) + (perception / 1.15)));
+        if (userData.stamina > userData.max_stamina) userData.stamina = userData.max_stamina;
+        if (userData.health > userData.max_health) userData.health = userData.max_health;
     }
 
     // TODO: Finish this code
@@ -260,7 +262,7 @@ export default class DatabaseHandler {
         return await this.redis.client.get(`tempCache_${base}:${target}`).then(r => r || null);
     }    
 
-    async setCooldownCache(base: string, target: string, value: string | number = Infinity): Promise<string> {
+    async setCooldownCache(base: string, target: string, value: string | number = Date.now()): Promise<string> {
         return await this.redis.client.set(`tempCache_${base}:${target}`, value);
     }
     async delCooldownCache(base: string, target?: string): Promise<string | number> {

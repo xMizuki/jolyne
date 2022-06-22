@@ -72,7 +72,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         content: `${NPC.dialogues?.assault ? Util.makeNPCString(NPC) + " " + NPC.dialogues.assault : `You assaulted ${Util.makeNPCString(NPC)}`}`,
     });
     await Util.wait(3000);
-    await ctx.client.database.delCooldownCache("cooldown", userData.id);
+    await ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(userData.id));
+    await ctx.client.database.redis.del(await ctx.client.database.getCooldownCache(userData.id));
+
+
     delete require.cache[require.resolve('../../database/rpg/NPCs')];
     await ctx.client.commands.get("fight").execute(ctx, userData, protectedNPC);
 };

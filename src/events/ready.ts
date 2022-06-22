@@ -32,6 +32,14 @@ export const execute: Event["execute"] = async (client: Client) => {
 
     // Daily quests
     if (client.guilds.cache.random().shardId === 0) {
+        async function expireCooldownCache() {
+            const keys = await client.database.redis.keys('tempCache_cooldown*');
+            for (const key of keys) {
+                const value: number = await client.database.redis.get(key) as any;
+                if (typeof key !== 'number') continue;
+                if (Date.now() + (60_000 * 10) < value) client.database.redis.del(key);
+            }
+        }
         TopGG(client);
         client.log('Daily quests cron job is starting...', 'cmd');
         let toSaveUSERS: UserData[] = [];
@@ -55,6 +63,7 @@ export const execute: Event["execute"] = async (client: Client) => {
             }
         }, null, true, 'Europe/Paris');
         setInterval(async () => {
+            expireCooldownCache()
             for (const user of toSaveUSERS) {
                 if (await client.database.getCooldownCache(user.id)) continue;
                 client.database.redis.del(`jjba:finishedQ:${user.id}`);
