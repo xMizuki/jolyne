@@ -422,7 +422,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
 
         async function NPCAttack() {
-            if (ended) return;
+            if (ended || opponent.health <= 0) return;
             await Util.wait(1200);
             const NPC = whosTurn();
             if (!Util.isNPC(NPC)) return; //typeguard

@@ -216,6 +216,7 @@ export const Crossfire_Hurricane: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
             victim.health -= damage;
@@ -249,6 +250,7 @@ export const Red_Bind: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
             victim.health -= damage;
@@ -282,6 +284,7 @@ export const Bakugo: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`:fire:${victimUsername} took some burn damages (-${damage} :heart:)`);
             victim.health -= damage;
@@ -473,7 +476,9 @@ export const Gun: Ability = {
             if (gameOptions[tsID].cd === 0) return;
             gameOptions[tsID].cd--;
             gameOptions.trns--;
+            gameOptions.invincible = true;
             if (gameOptions[tsID].cd === 0) {
+                gameOptions.invincible = false;
                 gameOptions.trns--;
                 turns[turns.length - 1].logs.push(`:gun::x: **${victimUsername}** is no longer stunned. :gun::x:`);
             }
@@ -794,6 +799,7 @@ export const Life_Giver: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`✊🩸 **${victimUsername}** POISON EFFECTS (-${dmg} :heart:)`);
             victim.health -= dmg;
@@ -878,6 +884,7 @@ export const Poison_Gas: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`:skull:${victimUsername} took some poison damages (-${damage} :heart:)\n:skull:${callerUsername} took some poison damages (-${Math.round(damage / 10)} :heart:)`);
             victim.health -= damage;
@@ -912,6 +919,7 @@ export const Capsule_Shot: Ability = {
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
+            if (gameOptions.invincible) return;
             gameOptions[tsID].cd--;
             turns[turns.length - 1].logs.push(`:skull:${victimUsername} took some poison damages (-${damage} :heart:)`);
             victim.health -= damage;
