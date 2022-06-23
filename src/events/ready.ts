@@ -52,10 +52,11 @@ export const execute: Event["execute"] = async (client: Client) => {
                 formattedUsers.push(JSON.parse(userData));
             }
             for await (const user of formattedUsers) {
+                /*
                 if (await client.database.getCooldownCache(user.id)) {
                     toSaveUSERS.push(user);
                     continue;
-                }
+                }*/
                 client.database.redis.del(`jjba:finishedQ:${user.id}`);
                 user.daily.quests = Util.generateDailyQuests(user.level);
                 client.database.saveUserData(user);
@@ -64,12 +65,13 @@ export const execute: Event["execute"] = async (client: Client) => {
         }, null, true, 'Europe/Paris');
         setInterval(async () => {
             expireCooldownCache()
+            /*
             for (const user of toSaveUSERS) {
                 if (await client.database.getCooldownCache(user.id)) continue;
                 client.database.redis.del(`jjba:finishedQ:${user.id}`);
                 user.daily.quests = Util.generateDailyQuests(user.level);
                 client.database.saveUserData(user);
-            }
+            }*/
         }, 10000);
         
         job.start();

@@ -71,7 +71,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     }
     const collector = ctx.interaction.channel.createMessageComponentCollector({ filter });
     if (customNPC) return startBattle(customNPC, 'custom')
-    const opponentData = await ctx.client.database.getUserData(user ? user.id : userData.id);
+    let opponentData = await ctx.client.database.getUserData(user ? user.id : userData.id);
 
     if (!user) {
         if (lastChapterEnnemyQuest && lastDailyEnnemyQuest) {
@@ -688,6 +688,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
         }
         async function end() {
+            if (opponentData.id !== userData.id) {
+                opponentData = await ctx.client.database.getUserData(opponentData.id)
+            }
+            userData = await ctx.client.database.getUserData(userData.id);
             ended = true;
             const end = await loadBaseEmbed();
             if (end || user) {
