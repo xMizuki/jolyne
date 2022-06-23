@@ -422,7 +422,8 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         }
 
         async function NPCAttack() {
-            if (ended || opponent.health <= 0) return;
+            if (ended) return;
+            if (opponent.health <= 0) return end();
             await Util.wait(1200);
             const NPC = whosTurn();
             if (!Util.isNPC(NPC)) return; //typeguard
@@ -688,6 +689,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
         }
         async function end() {
+            let opponentData = await ctx.client.database.getUserData(user ? user.id : userData.id);
             if (opponentData.id !== userData.id) {
                 opponentData = await ctx.client.database.getUserData(opponentData.id)
             }
