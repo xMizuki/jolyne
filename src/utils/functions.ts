@@ -420,7 +420,7 @@ export const generateDailyQuests = (level: number): Quest[] => {
 }
 
 export const RNG = (percent: number): boolean => {
-    return getRandomInt(0, 100) < percent;
+    return getRandomInt(0, 100) + (getRandomInt(0, 100) / 100) < percent;
 }
 
 export const forEveryQuests = (userData: UserData, filter: (q: Quest) => boolean, callback: (quest: Quest) => void) => {
