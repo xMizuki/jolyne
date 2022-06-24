@@ -498,3 +498,16 @@ export const Skill_Points_Reset_Potion: Item = {
   }
 
 }
+
+export const Broken_Arrow: Item = {
+  id: 'broken_arrow',
+  name: 'Broken Arrow',
+  description: 'A broken arrow that can be used to craft some mysterious arrows (OR REQUIEM ARROWS?!)',
+  type: 'arrow',
+  price: 5000,
+  tradable: true,
+  storable: true,
+  rarity: 'B',
+  usable: false,
+  emoji: Emojis.mysterious_arrow,
+}

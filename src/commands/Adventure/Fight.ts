@@ -62,7 +62,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     const user = ctx.interaction.options.getUser("user");
     if (user && user.id === userData.id) return ctx.makeMessage({
         content: Emojis['jolyne']
-    })
+    });
 
     const filter = (i: MessageComponentInteraction) => {
         i.deferUpdate().catch(() => { });
@@ -257,10 +257,11 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             .setEmoji("⚔️")
             .setStyle("PRIMARY");
         const forfeitBTN = new MessageButton()
-            .setCustomId(forfeitID)
-            .setLabel("Forfeit")
-            .setEmoji("🗡")
-            .setStyle("SECONDARY");
+        .setCustomId(forfeitID)
+        .setLabel("Forfeit")
+        .setEmoji("🗡")
+        .setDisabled(type === 'ranked' ? true : false)
+        .setStyle("SECONDARY");
         const NPCBTN = new MessageButton()
             .setCustomId('[@ny]')
             .setLabel('[Waiting for your turn...]')
@@ -339,6 +340,17 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 case attackID:
                     const input = attack({ damages: Util.getATKDMG(povData), username: i.user?.username }, dodged, currentTurn);
                     output = input;
+                    break;
+                case forfeitID:
+                    collector.stop('forfeit');
+                    ended = true;
+                    if (!user) {
+                        ctx.client.database.delCooldownCache("battle", ctx.interaction.user.id);
+                        ctx.client.database.saveUserData(userData);    
+                    }
+                    ctx.interaction.followUp({
+                        content: `${Emojis.happyjolyne} **${i.user.tag}** was too afraid LMAO SMH`
+                    })
                     break;
                 case defendID:
                     output = defend();

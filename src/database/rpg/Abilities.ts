@@ -191,7 +191,7 @@ export const Deadly_Erasure: Ability = {
     name: 'Deadly Erasure',
     description: 'uses their right hand to erase space and jump one you and use the effect of surprise to erase you and make you discover where thing he erase go..',
     cooldown: 10,
-    damages: 60,
+    damages: 35,
     blockable: false,
     dodgeable: false,
     stamina: 100
@@ -387,7 +387,7 @@ export const Hatred_powered_Object_Possession: Ability = {
 export const Stand_Disc: Ability = {
     name: 'Stand Disc',
     description: 'Takes out your opponen\'s disc. They will be unable to use their stand\'s abilites for a few turns.',
-    cooldown: 15,
+    cooldown: 9,
     damages: 0,
     blockable: false,
     dodgeable: true,
