@@ -689,11 +689,16 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
         }
         async function end() {
-            let opponentData = await ctx.client.database.getUserData(user ? user.id : userData.id);
-            if (opponentData.id !== userData.id) {
-                opponentData = await ctx.client.database.getUserData(opponentData.id)
+            if (opponent.id !== userData.id && !Util.isNPC(opponent)) {
+                let oldOpp = opponent;
+                opponent = await ctx.client.database.getUserData(opponent.id);
+                opponent.stamina = oldOpp.stamina;
+                opponent.health = oldOpp.health;
             }
+            let oldUser = userData;
             userData = await ctx.client.database.getUserData(userData.id);
+            userData.stamina = oldUser.stamina;
+            userData.health = oldUser.health;
             ended = true;
             const end = await loadBaseEmbed();
             if (end || user) {

@@ -356,7 +356,7 @@ const UseBox = async (ctx: CommandInteractionContext, userData: UserData, box: s
           const item = Items[item_value as keyof typeof Items];
           if (item && !win_content.includes(item.name)) {
               win_content += `+ **${win.filter(r => r === item_value).length}** ${item.emoji} ${item.name}\n`;
-              userData.items.push(item_value);
+              for (let i = 0; i < win.filter(r => r === item_value).length; i ++) userData.items.push(item_value);
           }
       } else {
           let togive: string = item_value.startsWith("xp") ? "xp" : "coins";
