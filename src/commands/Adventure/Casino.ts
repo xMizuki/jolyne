@@ -115,6 +115,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         if (left === 0) {
             let followUpMSG: string;
+            userData = await ctx.client.database.getUserData(userData.id)
 
             if (slotMachineFruits[3] === slotMachineFruits[4] && slotMachineFruits[4] === slotMachineFruits[5]) { // JACKPOT
                 msg += "| : : **JACKPOT** : : |\n";

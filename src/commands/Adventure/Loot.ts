@@ -184,6 +184,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }]
         });
         await Util.wait(Util.getRandomInt(2, 6) * 1000);
+        userData = await ctx.client.database.getUserData(userData.id)
 
         const luck = Util.getRandomInt(1, 10000);
         const loot = choosedLoot.loots.filter(l => (l.percent * 100) >= luck).sort((a, b) => a.percent - b.percent)[0];
