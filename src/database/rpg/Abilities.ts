@@ -243,7 +243,6 @@ export const Red_Bind: Ability = {
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
         const damage = Math.round(Util.calcAbilityDMG(Red_Bind, caller) / 10);
 
-
         const tsID = Util.generateID();
         gameOptions[tsID] = {
             cd: 3,
@@ -411,7 +410,7 @@ export const Stand_Disc: Ability = {
         });
 
         if (victimStand) {
-            turns[turns.length - 1].logs.push(`${Emojis.disk} \`${victimUsername}\`'s stand (**${victimStand}**) is disabled for 3 turns.`);
+            turns[turns.length - 1].logs.push(`${Emojis.disk} \`${victimUsername}\`'s stand (**${victimStand}**) is disabled for some turns.`);
             victim.stand = null;
             promises.push(func);
         } else {
@@ -876,11 +875,11 @@ export const Poison_Gas: Ability = {
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
         const callerUsername = Util.isNPC(caller) ? caller.name : ctx.client.users.cache.get(caller.id)?.username;
         const damage = Util.calcATKDMG(caller);
-        turns[turns.length - 1].logs.push(`**${callerUsername}** used **Poison Gas** on **${victimUsername}**.`);
+        turns[turns.length - 1].logs.push(`**${callerUsername}** used **Poison Gas** on **${victimUsername}** ${Util.getStand(victim.stand).name === Util.getStand('Purple Haze').name ? 'but it has no effect cuz their opponent has also purple haze OMG!!!!' : ''}.`);
 
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: 16,
+            cd: 10,
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
@@ -895,7 +894,7 @@ export const Poison_Gas: Ability = {
             }
         });
 
-        promises.push(func);
+        if (Util.getStand(victim.stand).name !== Util.getStand('Purple Haze').name) promises.push(func);
     }
 }
 
@@ -915,7 +914,7 @@ export const Capsule_Shot: Ability = {
 
         const tsID = Util.generateID();
         gameOptions[tsID] = {
-            cd: 12,
+            cd: 5,
         };
         const func = (async () => {
             if (gameOptions[tsID].cd === 0) return;
@@ -929,7 +928,7 @@ export const Capsule_Shot: Ability = {
             }
         });
 
-        promises.push(func);
+        if (Util.getStand(victim.stand).name !== Util.getStand('Purple Haze').name) promises.push(func);
     }
 }
 

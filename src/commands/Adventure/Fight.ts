@@ -176,7 +176,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             ctx.client.database.setCooldownCache("battle", userData.id, `https://discord.com/channels/${ctx.interaction.guild.id}/${ctx.interaction.channel.id}/${ctx.interaction.id}`);
             ctx.client.database.setCooldownCache("battle", opponent.id, `https://discord.com/channels/${ctx.interaction.guild.id}/${ctx.interaction.channel.id}/${ctx.interaction.id}`);
         } else {
-            console.log("IN COMBATE")
             ctx.client.database.setCooldownCache("battle", userData.id, `https://discord.com/channels/${ctx.interaction.guild.id}/${ctx.interaction.channel.id}/${ctx.interaction.id}`);
         }
         if (Util.isNPC(opponent) && type !== "custom") {
@@ -302,7 +301,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             lastDamage: 0
         })
         loadBaseEmbed();
-        console.log("pflf")
         collector.on("collect", async (i: MessageComponentInteraction) => {
             if (i.customId === nextID) {
                 // ANTI-CHEAT, ANTI-DUPES, ANTI-BUG, ANTI-GLITCH
@@ -327,7 +325,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             const dodges = Util.calcDodgeChances(before);
             const dodgesNumerator = 90 + (!Util.isNPC(before) ? before.spb?.perception : before.skill_points.perception);
             const dodgesPercent = Util.getRandomInt(0, Math.round(dodgesNumerator));
-            console.log(dodgesPercent, dodges)
             if (dodgesPercent < dodges) dodged = true;
             if (gameOptions.invincible) dodged = false;
 
@@ -375,7 +372,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         break;
                     } else return;
             }
-            //console.log(await Promise.all(promises));
 
             if (output) currentTurn.logs.push(output);
             pushTurn();
@@ -462,7 +458,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             const dodges = Util.calcDodgeChances(before);
             const dodgesNumerator = 90 + (!Util.isNPC(before) ? before.spb?.perception : before.skill_points.perception);
             const dodgesPercent = Util.getRandomInt(0, Math.round(dodgesNumerator));
-            console.log(dodgesPercent, dodges)
             if (dodgesPercent < dodges) dodged = true;
             if (gameOptions.invincible) dodged = false;
 
@@ -560,7 +555,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
         }
         async function loadBaseEmbed(): Promise<boolean> {
-            console.log("plouf")
             timeoutClt();
             const povData = whosTurn();
             const components: MessageButton[] = [];
@@ -605,7 +599,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
             if (fields.length > 24) fields = fields.slice(fields.length-24, fields.length);
             try {
-                console.log("plouf is")
 
                 await ctx.makeMessage({
                     content: content,
@@ -625,16 +618,15 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                 });
     
             } catch(e) {
-                console.log("plouf errored")
 
                 ctx.followUp({
                     content: 'An error occured while loading the sandbox. Please try again. Contact us if the problem persists (https://jolyne.wtf/discord).',
                 });
                 collector.stop();
+                ended = true;
                 ctx.client.database.delCooldownCache("battle", ctx.interaction.user.id);
                 if (user) ctx.client.database.delCooldownCache("battle", user.id);
             }
-            console.log("plouf nex")
 
 
             if (opponent.id === povData.id && Util.isNPC(opponent) && !ended) await NPCAttack(); 

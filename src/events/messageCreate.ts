@@ -53,13 +53,15 @@ export const execute: Event["execute"] = async (message: Message) => {
             }); 
         }
         if (commandName === 'give') {
-            console.log(args.join(' ').slice(args[0].length + 1));
             const user = message.mentions.users.first() || await client.users.fetch(args[0]).catch(() => null);
             const userData = await client.database.getUserData(user.id);
             if (!userData) return message.reply('User does not exist!');
-            const item = Util.getItem(args.join(' ').slice(args[0].length + 1)) || Object.values(Items).find((v) => v.id.toLowerCase().includes(args.join(' ').slice(args[0].length + 1).toLowerCase()) || v.name.toLowerCase() === args.join(' ').slice(args[0].length + 1).toLowerCase() || v.id.toLowerCase() === args.join(' ').slice(args[0].length + 1).toLowerCase() || v.name.toLowerCase().includes(args.join(' ').slice(args[0].length + 1).toLowerCase() ));
+            let b: any = args.join(' ').split('--')[0].split('')
+            b = b.slice(0, b.length - 1).join('');
+            console.log(args.join(' ').split('--'))
+            const item = Util.getItem(b.slice(args[0].length + 1)) || Object.values(Items).find((v) => v.id.toLowerCase().includes(b.slice(args[0].length + 1).toLowerCase()) || v.name.toLowerCase() === b.slice(args[0].length + 1).toLowerCase() || v.id.toLowerCase() === b.slice(args[0].length + 1).toLowerCase() || v.name.toLowerCase().includes(b.slice(args[0].length + 1).toLowerCase() ));
             if (!item) return message.reply('Item does not exist!');
-            const amout = args.join(' ').includes('--') ? parseInt(args.join(' ').split('--')[1]) : 1;
+            const amout = args.join('  ').includes('--') ? parseInt(args.join(' ').split('--')[1]) : 1;
 
             for (let i = 0; i < amout; i++) {
                 userData.items.push(item.id);
