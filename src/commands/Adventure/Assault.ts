@@ -37,6 +37,9 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         npc: NPCs.Dio,
         luck: 0.5
     }, {
+        npc: NPCs.Pucci,
+        luck: 1
+    }, {
         npc: NPCs.Police_Officer,
         luck: 20
     }, {
