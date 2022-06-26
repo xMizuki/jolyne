@@ -278,8 +278,8 @@ export const Jotaro: NPC = {
         stamina: 200
     },
     fight_rewards: {
-        xp: 100000,
-        money: 100000
+        xp: 1000000,
+        money: 1000000
     },
     stand: Stands.Star_Platinum["name"],
     dialogues: {

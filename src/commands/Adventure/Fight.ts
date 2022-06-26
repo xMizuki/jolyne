@@ -53,6 +53,11 @@ export const data: SlashCommand["data"] = {
 
 
 export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandContext, userData: UserData, customNPC?: NPC, updateUser?: boolean) => {
+    if (ctx.client._ready === false) return ctx.makeMessage({
+        content: 'The bot is going to restart soon.',
+        components: [],
+        embeds: []
+    });
     if (updateUser) userData = await ctx.client.database.getUserData(userData.id);
     const lastChapterEnnemyQuest: Quest = userData.chapter_quests.filter(v => v.npc && v.npc.health !== 0).sort((a, b) => a.npc.max_health - b.npc.max_health)[0];
     const lastDailyEnnemyQuest: Quest = userData.daily.quests.filter(v => v.npc && v.npc.health !== 0)[0];
@@ -168,6 +173,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         return collector.on('collect', callback);
     }
     async function startBattle(opponent: UserData | NPC, type: "chapter_quests" | "daily.quests" | "side_quests" | "ranked" | "friendly" | "custom") {
+        console.log(`${userData.tag} started a battle against ${opponent.id}`);
         let timeoutCollector: NodeJS.Timeout;
         if (type === "friendly") {
             opponent.health = opponent.max_health;
@@ -693,6 +699,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             }
         }
         async function end() {
+            console.log(`${userData.tag} ended battle against ${opponent.id}`)
             if (opponent.id !== userData.id && !Util.isNPC(opponent)) {
                 let oldOpp = opponent;
                 opponent = await ctx.client.database.getUserData(opponent.id);
