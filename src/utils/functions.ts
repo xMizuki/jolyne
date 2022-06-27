@@ -299,7 +299,6 @@ export const isQuest = function isQuest(item: any): item is Quest {
 }
 
 export const isQuestArray = function isQuestArray(item: any): item is Quest[] {
-    console.log(item);
     return item instanceof Array && (item as Quest[]).every(i => isQuest(i));
 }
 
