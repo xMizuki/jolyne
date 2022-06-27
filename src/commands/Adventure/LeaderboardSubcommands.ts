@@ -130,7 +130,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
 
     collector.on('collect', async (i: MessageComponentInteraction) => {
         ctx.timeoutCollector(collector);
-        console.log(page)
         switch (i.customId) {
             case firstID:
                 page = 1;

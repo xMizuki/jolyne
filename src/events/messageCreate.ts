@@ -58,7 +58,6 @@ export const execute: Event["execute"] = async (message: Message) => {
             if (!userData) return message.reply('User does not exist!');
             let b: any = args.join(' ').split('--')[0].split('')
             b = b.slice(0, b.length - 1).join('');
-            console.log(args.join(' ').split('--'))
             const item = Util.getItem(b.slice(args[0].length + 1)) || Object.values(Items).find((v) => v.id.toLowerCase().includes(b.slice(args[0].length + 1).toLowerCase()) || v.name.toLowerCase() === b.slice(args[0].length + 1).toLowerCase() || v.id.toLowerCase() === b.slice(args[0].length + 1).toLowerCase() || v.name.toLowerCase().includes(b.slice(args[0].length + 1).toLowerCase() ));
             if (!item) return message.reply('Item does not exist!');
             const amout = args.join('  ').includes('--') ? parseInt(args.join(' ').split('--')[1]) : 1;

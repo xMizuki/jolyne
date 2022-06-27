@@ -183,7 +183,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                     break;
                 case goBackID:
                     if (i.user.id === user.id) {
-                        console.log(userOffers);
                         const itemID = userOffers[userOffers.length - 1].id;
                         userOffers = userOffers.slice(0, userOffers.length - 1);
                         user_data.items.push(itemID);

@@ -111,7 +111,7 @@ export const execute: Event["execute"] = async (interaction: InteractionCommand)
             if (await interaction.client.database.getCooldownCache(interaction.user.id)) return;
 
             while (userData.xp >= Util.getMaxXp(userData.level)) {
-                console.log("Level up!");
+                console.log(userData.tag + " Level up!");
                 userData.xp = userData.xp - Util.getMaxXp(userData.level);
                 userData.level++;
                 ctx.followUp({

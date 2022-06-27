@@ -165,7 +165,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
                         status = `(${Util.localeNumber(count)}/${Util.localeNumber(max)}) **${perc}%**`
                         dftArray.push(quest.id); 
                     } else {
-                        console.log(quest.id);
+                        console.log(quest.id, 'NOT SUPPORTED I THINK');
                     }
                 }
                 fixedChapterContent.push({

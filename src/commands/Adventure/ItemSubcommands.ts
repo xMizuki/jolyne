@@ -245,7 +245,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             } else {
                 ctx.client.database.setCooldownCache("cooldown", userData.id)
                 for (let i = 0; i < quantity; i ++) {
-                    console.log(quantity > 2 ? true : false, quantity-i);
                     const response = await item.use(ctx, userData, (quantity > 2 ? true : false), quantity-i);
                     if (response) Util.removeItem(userData.items, item.id);    
                     else break; // an error occured, so we stop

@@ -29,7 +29,6 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         if (!userData) return ctx.sendT("base:USER_NO_ADVENTURE");
     }
     const rows: UserData[] = (await ctx.client.database.redis.client.keys("cachedUser*").then(async keys => await Promise.all(keys.map(async key => JSON.parse(await ctx.client.database.redis.client.get(key))))));// OLD CODE (causing too much latency) await ctx.client.database.postgres.client.query(`SELECT * FROM users WHERE adventureat IS NOT NULL AND level IS NOT NULL AND xp IS NOT NULL ORDER BY level DESC, xp DESC`).then(r => r.rows);
-    console.log(rows[0].id)
     const userGlobalPosition = rows.sort((a: UserData, b: UserData) => (b.level * 100000) + b.xp - (a.level * 100000) + a.xp).findIndex(p => p.id === userData.id) + 1;
     const userRankedPosition = (() => {
         function getRatio(user: UserData) {
