@@ -447,7 +447,6 @@ export const Hallucinogen: Ability = {
                 turns[turns.length - 1].logs.push(`💭 The hallucinogen effect has expired`);
                 Util.isNPC(caller) ? caller.skill_points["perception"] -= Math.floor(oldCallererception * 0.90) : caller.spb["perception"] -= Math.floor(oldCallererception * 0.90);
                 Util.isNPC(victim) ? victim.skill_points["perception"] += Math.floor(oldPerception * 0.90) : victim.spb["perception"] -= Math.floor(oldPerception * 0.90);
-                victim.stand = victimStand;
             }
         });
         promises.push(func);
