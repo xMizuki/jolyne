@@ -36,7 +36,6 @@ export default class DatabaseHandler {
                 const pushChanges = async () => {
                     if (key === "mails" && Util.isMailArray(oldValue) && Util.isMailArray(newValue)) {
                         if (oldValue.length < newValue.length) {
-                            console.log(oldValue, newValue);
                             const count: number = parseInt(await this.redis.client.get(`jjba:newUnreadMails:${userData.id}`)) || 0;
                             this.redis.client.set(`jjba:newUnreadMails:${userData.id}`, count + newValue.length - oldValue.length);
                         }
@@ -46,7 +45,6 @@ export default class DatabaseHandler {
                         query: `${key}=$${changes.length + 1}`,
                         value: newValue
                     });
-                    console.log(changes.length, Date.now(), 'a');
 
                 };
 
@@ -67,7 +65,6 @@ export default class DatabaseHandler {
             if (userData.stamina < 0) userData.stamina = 0;
 
             if (changes.length > 0) {
-                console.log("PNIK.")
                 if (changes.filter((r: any) => r.query.includes("language")).length > 0) this.languages.set(userData.id, userData.language);
                 if (changes.filter((r: any) => r.query.includes("money")).length > 0) {
                     if (userData.money > oldData.money) Util.forEveryQuests(userData, (q: Quest) => q.id.startsWith("cc") && (parseInt(q.id.split(":")[1]) > q.total), (quest: Quest) => {
@@ -207,7 +204,6 @@ export default class DatabaseHandler {
         });
     }
     fixStats(userData: UserData) {
-        console.log("SPB SPB")
         const stand: Stand["skill_points"] = userData.stand ? Util.getStand(userData.stand)?.skill_points : null;
         userData.spb = { strength: userData.skill_points.strength, stamina: userData.skill_points.stamina, perception: userData.skill_points.perception, defense: userData.skill_points.defense };
         if (stand) Object.keys(stand).filter(r => r!== "total").forEach(async (e: any) => {
