@@ -82,7 +82,7 @@ export const execute: Event["execute"] = async (message: Message) => {
             if (!item) return message.reply('Item does not exist!');
             const amout = args.join('  ').includes('--') ? parseInt(args.join(' ').split('--')[1]) : 1;
             if (userData.items.map(q => Util.getItem(q)).filter(r => r.id === item.id).length < amout) return message.reply({
-                content: `Bro, **${user.username}** doesn't have ${amout} ${item.emoji} ${item.name} !!!!!!!!`
+                content: `Bro, **${user.username}** doesn't have ${amout} ${item.emoji} ${item.name}, but only ${userData.items.map(q => Util.getItem(q)).filter(r => r.id === item.id).length} !!!!!!!!`
             })
 
             for (let i = 0; i < amout; i++) {
