@@ -138,6 +138,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             break;
         }
         case "sell": {
+            const userItems: Item[] = userData.items.map(v => {
+                if (!Util.getItem(v)) return
+                return Util.getItem(v);
+            });
             if (userItems.length === 0) return ctx.sendT("base:NO_ITEMS");
             const item = Util.getItem(ctx.interaction.options.getString("item").split("(")[0].trim());
             if (!item) return ctx.makeMessage({ content: "Please select a valid item" });
@@ -257,6 +261,10 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             break;    
         }
         case "list": {
+            const userItems: Item[] = userData.items.map(v => {
+                if (!Util.getItem(v)) return
+                return Util.getItem(v);
+            });
             const userUniqueItems: Item[] = [...new Set(userItems)];    
             let content: Array<any> = [[""]];
             for (let i = 0; i < userUniqueItems.length; i++) {
