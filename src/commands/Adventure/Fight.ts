@@ -449,7 +449,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
             
 
             
-            if (OpponentStand) {
+            if (opponent.stand) {
                 for (const ability of OpponentStand.abilities) {
                     if (cooldowns.find(r => r.id === NPC.id && r.move === ability.name)?.cooldown <= 0) {
                         possibleMoves.push(ability);
