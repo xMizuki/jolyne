@@ -70,7 +70,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
         .addField("Rank", `:globe_with_meridians: \`${userGlobalPosition}\`/\`${rows.length}\`\n⚔️ \`${userRankedPosition}\`/\`${rows.length}\`\n${Emojis.jocoins} \`${userMoneyPosition}\`/\`${rows.length}\``, true)
         .setColor(color)
         .addField(ctx.translate("profile:STATS"), `${Emojis.a_} LVL: ${userData.level}\n${Emojis.xp} XP: ${Util.localeNumber(userData.xp)}/${Util.localeNumber(Util.getMaxXp(userData.level))}\n${Emojis.jocoins} Coins: ${Util.localeNumber(userData.money)}`, true)
-        .addField("Combat Infos", `:crossed_swords: ATK Damages: ${Util.getATKDMG(userData)}\n🍃 Dodge Chances: ~${userData.dodge_chances}%`, true)
+        .addField("Combat Infos", `:crossed_swords: ATK Damages: ${Util.getATKDMG(userData)}\n🍃 Dodge Chances: ~${Util.calcDodgeChances(userData)}%`, true)
         .addField("Stand", userStand ? `${userStand.emoji} ${userStand.name}` : "Stand-less", true)
         .addField("Combat Stats [RANKED]", `🇼ins: ${Util.localeNumber(userData.stats.rankedBattle.wins)}\n🇱osses: ${Util.localeNumber(userData.stats.rankedBattle.losses)}\n:regional_indicator_w:/:regional_indicator_l: Ratio: ${ratio}`, true)
     if (userStand) embed.setThumbnail(userStand.image);

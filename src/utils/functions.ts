@@ -176,7 +176,7 @@ export const generateID = (): string => [...Array(12)].map(() => (~~(Math.random
 
 export const calcDodgeChances = (data: UserData | NPC): number => {
     const perception = isNPC(data) ? data.skill_points.perception : data.spb.perception;
-    return Math.round(Math.round((data.level / 2) + (perception / 1.15)));
+    return Math.round(Math.round((data.level / 20) + (perception / 1.20)));
 };
 
 export const isNPC = function isNPC(crusader: NPC | UserData): crusader is NPC {
