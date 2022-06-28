@@ -322,7 +322,7 @@ export const execute: SlashCommand["execute"] = async (ctx: InteractionCommandCo
     
                 return collector.on("collect", async (i: MessageComponentInteraction) => {
                     ctx.timeoutCollector(collector);   
-                    await i.deferUpdate();
+                    i.deferUpdate().catch(() => { });
                     if (i.customId === ctx.interaction.id+":back" && currentPage !== 1) {
                         goToPage(currentPage-1);
                         currentPage--;
