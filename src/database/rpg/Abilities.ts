@@ -386,11 +386,11 @@ export const Hatred_powered_Object_Possession: Ability = {
 export const Stand_Disc: Ability = {
     name: 'Stand Disc',
     description: 'Takes out your opponen\'s disc. They will be unable to use their stand\'s abilites for a few turns.',
-    cooldown: 0,
+    cooldown: 9,
     damages: 0,
     blockable: false,
     dodgeable: true,
-    stamina: 0,
+    stamina: 20,
     ultimate: true,
     trigger: (ctx: CommandInteractionContext, promises: Array<Function>, gameOptions: any, caller: UserData | NPC, victim: UserData | NPC, trns: number, turns: Turn[]) => {
         const victimUsername = Util.isNPC(victim) ? victim.name : ctx.client.users.cache.get(victim.id)?.username;
@@ -457,7 +457,7 @@ export const Hallucinogen: Ability = {
 export const Gun: Ability = {
     name: 'Gun',
     description: 'A gun that shoots a bullet at the opponent. The bullet will deal damages and stun the opponent for 2 turns.',
-    cooldown: 10,
+    cooldown: 13,
     damages: 30,
     blockable: false,
     dodgeable: true,
