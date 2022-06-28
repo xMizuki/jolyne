@@ -91,6 +91,12 @@ export const C3_P1: Chapter = {
     quests: [
         Quests.Tell_Your_Grandfather_About_DIO
     ],
+    tips: {
+        'en-US': 'You may need the `/action` command in order to complete some of your quests',
+        'fr-FR': 'Tu peux avoir besoin de la commande `/action` pour compléter certaines de tes quêtes',
+        'es-ES': 'Puedes necesitar la `/action` para completar algunas de tus misiones',
+        'de-DE': 'Du kannst das `/action`-Kommando benutzen, um einige deiner Aufgaben zu erfüllen'
+    },
 }
 
 export const C3_P2: Chapter = {
@@ -177,8 +183,7 @@ export const C3_P2: Chapter = {
             Util.makeNPCString(NPCs.Harry_Lester) + " NOOOOO ! *runs*   BEAT THESE GUARDS PLZ, SEE YA LATER IN THE PLANE **F-6969**"
         ],    
     },
-    parent: C3_P1
-
+    parent: C3_P1,
 }
 
 export const C3_P3: Chapter = {
@@ -214,6 +219,12 @@ export const C3_P4: Chapter = {
         Quests.UseLoot(10),
         Quests.Assault(5)
     ],
+    tips: {
+        'en-US': 'You may need the `/action` command in order to complete some of your quests',
+        'fr-FR': 'Tu peux avoir besoin de la commande `/action` pour compléter certaines de tes quêtes',
+        'es-ES': 'Puedes necesitar la `/action` para completar algunas de tus misiones',
+        'de-DE': 'Du kannst das `/action`-Kommando benutzen, um einige deiner Aufgaben zu erfüllen'
+    },
     parent: C3_P1
 }
 
@@ -230,5 +241,11 @@ export const C3_P5: Chapter = {
         Quests.ClaimCoins(35_000),
         Quests.Defeat(Util.AttributeChapterQuestToNPC(NPCs.Gray_Fly, [Quests.Drive_Airplane_To_Hongkong]))
     ],
-    parent: C3_P1
+    parent: C3_P1,
+    tips: {
+        'en-US': 'You may need the `/action` command in order to complete some of your quests',
+        'fr-FR': 'Tu peux avoir besoin de la commande `/action` pour compléter certaines de tes quêtes',
+        'es-ES': 'Puedes necesitar la `/action` para completar algunas de tus misiones',
+        'de-DE': 'Du kannst das `/action`-Kommando benutzen, um einige deiner Aufgaben zu erfüllen'
+    },
 }
