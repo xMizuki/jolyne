@@ -354,3 +354,24 @@ export const Tower_Of_Gray: Stand = {
     emoji: '\uD83D\uDEA8',
     available: false
 }
+
+export const Pika_Pika_No_Mi: Stand = {
+    name: 'Pika Pika No Mi',
+    rarity: 'SS',
+    description: 'Pika Pika No Mi (light fruit) is a devil fruit, currently owned by Kizaru (from the One Piece series).',
+    color: 'YELLOW',
+    abilities: [
+        Abilities.Light_Lunge,
+        Abilities['Light_Kick'],
+        Abilities['Mirror_Kick'],
+        Abilities['Jewels_Of_Light']
+    ],
+    image: 'https://cdn.discordapp.com/emojis/959495096485691412.png',
+    skill_points: Star_Platinum.skill_points,
+    text: {
+        awakening_text: "[awakening in you...]",
+        awaken_text: "*LIGHTOOOO*"
+    },
+    emoji: '<:Pika:959495096485691412>',
+    available: false
+}

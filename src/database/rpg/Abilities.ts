@@ -970,3 +970,43 @@ export const Secondary_Jaw: Ability = {
     dodgeable: false,
     stamina: 50
 }
+
+export const Light_Lunge: Ability = {
+    name: 'Light Lunge',
+    description: 'materialize a light sword & attacks.',
+    cooldown: 3,
+    damages: 9,
+    blockable: false,
+    dodgeable: true,
+    stamina: 10
+}
+
+export const Light_Kick: Ability = {
+    name: 'Light Kick',
+    description: 'light kicks the ennemy dealing wow dmgs.',
+    cooldown: 5,
+    damages: 13,
+    blockable: false,
+    dodgeable: true,
+    stamina: 10
+}
+
+export const Mirror_Kick: Ability = {
+    name: 'Yata no Kagami',
+    description: 'mirror kicks (zigzag)',
+    cooldown: 7,
+    damages: 25,
+    blockable: false,
+    dodgeable: false,
+    stamina: 10
+}
+
+export const Jewels_Of_Light: Ability = {
+    name: 'Jewels of Light',
+    description: 'light op bro u cannot dodge this (pwee pwee pwee pwee LIGHT).',
+    cooldown: 10,
+    damages: 30,
+    blockable: false,
+    dodgeable: false,
+    stamina: 10
+}
